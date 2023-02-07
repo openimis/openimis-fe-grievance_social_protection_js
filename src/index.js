@@ -10,6 +10,8 @@ import { FormattedMessage } from "@openimis/fe-core";
 import GrievanceStatusPicker from "./pickers/GrievanceStatusPicker";
 import GrievanceTypePicker from "./pickers/GrievanceTypePicker";
 
+import ClaimFilterbyAttachment from "./components/ClaimFilterbyAttachment";
+
 const ROUTE_MY_GRIEVANCES = "grievances/my_grievances";
 const ROUTE_ADD_GRIEVANCE = "grievances/add_grievance";
 
@@ -32,6 +34,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_MY_GRIEVANCES, component: GrievancePage },
     {path: ROUTE_ADD_GRIEVANCE, component: AddGrievance},
   ],
+  "claim.Filter" : [ClaimFilterbyAttachment],
   "admin.MainMenu": [
     {
       text: <FormattedMessage module="grievance" id="menu.grievance" />,
