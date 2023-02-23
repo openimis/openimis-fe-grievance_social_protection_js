@@ -9,6 +9,12 @@ function reducer(
         fetchedGrievance: false,
         Grievance: [],
         grievancePageInfo: { totalCount: 0 },
+
+        fetchingClaimAttachments: false,
+        fetchedClaimAttachments: false,
+        errorClaimAttachments: null,
+        claimAttachments: null,
+        claimAttachmentsPageInfo: { totalCount: 0 },
     },
     action,
 ) {
@@ -37,6 +43,29 @@ function reducer(
                     fetching: false,
                     error: formatServerError(action.payload)
                 };
+            
+                case "CLAIM_CLAIM_ATTACHMENTS_REQ":
+                    return {
+                      ...state,
+                      fetchingClaimAttachments: true,
+                      fetchedClaimAttachments: false,
+                      claimAttachments: null,
+                      errorClaimAttachments: null,
+                    };
+                  case "CLAIM_CLAIM_ATTACHMENTS_RESP":
+                    return {
+                      ...state,
+                      fetchingClaimAttachments: false,
+                      fetchedClaimAttachments: true,
+                      claimAttachments: parseData(action.payload.data.claimAttachmentsDetails),
+                      errorClaimAttachments: formatGraphQLError(action.payload),
+                    };
+                  case "CLAIM_CLAIM_ATTACHMENTS_ERR":
+                    return {
+                      ...state,
+                      fetchingClaimAttachments: false,
+                      errorClaimAttachments: formatServerError(action.payload),
+                    };
         default:
             return state;
     }
