@@ -12,7 +12,6 @@ import GrievanceTypePicker from "./pickers/GrievanceTypePicker";
 
 import ClaimFilterbyAttachment from "./components/ClaimFilterbyAttachment";
 import ClaimAttachmentPanel from "./components/ClaimAttachmentPanel";
-import ClaimAttachmentPanel_c from "./components/ClaimAttachmentPanel_c";
 
 const ROUTE_MY_GRIEVANCES = "grievances/my_grievances";
 const ROUTE_ADD_GRIEVANCE = "grievances/add_grievance";
@@ -37,8 +36,7 @@ const DEFAULT_CONFIG = {
     {path: ROUTE_ADD_GRIEVANCE, component: AddGrievance},
   ],
   "claim.Filter" : [ClaimFilterbyAttachment],
-  "claim.ClaimForm" : [ClaimAttachmentPanel], 
-  // "claim.ClaimForm" : [ClaimAttachmentPanel_c],
+  // "claim.ClaimForm" : [ClaimAttachmentPanel], 
   "admin.MainMenu": [
     {
       text: <FormattedMessage module="grievance" id="menu.grievance" />,

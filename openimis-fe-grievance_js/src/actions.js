@@ -34,11 +34,9 @@ export function saveGrievance(grievance, clientMutationLabel) {
     )
 }
 
-export function fetchClaimAttachments(claim_uuid) {
+export function fetchClaimAttachment(claim_uuid) {
     let filters = []
-    if (!!claim_uuid) {
       filters.push(`claimUuid: "${claim_uuid}"`)
-    }
     console.log("This is the Claim Uuid from the query", claim_uuid);
     let projections = [
       "id", "claim{code, id, uuid}", "type", "title", "filename"
@@ -47,8 +45,8 @@ export function fetchClaimAttachments(claim_uuid) {
     filters,
     projections
     );
-    return graphql(payload, 'CLAIM_CLAIM_ATTACHMENTS');
-}
+    return graphql(payload, 'CLAIM_CLAIM_ATTACHMENT');
+  }
 
 export function downloadAttachment(attach) {
     var url = new URL(`${window.location.origin}${baseApiUrl}/claim/attach`);
