@@ -33,27 +33,3 @@ export function saveGrievance(grievance, clientMutationLabel) {
         }
     )
 }
-
-export function fetchClaimAttachment(claim_uuid) {
-    let filters = []
-      filters.push(`claimUuid: "${claim_uuid}"`)
-    console.log("This is the Claim Uuid from the query", claim_uuid);
-    let projections = [
-      "id", "claim{code, id, uuid}", "type", "title", "filename"
-    ]
-    const payload = formatPageQuery("claimAttachmentsDetails",
-    filters,
-    projections
-    );
-    return graphql(payload, 'CLAIM_CLAIM_ATTACHMENT');
-  }
-
-export function downloadAttachment(attach) {
-    var url = new URL(`${window.location.origin}${baseApiUrl}/claim/attach`);
-    url.search = new URLSearchParams({ id: decodeId(attach.id) });
-    return (dispatch) => {
-      return fetch(url)
-        .then((response) => response.blob())
-        .then((blob) => openBlob(blob, attach.filename, attach.mime));
-    };
-  }
