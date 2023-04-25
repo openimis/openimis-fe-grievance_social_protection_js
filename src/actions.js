@@ -1,35 +1,114 @@
 import {
-    graphql, formatPageQueryWithCount, formatMutation, formatPageQuery, decodeId, openBlob, baseApiUrl
+    graphql, formatPageQueryWithCount, formatMutation
     } from "@openimis/fe-core";
 
-export function fetchGrievance(prms){
+
+export function fetchTicket(prms){
     const payload = formatPageQueryWithCount( 
-        "grievance",
+        "tickets",
         prms,
-        ["grievanceCode", "typeOfGrievance", "status", "comments", "createdBy", "description", "insuree{otherNames, lastName}"]
+        ["id", "uuid", "ticketTitle", "ticketCode","ticketDescription", "ticketStatus", "ticketPriority", "ticketDuedate",
+        "category{id, uuid, categoryTitle, slug}", 
+        "insuree{id, uuid, otherNames, lastName, dob, chfId}" ]
     );
-    return graphql(payload, 'GRIEVANCE_MY_GRIEVANCES');
+    return graphql(payload, 'TICKET_MY_TICKETS');
 }
 
-export function saveGrievance(grievance, clientMutationLabel) {
-    let grievanceGQL = ` 
-    grievanceCode: "${grievance.grievanceCode}"
-    insureeUuid: "${grievance["insuree"]["uuid"]}"
-    typeOfGrievance: "${grievance.typeOfGrievance}"
-    description: "${grievance.description}"
-    createdBy: "${grievance.createdBy}"
-    comments: "${grievance.comments}"
-    status: "${grievance.status}"
+export function  fetchMyCategory(prms,) {
+
+    const payload  = formatPageQueryWithCount(
+        "category",
+        prms,
+        [ "categoryTitle", "slug"]
+    )
+
+    return graphql (payload, "CATEGORY_MY_ENTITIES") 
+
+}
+
+export function saveTicket( tickets,  clientMutationLabel){
+
+    let TicketGQL = `
+    insureeUuid: "${tickets["insuree"]["uuid"]}"
+    name: "${tickets.name}"
+    phone: ${tickets.phone}
+    email: "${tickets.email}"
+    insureeLocation: "${tickets.insureeLocation}"
+    dateOfIncident: "${tickets.dateOfIncident}"
+    eventLocationUuid: "${tickets["location"]["uuid"]}"
+    witness: "${tickets.witness}"
+    categoryUuid: "${tickets["category"]["uuid"]}"
+    ticketPriority: "${tickets.ticketPriority}"  
+    ticketDescription: "${tickets.ticketDescription}"
+    resolution: "${tickets.resolution}"
     `
-    let mutation = formatMutation("createGrievance", grievanceGQL, clientMutationLabel);
-    var requestedDateTime = new Date();
+
+    let mutation = formatMutation ("createTicket", TicketGQL, clientMutationLabel);
+    var requestedDateTime = new Date ();
+
     return graphql(
+
         mutation.payload,
-        "GRIEVANCES_CREATE_GRIEVANCE",
+        "TICKET_CREATE_TICKET",
         {
             clientMutationId: mutation.clientMutationId,
             clientMutationLabel,
             requestedDateTime
         }
+        
+    )
+}
+
+export function updateTicket( tickets,  clientMutationLabel){
+
+    let TicketGQL = `
+    insureeUuid: "${tickets["insuree"]["uuid"]}"
+    name: "${tickets.name}"
+    phone: ${tickets.phone}
+    email: "${tickets.email}"
+    insureeLocation: "${tickets.insureeLocation}"
+    dateOfIncident: "${tickets.dateOfIncident}"
+    eventLocationUuid: "${tickets["location"]["uuid"]}"
+    witness: "${tickets.witness}"
+    categoryUuid: "${tickets["category"]["uuid"]}"
+    ticketPriority: "${tickets.ticketPriority}"  
+    ticketDescription: "${tickets.ticketDescription}"
+    resolution: "${tickets.resolution}"
+    `
+
+    let mutation = formatMutation ("createTicket", TicketGQL, clientMutationLabel);
+    var requestedDateTime = new Date ();
+
+    return graphql(
+
+        mutation.payload,
+        "TICKET_CREATE_TICKET",
+        {
+            clientMutationId: mutation.clientMutationId,
+            clientMutationLabel,
+            requestedDateTime
+        }
+        
+    )
+}
+
+
+export function saveCategory( category,  clientMutationLabel){
+
+    let CategoryTicketGQL = `
+    categoryTitle: "${category.categoryTitle}"
+    slug: "${category.slug}"
+    `
+    let mutation = formatMuatation ("createCategory", CategoryTicketGQL , clientMutationLabel);
+    var requestedDateTime = new Date ();
+    return graphql(
+        mutation.payload,
+        "CATEGORY_CREATE_CATEGORY",
+        {
+            clientMutationId: mutation.clientMutationId,
+            clientMutationLabel,
+            requestedDateTime
+        }
+        
     )
 }

@@ -1,49 +1,53 @@
 import React from "react";
-import { AccountBalanceOutlined } from "@material-ui/icons";
 import messages_en from "./translations/en.json";
-import GrievanceMainMenu from "./menu/GrievanceMainMenu";
+import TicketMainMenu from "./menu/TicketMainMenu";
+import { AccountBalanceOutlined } from "@material-ui/icons";
 import reducer from "./reducer";
-import GrievancePage from "./pages/GrievancePage";
-import AddGrievance from "./pages/AddGrievance";
 import { FormattedMessage } from "@openimis/fe-core";
+import TicketsPage from "./pages/TicketsPage";
+import TicketPage from "./pages/TicketPage";
 
-import GrievanceStatusPicker from "./pickers/GrievanceStatusPicker";
-import GrievanceTypePicker from "./pickers/GrievanceTypePicker";
+import TicketPriorityPicker from "./pickers/TicketPriorityPicker";
+import TicketStatusPicker from "./pickers/TicketStatusPicker";
+import DropDownCategoryPicker from "./pickers/DropDownCategoryPicker";
 
-import ClaimFilterbyAttachment from "./components/ClaimFilterbyAttachment";
+const ROUTE_TICKET_TICKETS = "ticket/tickets";
+const ROUTE_TICKET_TICKET = "ticket/ticket";
 
-const ROUTE_MY_GRIEVANCES = "grievances/my_grievances";
-const ROUTE_ADD_GRIEVANCE = "grievances/add_grievance";
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
-  'reducers': [{ key:'grievance', reducer }],
+  'reducers': [{ key:'ticket', reducer }],
 
-  "refs": [
+  "refs":[
     
-    { key: "grievance.route.my_grievance", ref: ROUTE_MY_GRIEVANCES },
-    { key: "grievance.route.add_grievance", ref: ROUTE_ADD_GRIEVANCE },
+    { key: "ticket.route.tickets", ref: ROUTE_TICKET_TICKETS },
+    { key: "ticket.route.ticket", ref: ROUTE_TICKET_TICKET },
     
-    { key: "grievance.GrievanceStatusPicker", ref: GrievanceStatusPicker },
-    { key: "grievance.GrievanceTypePicker", ref: GrievanceTypePicker },
 
-  ],
+    { key: "ticket.TicketStatusPicker", ref: TicketStatusPicker },
+    { key: "ticket.TicketPriorityPicker", ref: TicketPriorityPicker },
+    { key: "payroll.DropDownCategoryPicker", ref: DropDownCategoryPicker },
 
-  'core.MainMenu': [GrievanceMainMenu],
+ ],
+
+  'core.MainMenu': [TicketMainMenu],
   "core.Router": [ 
-    { path: ROUTE_MY_GRIEVANCES, component: GrievancePage },
-    {path: ROUTE_ADD_GRIEVANCE, component: AddGrievance},
+     
+    {path: ROUTE_TICKET_TICKETS, component: TicketsPage},
+    { path: ROUTE_TICKET_TICKET + "/:ticket_uuid?", component: TicketPage },
+    
   ],
-  "claim.Filter" : [ClaimFilterbyAttachment],
+
   "admin.MainMenu": [
     {
-      text: <FormattedMessage module="grievance" id="menu.grievance" />,
+      text: <FormattedMessage module="ticket" id="menu.ticket" />,
       icon: <AccountBalanceOutlined />,
-      route: "/" + ROUTE_MY_GRIEVANCES,
+      route: "/" + ROUTE_TICKET_TICKETS,
     },
   ],
 }
 
-export const GrievanceModule = (cfg) => {
+export const TicketsModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 }
