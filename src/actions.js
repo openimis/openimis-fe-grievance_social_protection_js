@@ -99,7 +99,7 @@ export function saveCategory( category,  clientMutationLabel){
     categoryTitle: "${category.categoryTitle}"
     slug: "${category.slug}"
     `
-    let mutation = formatMuatation ("createCategory", CategoryTicketGQL , clientMutationLabel);
+    let mutation = formatMutation ("createCategory", CategoryTicketGQL , clientMutationLabel);
     var requestedDateTime = new Date ();
     return graphql(
         mutation.payload,
