@@ -1,14 +1,11 @@
 import React, { Component, Fragment } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { Paper, Grid, Typography, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Paper, Grid, Typography, Divider } from "@material-ui/core";
 import {
-  formatMessage,
-  withTooltip,
   FormattedMessage,
   PublishedComponent,
   FormPanel,
   TextInput,
-  Contributions,
   withModulesManager,
 } from "@openimis/fe-core";
 
@@ -21,282 +18,175 @@ const styles = (theme) => ({
   },
 });
 
-const INSUREE_INSUREE_CONTRIBUTION_KEY = "insuree.Insuree";
-const INSUREE_INSUREE_PANELS_CONTRIBUTION_KEY = "insuree.Insuree.panels";
-
 class TicketMasterPanel extends FormPanel {
   render() {
     const {
       intl,
       classes,
       edited,
-      title = "Insuree.title",
+      title = "Ticket.title",
       titleParams = { label: "" },
       readOnly = true,
       actions,
     } = this.props;
     return (
-      <Grid container>
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            <Grid container className={classes.tableTitle}>
-              <Grid item xs={3} container alignItems="center" className={classes.item}>
-                <Typography variant="h5">
-                  <FormattedMessage module="insuree" id={title} values={titleParams} />
-                </Typography>
-              </Grid>
-              <Grid item xs={9}>
-                <Grid container justify="flex-end">
-                  {!!edited &&
-                    !!edited.family &&
-                    !!edited.family.headInsuree &&
-                    edited.family.headInsuree.id !== edited.id && (
-                      <Grid item xs={3}>
-                        <PublishedComponent
-                          pubRef="insuree.RelationPicker"
-                          withNull={true}
-                          // nullLabel={formatMessage(this.props.intl, "insuree", `Relation.none`)}
-                          readOnly={readOnly}
-                          value={!!edited && !!edited.relationship ? edited.relationship.id : ""}
-                          onChange={(v) => this.updateAttribute("relationship", { id: v })}
-                        />
-                      </Grid>
-                    )}
-                  {!!actions &&
-                    actions.map((a, idx) => {
-                      return (
-                        <Grid item key={`form-action-${idx}`} className={classes.paperHeaderAction}>
-                          {withTooltip(a.button, a.tooltip)}
-                        </Grid>
-                      );
-                    })}
-                </Grid>
-              </Grid>
-            </Grid>
-            <Divider />
-            <Grid container className={classes.item}>
-              {/* <Grid item xs={4} className={classes.item}>
-                <PublishedComponent
-                  pubRef="insuree.InsureeNumberInput"
-                  module="insuree"
-                  label="Insuree.chfId"
-                  required={true}
-                  readOnly={readOnly}
-                  value={edited?.chfId}
-                  onChange={(v) => this.updateAttribute("chfId", v)}
-                />
-              </Grid> */}
-              <Grid item xs={4} className={classes.item}>
-                <TextInput
-                  module="insuree"
-                  label="Insuree.lastName"
-                  required={true}
-                  readOnly={readOnly}
-                  value={!!edited && !!edited.lastName ? edited.lastName : ""}
-                  onChange={(v) => this.updateAttribute("lastName", v)}
-                />
-              </Grid>
-              <Grid item xs={4} className={classes.item}>
-                <TextInput
-                  module="insuree"
-                  label="Insuree.otherNames"
-                  required={true}
-                  readOnly={readOnly}
-                  value={!!edited && !!edited.otherNames ? edited.otherNames : ""}
-                  onChange={(v) => this.updateAttribute("otherNames", v)}
-                />
-              </Grid>
-              <Grid item xs={8}>
+      <div className={classes.page}>
                 <Grid container>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="core.DatePicker"
-                      value={!!edited ? edited.dob : null}
-                      module="insuree"
-                      label="Insuree.dob"
-                      readOnly={readOnly}
-                      required={true}
-                      onChange={(v) => this.updateAttribute("dob", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="insuree.InsureeGenderPicker"
-                      value={!!edited && !!edited.gender ? edited.gender.code : ""}
-                      module="insuree"
-                      readOnly={readOnly}
-                      withNull={true}
-                      onChange={(v) => this.updateAttribute("gender", { code: v })}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="insuree.InsureeMaritalStatusPicker"
-                      value={!!edited && !!edited.marital ? edited.marital : ""}
-                      module="insuree"
-                      readOnly={readOnly}
-                      withNull={true}
-                      nullLabel="InsureeMaritalStatus.null"
-                      onChange={(v) => this.updateAttribute("marital", v)}
-                    />
-                  </Grid>
-                  {/* <Grid item xs={3} className={classes.item}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          color="primary"
-                          checked={!!edited && !!edited.cardIssued}
-                          disabled={readOnly}
-                          onChange={(v) => this.updateAttribute("cardIssued", !edited || !edited.cardIssued)}
-                        />
-                      }
-                      label={formatMessage(intl, "insuree", "Insuree.cardIssued")}
-                    />
-                  </Grid> */}
-                  <Grid item xs={12}>
-                    <PublishedComponent
-                      pubRef="insuree.InsureeAddress"
-                      value={edited}
-                      module="insuree"
-                      readOnly={readOnly}
-                      onChangeLocation={(v) => this.updateAttribute("currentVillage", v)}
-                      onChangeAddress={(v) => this.updateAttribute("currentAddress", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={6} className={classes.item}>
-                    <TextInput
-                      module="insuree"
-                      label="Insuree.phone"
-                      readOnly={readOnly}
-                      value={!!edited && !!edited.phone ? edited.phone : ""}
-                      onChange={(v) => this.updateAttribute("phone", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={6} className={classes.item}>
-                    <TextInput
-                      module="insuree"
-                      label="Insuree.email"
-                      readOnly={readOnly}
-                      value={!!edited && !!edited.email ? edited.email : ""}
-                      onChange={(v) => this.updateAttribute("email", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="insuree.ProfessionPicker"
-                      module="insuree"
-                      value={!!edited && !!edited.profession ? edited.profession.id : null}
-                      readOnly={readOnly}
-                      withNull={true}
-                      // nullLabel={formatMessage(intl, "insuree", "Profession.none")}
-                      onChange={(v) => this.updateAttribute("profession", { id: v })}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="insuree.EducationPicker"
-                      module="insuree"
-                      value={!!edited && !!edited.education ? edited.education.id : ""}
-                      readOnly={readOnly}
-                      withNull={true}
-                      // nullLabel={formatMessage(intl, "insuree", "insuree.Education.none")}
-                      onChange={(v) => this.updateAttribute("education", { id: v })}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="insuree.IdentificationTypePicker"
-                      module="insuree"
-                      value={!!edited && !!edited.typeOfId ? edited.typeOfId.code : null}
-                      readOnly={readOnly}
-                      withNull={true}
-                      // nullLabel={formatMessage(intl, "insuree", "IdentificationType.none")}
-                      onChange={(v) => this.updateAttribute("typeOfId", { code: v })}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                      module="insuree"
-                      label="Insuree.passport"
-                      readOnly={readOnly}
-                      value={!!edited && !!edited.passport ? edited.passport : ""}
-                      onChange={(v) => this.updateAttribute("passport", !!v ? v : null)}
-                    />
-                  </Grid>
+                        <Grid item xs={12}>
+                            <Paper className={classes.paper}>
+                                <Grid container className={classes.tableTitle}>
+                                    <Grid item xs={8} className={classes.tableTitle}>
+                                        <Typography>
+                                            <IconButton variant="contained" component="label" onClick={this.back}>
+                                                <ArrowBackIos />
+                                            </IconButton>
+                                            <FormattedMessage module="ticket" id={titleone} values={titleParams} />
+                                        </Typography>
+                                    </Grid>
+                                    {/* <Grid item xs={4} className={classes.tableTitle}>
+                                        <PublishedComponent
+                                            pubRef="insuree.InsureePicker"
+                                            value={edited.insuree}
+                                            label="Complainant"
+                                            onChange={(v) => this.updateAttribute("insuree", v)}
+                                            required={false} 
+                                        />
+                                    </Grid> */}
+                                </Grid>
+                                <Divider />
+                                <Grid container className={classes.item}>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <TextInput
+                                            module="ticket" label="ticket.name"
+                                            // value={!!edited && !!edited.insuree ? edited.insuree.otherNames : ""}
+                                            value={edited.ticket.name}
+                                            onChange={v => this.updateAttribute("name", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <TextInput
+                                            module="ticket" label="ticket.phone"
+                                            value={!!edited && !!edited.insuree ? edited.insuree.phone : ""}
+                                            //value={edited.phone}
+                                            onChange={v => this.updateAttribute("phone", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <TextInput
+                                            module="ticket" label="ticket.email"
+                                            value={!!edited && !!edited.insuree ? edited.insuree.email : ""}
+                                            onChange={v => this.updateAttribute("email", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <TextInput
+                                            module="ticket" label="ticket.currentVillage"
+                                            value={!!edited && !!edited.insuree && !!edited.insuree.currentVillage ? edited.insuree.currentVillage.name : ""}
+                                            onChange={v => this.updateAttribute("insureeLocation", v)}
+                                            required={false} />
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+                        </Grid>
                 </Grid>
-              </Grid>
-              <Grid item xs={4} className={classes.item}>
-                <PublishedComponent
-                  pubRef="insuree.Avatar"
-                  photo={!!edited ? edited.photo : null}
-                  readOnly={readOnly}
-                  withMeta={true}
-                  onChange={(v) => this.updateAttribute("photo", !!v ? v : null)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-	              <Grid container>
-		              <Grid item xs={3} className={classes.item}>
-			              <TextInput
-                      module="insuree"
-                      label="Insuree.bankAccountName"
-                      readOnly={readOnly}
-                      value={!!edited && !!edited.accountName ? edited.accountName : ""}
-                      onChange={(v) => this.updateAttribute("accountName", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                        module="insuree"
-                        label="Insuree.bankAccountNo"
-                        readOnly={readOnly}
-                        value={!!edited && !!edited.accountNumber ? edited.accountNumber : ""}
-                        onChange={(v) => this.updateAttribute("accountNumber", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                        module="insuree"
-                        label="Insuree.placeofBirth"
-                        readOnly={readOnly}
-                        value={!!edited && !!edited.placeOfBirth ? edited.placeOfBirth : ""}
-                        onChange={(v) => this.updateAttribute("placeOfBirth", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                        module="insuree"
-                        label="Insuree.citizenship"
-                        readOnly={readOnly}
-                        value={!!edited && !!edited.citezenship ? edited.citezenship : ""}
-                        onChange={(v) => this.updateAttribute("citezenship", v)}
-                    />
-                  </Grid>
-                  <Grid item xs={3} className={classes.item}>
-                    <TextInput
-                        module="insuree"
-                        label="Insuree.taxNo"
-                        readOnly={readOnly}
-                        value={!!edited && !!edited.taxNo ? edited.taxNo : ""}
-                        onChange={(v) => this.updateAttribute("taxNo", v)}
-                    />
-                  </Grid>
+
+                <Grid container>
+                        <Grid item xs={12}>
+                            <Paper className={classes.paper}>
+                                <Grid container className={classes.tableTitle}>
+                                    <Grid item xs={12} className={classes.tableTitle}>
+                                        <Typography>
+                                            <FormattedMessage module="ticket" id={titletwo} values={titleParams} />
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                                <Divider />
+                                <Grid container className={classes.item}>
+                                    <Grid item xs={4} className={classes.item}>
+                                        <PublishedComponent
+                                            pubRef="core.DatePicker"
+                                            label="ticket.eventDate"
+                                            value={!edited ? null : edited.dateOfIncident}
+                                            // value={edited.dateOfIncident}
+                                            required={false}
+                                            onChange={v => this.updateAttribute("dateOfIncident", v)} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <PublishedComponent
+                                            pubRef="location.DetailedLocation"
+                                            withNull={true}
+                                            // readOnly={readOnly}
+                                            required
+                                            value={!edited ? null : edited.location}
+                                            onChange={(v) => this.updateAttribute("location", v)}
+                                            filterLabels={false}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4} className={classes.item}>
+                                        <TextInput
+                                            module="ticket" label="ticket.witness"
+                                            value={!edited ? null : edited.witness}
+                                            onChange={v => this.updateAttribute("witness", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <PublishedComponent
+                                            pubRef="payroll.DropDownCategoryPicker"
+                                            value={!edited ? null : edited.witness}
+                                            onChange={(v) => this.updateAttribute("category", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <PublishedComponent
+                                            pubRef="ticket.TicketPriorityPicker"
+                                            value={!edited ? null : edited.witness}
+                                            onChange={(v) => this.updateAttribute("ticketPriority", v)}
+                                            required={false} />
+                                    </Grid>
+                                    <Grid item xs={12} className={classes.item}>
+                                        <textarea rows="10" cols="115"
+                                            module="grievance" label="Grievance.descriptionOfEvents"
+                                            // value={edited.description}
+                                            required={false}
+                                            onChange={v => this.updateAttribute("ticketDescription", v)} />
+                                    </Grid>
+                                </Grid>
+                                <IconButton variant="contained" component="label" color="primary" onClick={this.save}>
+                                    <Save />
+                                </IconButton>
+                            </Paper>
+                        </Grid>
                 </Grid>
-              </Grid>
-              <Contributions
-                {...this.props}
-                updateAttribute={this.updateAttribute}
-                contributionKey={INSUREE_INSUREE_CONTRIBUTION_KEY}
-              />
-            </Grid>
-          </Paper>
-          <Contributions
-            {...this.props}
-            updateAttribute={this.updateAttribute}
-            contributionKey={INSUREE_INSUREE_PANELS_CONTRIBUTION_KEY}
-          />
-        </Grid>
-      </Grid>
+
+                <Grid container>
+                    <Grid item xs = {12}>
+                        <Paper className = {classes.paper}>
+                        <Grid container className={classes.tableTitle}>
+                            <Grid item xs= {12} className = {classes.tableTitle}>
+                                <Typography>
+                                    <FormattedMessage module ="ticket" id= {titlethree} values = {titleParams}/>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Divider/>
+                        <Grid container className={classes.item}>
+                            <Grid item xs={12} className={classes.item}>
+                                <textarea rows="10" cols="115"
+                                    module="ticket" 
+                                    // value={edited.description}
+                                    required={false}
+                                    onChange={v => this.updateAttribute("resolution", v)}
+                                />
+                            </Grid>
+                        </Grid>
+                        <IconButton variant="contained" component="label" color="primary" onClick={this.save}>
+						    <Save />
+                        </IconButton>
+                        </Paper>
+                    </Grid>
+                </Grid>
+                <br/>
+            </div>
     );
   }
 }
