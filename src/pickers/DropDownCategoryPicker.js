@@ -16,7 +16,7 @@ const DropDownCategoryPicker = (props) => {
     multiple,
   } = props;
   const [searchString, setSearchString] = useState(null);
-  const { formatMessage } = useTranslations("programs");
+  const { formatMessage } = useTranslations("ticket");
 
   const { isLoading, data, error } = useGraphqlQuery(
     `query CategoryPicker {

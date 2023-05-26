@@ -4,37 +4,36 @@ import { connect } from "react-redux";
 import { injectIntl } from 'react-intl';
 import { IconButton } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-// import {
-//     People as PeopleIcon, Tab as TabIcon, Delete as DeleteIcon
-// } from '@material-ui/icons';
 import {
     withModulesManager, formatMessageWithValues, formatMessage,
-    withHistory , historyPush, coreConfirm, journalize,
+    withHistory, historyPush, coreConfirm, journalize,
     Searcher
 } from "@openimis/fe-core";
-import { fetchTicket } from "../actions";
-import { ticketLabel } from "../utils/utils";
-import AddIcon from "@material-ui/icons/Add";
 import { RIGHT_TICKET_ADD } from "../constants";
+import { fetchTicketSummaries, resolveTicket } from "../actions";
+
+import AddIcon from "@material-ui/icons/Add";
+// import {CheckCircle as CloseIcon} from '@material-ui/icons';
 
 const styles = (theme) => ({
     paper: {
-      ...theme.paper.paper,
-      margin: 0,
+        ...theme.paper.paper,
+        margin: 0,
     },
     paperHeader: {
-      ...theme.paper.header,
-      padding: 10,
+        ...theme.paper.header,
+        padding: 10,
     },
     tableTitle: theme.table.title,
     fab: theme.fab,
     button: {
-      margin: theme.spacing(1),
+        margin: theme.spacing(1),
     },
     item: {
-      padding: theme.spacing(1),
+        padding: theme.spacing(1),
     },
-  });
+});
+
 
 class TicketSearcher extends Component {
 
@@ -61,11 +60,11 @@ class TicketSearcher extends Component {
     }
 
     onAdd = () => {
-        historyPush(this.props.modulesManager, this.props.history, "ticket.route.add_ticket");
+        historyPush(this.props.modulesManager, this.props.history, "ticket.route.addticket");
     }
 
     fetch = (prms) => {
-        this.props.fetchTicket(
+        this.props.fetchTicketSummaries(
             this.props.modulesManager,
             prms
         )
@@ -90,32 +89,42 @@ class TicketSearcher extends Component {
         return prms;
     }
 
+    _onClick = (i, newTab = false) => {
+        historyPush(this.props.modulesManager, this.props.history, "insuree.route.insuree", [i.uuid], newTab);
+    }
+
+    resolveTicket = e => {
+        this.props.resolveTicket(this.props.edited_id)
+    }
+
     headers = (filters) => {
         var h = [
-          "tickets.ticketCode",
-          "tickets.beneficaryCode",
-          "tickets.beneficary",
-          "tickets.priority",
-          "tickets.status",
+            "tickets.ticketCode",
+            "tickets.beneficaryCode",
+            "tickets.beneficary",
+            "tickets.priority",
+            "tickets.status",
         ]
         return h;
     }
 
     sorts = (filters) => {
         var results = [
-            ['name', true],
-            ['code', true],
-            ['ticketType', true],
-            ['status', true],
+            ["ticketCode", true],
+            ["insuree_id", true],
+            ["insuree", true],
+            ["ticket_priority", true],
+            ["ticket_status", true]
         ];
         return results;
-            
+
     }
 
     itemFormatters = (filters) => {
         var formatters = [
             ticket => ticket.ticketCode,
             ticket => ticket.insuree.chfId,
+            // ticket => <Button onClick={this._onClick} color="primary">{ticket.insuree.chfId}</Button>,
             ticket => ticket.insuree.otherNames + ' ' + ticket.insuree.lastName,
             ticket => ticket.ticketPriority,
             ticket => ticket.ticketStatus,
@@ -129,54 +138,46 @@ class TicketSearcher extends Component {
 
     render() {
         const { intl,
-          Ticket, ticketPageInfo, fetchingTickets, fetchedTickets, errorTickets,
+            tickets, ticketsPageInfo, fetchingTickets, fetchedTickets, errorTickets,
             filterPaneContributionsKey, cacheFiltersKey, onDoubleClick, rights, readOnly, classes
         } = this.props;
 
-        let count = ticketPageInfo.totalCount;
-        
+        let count = ticketsPageInfo.totalCount;
 
-          let actions =
-          !!readOnly || !rights.includes(RIGHT_TICKET_ADD)
-          ? []: [
-          {
-            button: (
-              <IconButton onClick={this.onAdd}>
-                <AddIcon />
-              </IconButton>
-            ),
-            tooltip: formatMessage(intl, 'programs', 'action.Addticket.tooltip')
-          }
-        ] 
+
+        let actions =
+            !!readOnly || !rights.includes(RIGHT_TICKET_ADD)
+                ? []
+                : [
+                    {
+                        button: (
+                            <IconButton onClick={this.onAdd}>
+                                <AddIcon />
+                            </IconButton>
+                        ),
+                        tooltip: formatMessage(intl, 'ticket', 'action.AddTicket.tooltip')
+                    }
+                ]
 
 
         return (
             <Fragment>
-                    {/* <Grid container alignItems="center" spacing={3}>
-                        {actions.map((a, idx) => {
-                            return (
-                                <Grid item key={`form-action-${idx}`}>
-                                    {withTooltip(a.button, a.tooltip)}
-                                </Grid>
-                            );
-                        })}
-                    </Grid> */}
                 <Searcher
                     module="ticket"
                     cacheFiltersKey={cacheFiltersKey}
                     filterPaneContributionsKey={filterPaneContributionsKey}
-                    items={Ticket}
-                    itemsPageInfo={ticketPageInfo}
+                    items={tickets}
+                    itemsPageInfo={ticketsPageInfo}
                     fetchingItems={fetchingTickets}
                     fetchedItems={fetchedTickets}
                     errorItems={errorTickets}
-                    tableTitle={formatMessageWithValues(intl, "programs", "ticketSummaries", { count })}
+                    tableTitle={formatMessageWithValues(intl, "ticket", "ticketSummaries", { count })}
                     rowsPerPageOptions={this.rowsPerPageOptions}
                     defaultPageSize={this.defaultPageSize}
                     fetch={this.fetch}
                     rowIdentifier={this.rowIdentifier}
                     filtersToQueryParams={this.filtersToQueryParams}
-                    defaultOrderBy="code"
+                    defaultOrderBy="ticketCode"
                     headers={this.headers}
                     itemFormatters={this.itemFormatters}
                     sorts={this.sorts}
@@ -184,7 +185,7 @@ class TicketSearcher extends Component {
                     rowLocked={this.rowLocked}
                     onDoubleClick={(i) => !i.clientMutationId && onDoubleClick(i)}
                     reset={this.state.reset}
-                    
+
                 />
             </Fragment>
         )
@@ -193,8 +194,8 @@ class TicketSearcher extends Component {
 
 const mapStateToProps = state => ({
     rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-    Ticket: state.ticket.Ticket,
-    ticketPageInfo: state.ticket.ticketPageInfo,
+    tickets: state.ticket.tickets,
+    ticketsPageInfo: state.ticket.ticketsPageInfo,
     fetchingTickets: state.ticket.fetchingTickets,
     fetchedTickets: state.ticket.fetchedTickets,
     errorTickets: state.ticket.errorTickets,
@@ -206,7 +207,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => {
     return bindActionCreators(
-        { fetchTicket, journalize, coreConfirm },
+        { fetchTicketSummaries, resolveTicket, journalize, coreConfirm },
         dispatch);
 };
 

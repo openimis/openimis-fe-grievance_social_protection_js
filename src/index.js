@@ -1,53 +1,54 @@
 import React from "react";
 import messages_en from "./translations/en.json";
-import TicketMainMenu from "./menu/TicketMainMenu";
-import { AccountBalanceOutlined } from "@material-ui/icons";
 import reducer from "./reducer";
+import { ListAlt } from "@material-ui/icons";
 import { FormattedMessage } from "@openimis/fe-core";
+import TicketMainMenu from "./menu/TicketMainMenu";
 import TicketsPage from "./pages/TicketsPage";
 import TicketPage from "./pages/TicketPage";
-
+import TicketSearcher from "./components/TicketSearcher";
 import TicketPriorityPicker from "./pickers/TicketPriorityPicker";
 import TicketStatusPicker from "./pickers/TicketStatusPicker";
 import DropDownCategoryPicker from "./pickers/DropDownCategoryPicker";
+import CategoryPicker from "./pickers/CategoryPicker";
 
 const ROUTE_TICKET_TICKETS = "ticket/tickets";
 const ROUTE_TICKET_TICKET = "ticket/ticket";
 
-
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
-  'reducers': [{ key:'ticket', reducer }],
+  "reducers": [{ key: 'ticket', reducer }],
 
-  "refs":[
-    
+  "refs": [
     { key: "ticket.route.tickets", ref: ROUTE_TICKET_TICKETS },
     { key: "ticket.route.ticket", ref: ROUTE_TICKET_TICKET },
-    
+
+    { key: "ticket.route.ticketSearcher", ref: TicketSearcher },
 
     { key: "ticket.TicketStatusPicker", ref: TicketStatusPicker },
     { key: "ticket.TicketPriorityPicker", ref: TicketPriorityPicker },
-    { key: "payroll.DropDownCategoryPicker", ref: DropDownCategoryPicker },
+    { key: "ticket.DropDownCategoryPicker", ref: DropDownCategoryPicker },
+    { key: "ticket.CategoryPicker", ref: CategoryPicker },
 
- ],
-
-  'core.MainMenu': [TicketMainMenu],
-  "core.Router": [ 
-     
-    {path: ROUTE_TICKET_TICKETS, component: TicketsPage},
-    { path: ROUTE_TICKET_TICKET + "/:ticket_uuid?", component: TicketPage },
-    
+  ],
+  "core.Router": [
+    { path: ROUTE_TICKET_TICKETS, component: TicketsPage },
+    { path: ROUTE_TICKET_TICKET+ "/:ticket_uuid?", component: TicketPage },
   ],
 
   "admin.MainMenu": [
     {
       text: <FormattedMessage module="ticket" id="menu.ticket" />,
-      icon: <AccountBalanceOutlined />,
+      icon: <ListAlt />,
       route: "/" + ROUTE_TICKET_TICKETS,
     },
   ],
+  "core.MainMenu": [TicketMainMenu],
+  
+  
 }
 
-export const TicketsModule = (cfg) => {
+export const GrievanceModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 }
+

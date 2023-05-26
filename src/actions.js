@@ -1,114 +1,162 @@
 import {
-    graphql, formatPageQueryWithCount, formatMutation
-    } from "@openimis/fe-core";
+  graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery, 
+  baseApiUrl, decodeId, openBlob
+} from "@openimis/fe-core";
 
+const CATEGORY_FULL_PROJECTION = (mm) => [
+  "id",
+  "uuid",
+  "categoryTitle",
+  "slug",
+  "validityFrom",
+  "validityTo",
+];
 
-export function fetchTicket(prms){
-    const payload = formatPageQueryWithCount( 
-        "tickets",
-        prms,
-        ["id", "uuid", "ticketTitle", "ticketCode","ticketDescription", "ticketStatus", "ticketPriority", "ticketDuedate",
-        "category{id, uuid, categoryTitle, slug}", 
-        "insuree{id, uuid, otherNames, lastName, dob, chfId}" ]
+export function fetchCategoryForPicker(mm, filters) {
+  let payload = formatPageQueryWithCount("category", filters, CATEGORY_FULL_PROJECTION(mm));
+  return graphql(payload, "CATEGORY_CATEGORY");
+}
+
+export function fetchTicketSummaries(mm, filters) {
+  var projections = [
+    "id", "uuid", "ticketTitle", "ticketCode", "ticketDescription", "ticketStatus", "ticketPriority",
+    "ticketDuedate", "category{id, uuid, categoryTitle, slug}",
+    "insuree{id, uuid, otherNames, lastName, dob, chfId}"]
+  const payload = formatPageQueryWithCount("tickets",
+    filters,
+    projections
+  );
+  return graphql(payload, 'TICKET_TICKETS');
+}
+
+export function fetchTicket(mm, uuid) {
+  let filters = [
+    `ticketUuid: "${uuid}"`
+  ]
+  let projections = [
+    "id", "uuid", "ticketTitle", "ticketCode", "ticketDescription",
+    "name", "phone", "email", "dateOfIncident", "nameOfComplainant", "witness",
+    "resolution", "ticketStatus", "ticketPriority", "dateSubmitted", "dateSubmitted",
+    "category{id, uuid, categoryTitle, slug}",
+    "insuree{id, uuid, otherNames, lastName, dob, chfId, phone, email}",
+    "attachment{edges{node{id, uuid, filename, mimeType, url, document, date}}}",
+  ]
+  const payload = formatPageQueryWithCount(`ticketDetails`,
+    filters,
+    projections
+  );
+  return graphql(payload, 'TICKET_TICKET');
+}
+
+export function formatTicketGQL(ticket) {
+  return `
+    ${ticket.uuid !== undefined && ticket.uuid !== null ? `uuid: "${ticket.uuid}"` : ""}
+    ${!!ticket.ticketCode ? `ticketCode: "${formatGQLString(ticket.ticketCode)}"` : ""}
+    ${!!ticket.ticketDescription ? `ticketDescription: "${formatGQLString(ticket.ticketDescription)}"` : ""}
+    ${!!ticket.insuree && !!ticket.insuree.id ? `insureeUuid: "${ticket.insuree.uuid}"` : ""}
+    ${!!ticket.category && !!ticket.category.id ? `categoryUuid: "${ticket.category.uuid}"` : ""}
+    ${!!ticket.name ? `name: "${formatGQLString(ticket.name)}"` : ""}
+    ${!!ticket.phone ? `phone: "${formatGQLString(ticket.phone)}"` : ""}
+    ${!!ticket.email ? `email: "${formatGQLString(ticket.email)}"` : ""}
+    ${!!ticket.dateOfIncident ? `dateOfIncident: "${formatGQLString(ticket.dateOfIncident)}"` : ""}
+    ${!!ticket.witness ? `witness: "${formatGQLString(ticket.witness)}"` : ""}
+    ${!!ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ""}
+    ${!!ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ""}
+    ${!!ticket.ticketStatus ? `ticketStatus: "${formatGQLString(ticket.ticketStatus)}"` : ""}
+    ${!!ticket.ticketPriority ? `ticketPriority: "${formatGQLString(ticket.ticketPriority)}"` : ""}
+    ${!!ticket.ticketDuedate ? `ticketDuedate: "${formatGQLString(ticket.ticketDuedate)}"` : ""}
+    ${!!ticket.dateSubmitted ? `dateSubmitted: "${formatGQLString(ticket.dateSubmitted)}"` : ""}
+  `;
+}
+
+export function resolveTicketGQL(ticket) {
+  return `
+    ${ticket.uuid !== undefined && ticket.uuid !== null ? `uuid: "${ticket.uuid}"` : ""}
+    ${!!ticket.ticketStatus ? `ticketStatus: "Close"` : ""}
+    ${!!ticket.insuree && !!ticket.insuree.id ? `insureeUuid: "${ticket.insuree.uuid}"` : ""}
+    ${!!ticket.category && !!ticket.category.id ? `categoryUuid: "${ticket.category.uuid}"` : ""}
+  `;
+}
+
+export function createTicket(ticket, clientMutationLabel) {
+  let mutation = formatMutation("createTicket", formatTicketGQL(ticket), clientMutationLabel);
+  var requestedDateTime = new Date();
+  return graphql(mutation.payload, ["TICKET_MUTATION_REQ", "TICKET_CREATE_TICKET_RESP", "TICKET_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+
+  });
+
+}
+
+export function updateTicket(ticket, clientMutationLabel) {
+  let mutation = formatMutation("updateTicket", formatTicketGQL(ticket), clientMutationLabel);
+  var requestedDateTime = new Date();
+  return graphql(mutation.payload, ["TICKET_MUTATION_REQ", "TICKET_UPDATE_TICKET_RESP", "TICKET_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+    ticketUuid: ticket.uuid,
+  });
+}
+
+export function resolveTicket(ticket, clientMutationLabel) {
+  let mutation = formatMutation("updateTicket", resolveTicketGQL(ticket), clientMutationLabel);
+  var requestedDateTime = new Date();
+  return graphql(mutation.payload, ["TICKET_MUTATION_REQ", "TICKET_UPDATE_TICKET_RESP", "TICKET_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
+    ticketUuid: ticket.uuid,
+  });
+}
+
+export function fetchTicketAttachments(ticket) {
+  if (ticket && ticket.uuid) {
+    const payload = formatPageQuery(
+      "ticketAttachments",
+      [`ticket_Uuid: "${ticket.uuid}"`],
+      ["id", "uuid", "date", "filename", "mimeType",
+      "ticket{id, uuid, ticketCode}"],
     );
-    return graphql(payload, 'TICKET_MY_TICKETS');
+    return graphql(payload, "TICKET_TICKET_ATTACHMENTS");
+  } else {
+    return { type: "TICKET_TICKET_ATTACHMENTS", payload: { data: [] } };
+  }
 }
 
-export function  fetchMyCategory(prms,) {
-
-    const payload  = formatPageQueryWithCount(
-        "category",
-        prms,
-        [ "categoryTitle", "slug"]
-    )
-
-    return graphql (payload, "CATEGORY_MY_ENTITIES") 
-
+export function downloadAttachment(attach) {
+  var url = new URL(`${window.location.origin}${baseApiUrl}/ticket/attach`);
+  url.search = new URLSearchParams({ id: decodeId(attach.id) });
+  return (dispatch) => {
+    return fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => openBlob(blob, attach.filename, attach.mime));
+  };
 }
 
-export function saveTicket( tickets,  clientMutationLabel){
-
-    let TicketGQL = `
-    insureeUuid: "${tickets["insuree"]["uuid"]}"
-    name: "${tickets.name}"
-    phone: ${tickets.phone}
-    email: "${tickets.email}"
-    insureeLocation: "${tickets.insureeLocation}"
-    dateOfIncident: "${tickets.dateOfIncident}"
-    eventLocationUuid: "${tickets["location"]["uuid"]}"
-    witness: "${tickets.witness}"
-    categoryUuid: "${tickets["category"]["uuid"]}"
-    ticketPriority: "${tickets.ticketPriority}"  
-    ticketDescription: "${tickets.ticketDescription}"
-    resolution: "${tickets.resolution}"
-    `
-
-    let mutation = formatMutation ("createTicket", TicketGQL, clientMutationLabel);
-    var requestedDateTime = new Date ();
-
-    return graphql(
-
-        mutation.payload,
-        "TICKET_CREATE_TICKET",
-        {
-            clientMutationId: mutation.clientMutationId,
-            clientMutationLabel,
-            requestedDateTime
-        }
-        
-    )
+export function formatTicketAttachmentGQL(ticketattachment) {
+  return `
+    ${ticketattachment.uuid !== undefined && ticketattachment.uuid !== null ? `uuid: "${ticketattachment.uuid}"` : ""}
+    ${!!ticketattachment.ticket && !!ticketattachment.ticket.id ? `ticketUuid: "${ticketattachment.ticket.uuid}"` : ""}
+    ${!!ticketattachment.filename ? `filename: "${formatGQLString(ticketattachment.filename)}"` : ""}
+    ${!!ticketattachment.mimeType ? `mimeType: "${formatGQLString(ticketattachment.mimeType)}"` : ""}
+    ${!!ticketattachment.url ? `url: "${formatGQLString(ticketattachment.url)}"` : ""}
+    ${!!ticketattachment.date ? `date: "${formatGQLString(ticketattachment.date)}"` : ""}
+    ${!!ticketattachment.document ? `document: "${formatGQLString(ticketattachment.document)}"` : ""}
+  `;
 }
 
-export function updateTicket( tickets,  clientMutationLabel){
+export function createTicketAttachment(ticketattachment, clientMutationLabel) {
+  console.log("_ _ _ _ _ _ _ _ _ _", ticketattachment);
+  let mutation = formatMutation("createTicketAttachment", formatTicketAttachmentGQL(ticketattachment), clientMutationLabel);
+  var requestedDateTime = new Date();
+  return graphql(mutation.payload, ["TICKET_ATTACHMENT_MUTATION_REQ", "TICKET_CREATE_TICKET_ATTACHMENT_RESP", "TICKET_ATTACHMENT_MUTATION_ERR"], {
+    clientMutationId: mutation.clientMutationId,
+    clientMutationLabel,
+    requestedDateTime,
 
-    let TicketGQL = `
-    insureeUuid: "${tickets["insuree"]["uuid"]}"
-    name: "${tickets.name}"
-    phone: ${tickets.phone}
-    email: "${tickets.email}"
-    insureeLocation: "${tickets.insureeLocation}"
-    dateOfIncident: "${tickets.dateOfIncident}"
-    eventLocationUuid: "${tickets["location"]["uuid"]}"
-    witness: "${tickets.witness}"
-    categoryUuid: "${tickets["category"]["uuid"]}"
-    ticketPriority: "${tickets.ticketPriority}"  
-    ticketDescription: "${tickets.ticketDescription}"
-    resolution: "${tickets.resolution}"
-    `
+  });
 
-    let mutation = formatMutation ("createTicket", TicketGQL, clientMutationLabel);
-    var requestedDateTime = new Date ();
-
-    return graphql(
-
-        mutation.payload,
-        "TICKET_CREATE_TICKET",
-        {
-            clientMutationId: mutation.clientMutationId,
-            clientMutationLabel,
-            requestedDateTime
-        }
-        
-    )
-}
-
-
-export function saveCategory( category,  clientMutationLabel){
-
-    let CategoryTicketGQL = `
-    categoryTitle: "${category.categoryTitle}"
-    slug: "${category.slug}"
-    `
-    let mutation = formatMutation ("createCategory", CategoryTicketGQL , clientMutationLabel);
-    var requestedDateTime = new Date ();
-    return graphql(
-        mutation.payload,
-        "CATEGORY_CREATE_CATEGORY",
-        {
-            clientMutationId: mutation.clientMutationId,
-            clientMutationLabel,
-            requestedDateTime
-        }
-        
-    )
 }
