@@ -5,12 +5,18 @@ import { injectIntl } from 'react-intl';
 import { IconButton } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import {
+    Search as SearchIcon,
+} from "@material-ui/icons";
+import {
     withModulesManager, formatMessageWithValues, formatMessage,
     withHistory, historyPush, coreConfirm, journalize,
     Searcher
 } from "@openimis/fe-core";
 import { RIGHT_TICKET_ADD } from "../constants";
 import { fetchTicketSummaries, resolveTicket } from "../actions";
+
+import TicketFilter from "./TicketFilter";
+import EnquiryDialog from "./EnquiryDialog";
 
 import AddIcon from "@material-ui/icons/Add";
 // import {CheckCircle as CloseIcon} from '@material-ui/icons';
@@ -38,6 +44,7 @@ const styles = (theme) => ({
 class TicketSearcher extends Component {
 
     state = {
+        enquiryOpen: false,
         open: false,
         chfid: null,
         confirmedAction: null,
@@ -120,10 +127,23 @@ class TicketSearcher extends Component {
 
     }
 
+    adornedChfId = (ticket) => (
+        <Fragment>
+            <IconButton
+                size="small"
+                onClick={(e) => !ticket.clientMutationId && this.setState({ enquiryOpen: true, chfid: ticket.insuree.chfId })}
+            >
+                <SearchIcon />
+            </IconButton>
+            {ticket.insuree.chfId}
+        </Fragment>
+    );
+
     itemFormatters = (filters) => {
         var formatters = [
             ticket => ticket.ticketCode,
-            ticket => ticket.insuree.chfId,
+            //ticket => ticket.insuree.chfId,
+            ticket => this.adornedChfId(ticket),
             // ticket => <Button onClick={this._onClick} color="primary">{ticket.insuree.chfId}</Button>,
             ticket => ticket.insuree.otherNames + ' ' + ticket.insuree.lastName,
             ticket => ticket.ticketPriority,
@@ -162,9 +182,17 @@ class TicketSearcher extends Component {
 
         return (
             <Fragment>
+                <EnquiryDialog
+                    open={this.state.enquiryOpen}
+                    chfid={this.state.chfid}
+                    onClose={() => {
+                        this.setState({ enquiryOpen: false, chfid: null });
+                    }}
+                />
                 <Searcher
                     module="ticket"
                     cacheFiltersKey={cacheFiltersKey}
+                    FilterPane={TicketFilter}
                     filterPaneContributionsKey={filterPaneContributionsKey}
                     items={tickets}
                     itemsPageInfo={ticketsPageInfo}

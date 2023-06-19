@@ -127,6 +127,30 @@ function reducer(
                 fetchingTicketAttachments: false,
                 errorTicketAttachments: formatServerError(action.payload),
             };
+        case 'TICKET_INSUREE_TICKETS_REQ':
+            return {
+                ...state,
+                fetchingTickets: true,
+                fetchedTickets: false,
+                tickets: null,
+                policy: null,
+                errorTickets: null,
+            };
+        case 'TICKET_INSUREE_TICKETS_RESP':
+            return {
+                ...state,
+                fetchingTickets: false,
+                fetchedTickets: true,
+                tickets: parseData(action.payload.data.ticketsByInsuree),
+                ticketsPageInfo: pageInfo(action.payload.data.ticketsByInsuree),
+                errorTickets: formatGraphQLError(action.payload)
+            };
+        case 'TICKET_INSUREE_TICKETS_ERR':
+            return {
+                ...state,
+                fetchingTickets: false,
+                errorTickets: formatServerError(action.payload),
+            };
         case "TICKET_MUTATION_REQ":
             return dispatchMutationReq(state, action);
         case "TICKET_MUTATION_ERR":

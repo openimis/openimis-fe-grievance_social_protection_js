@@ -162,7 +162,7 @@ class TicketAttachmentPanel extends Component {
                 < ProgressOrError progress={fetchingTicketAttachments} error={errorTicketAttachments} />
 
                 <Paper className={classes.paper}>
-                    <div style={{ textAlign: 'end' }}>
+                <div style={{ textAlign: 'end',background:"#b7d4d8", height:"2.5em",}}>
                         <IconButton variant="contained" component="label" onClick={this.reload}>
                             <ReplayIcon />
                         </IconButton>

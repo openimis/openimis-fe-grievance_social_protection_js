@@ -68,5 +68,9 @@
     "ticket.attachments.table":"Attachments",
     "ticket.attachments.table.filename":"File Name",
     "ticket.attachments.table.file":"File",
-    "ticket.attachments.table.date":"Date"
+    "ticket.attachments.table.date":"Date",
+    "ticket.ticketCode":"Code",
+    "ticket.ticketPriority":"Priority",
+    "ticket.ticketStatus":"Status",
+    "ticket.ticketGrievanct" : "Grievant"
 }

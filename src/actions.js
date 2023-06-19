@@ -1,5 +1,5 @@
 import {
-  graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery, 
+  graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery,
   baseApiUrl, decodeId, openBlob
 } from "@openimis/fe-core";
 
@@ -118,7 +118,7 @@ export function fetchTicketAttachments(ticket) {
       "ticketAttachments",
       [`ticket_Uuid: "${ticket.uuid}"`],
       ["id", "uuid", "date", "filename", "mimeType",
-      "ticket{id, uuid, ticketCode}"],
+        "ticket{id, uuid, ticketCode}"],
     );
     return graphql(payload, "TICKET_TICKET_ATTACHMENTS");
   } else {
@@ -159,4 +159,69 @@ export function createTicketAttachment(ticketattachment, clientMutationLabel) {
 
   });
 
+}
+
+export function fetchInsuree(mm, chfid) {
+  let payload = formatPageQuery(
+    "insurees",
+    [`chfId:"${chfid}"`],
+    [
+      "id",
+      "uuid",
+      "chfId",
+      "lastName",
+      "otherNames",
+      "dob",
+      "age",
+      "validityFrom",
+      "validityTo",
+      "gender{code}",
+      `family{id}`,
+      "photo{folder,filename,photo}",
+      "gender{code, gender, altLanguage}",
+      "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
+    ],
+  );
+  return graphql(payload, "INSUREE_INSUREE");
+}
+
+const GRIEVANCRE_BY_INSUREE_PROJECTION = [
+  "ticketUuid",
+  "ticketCode",
+  "ticketPriority",
+  "ticketStatus",
+];
+
+export function fetchInsureeTicket(mm, chfId) {
+  let filters = [
+    `chfId: "${chfId}"`
+  ];
+  let projections = [
+    "id", "uuid", "ticketTitle", "ticketCode", "ticketDescription",
+    "name", "phone", "email", "dateOfIncident", "nameOfComplainant", "witness",
+    "resolution", "ticketStatus", "ticketPriority", "dateSubmitted", "dateSubmitted",
+    "category{id, uuid, categoryTitle, slug}",
+    "insuree{id, uuid, otherNames, lastName, dob, chfId, phone, email}",
+    "attachment{edges{node{id, uuid, filename, mimeType, url, document, date}}}",
+  ];
+  const payload = formatPageQueryWithCount(
+    `ticketsByInsuree(chfId: "${chfId}", orderBy: "ticketCode", ticketCode: false, first: 5)`,
+    filters,
+    projections
+  );
+  return graphql(payload, 'TICKET_TICKET');
+}
+
+
+export function fetchInsureeTickets(mm, filters) {
+  if (filters.filter((f) => f.startsWith("chfId")).length !== 0) {
+    qry = "ticketsByInsuree";
+    RDX = "TICKET_INSUREE_TICKETS";
+  }
+  let payload = formatPageQueryWithCount(
+    qry,
+    filters,
+    GRIEVANCRE_BY_INSUREE_PROJECTION
+  );
+  return graphql(payload, RDX);
 }

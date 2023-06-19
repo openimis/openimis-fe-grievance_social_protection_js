@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { Fab, Grid, Paper, Typography, Divider, IconButton } from "@material-ui/core";
+import { Grid, Paper, Typography, Divider, IconButton } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import { TextInput, journalize, PublishedComponent, FormattedMessage } from "@openimis/fe-core";
 import { createTicket } from "../actions";
