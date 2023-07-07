@@ -9,7 +9,7 @@ class TicketPriorityPicker extends Component {
         const { readOnly = false} = this.props;
         
         return <ConstantBasedPicker
-            module="ticket"
+            module="grievance"
             label="Ticket Priority"
             constants={TICKET_PRIORITY}
             readOnly={readOnly}

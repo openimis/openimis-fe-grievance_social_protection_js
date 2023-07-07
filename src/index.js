@@ -17,18 +17,18 @@ const ROUTE_TICKET_TICKET = "ticket/ticket";
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
-  "reducers": [{ key: 'ticket', reducer }],
+  "reducers": [{ key: 'grievance', reducer }],
 
   "refs": [
-    { key: "ticket.route.tickets", ref: ROUTE_TICKET_TICKETS },
-    { key: "ticket.route.ticket", ref: ROUTE_TICKET_TICKET },
+    { key: "grievance.route.tickets", ref: ROUTE_TICKET_TICKETS },
+    { key: "grievance.route.ticket", ref: ROUTE_TICKET_TICKET },
 
-    { key: "ticket.route.ticketSearcher", ref: TicketSearcher },
+    { key: "grievance.route.ticketSearcher", ref: TicketSearcher },
 
-    { key: "ticket.TicketStatusPicker", ref: TicketStatusPicker },
-    { key: "ticket.TicketPriorityPicker", ref: TicketPriorityPicker },
-    { key: "ticket.DropDownCategoryPicker", ref: DropDownCategoryPicker },
-    { key: "ticket.CategoryPicker", ref: CategoryPicker },
+    { key: "grievance.TicketStatusPicker", ref: TicketStatusPicker },
+    { key: "grievance.TicketPriorityPicker", ref: TicketPriorityPicker },
+    { key: "grievance.DropDownCategoryPicker", ref: DropDownCategoryPicker },
+    { key: "grievance.CategoryPicker", ref: CategoryPicker },
 
   ],
   "core.Router": [
@@ -38,7 +38,7 @@ const DEFAULT_CONFIG = {
 
   "admin.MainMenu": [
     {
-      text: <FormattedMessage module="ticket" id="menu.ticket" />,
+      text: <FormattedMessage module="grievance" id="menu.ticket" />,
       icon: <ListAlt />,
       route: "/" + ROUTE_TICKET_TICKETS,
     },

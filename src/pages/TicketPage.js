@@ -17,7 +17,7 @@ const styles = theme => ({
 class TicketPage extends Component {
 
     add = () => {
-        historyPush(this.props.modulesManager, this.props.history, "ticket.route.ticket")
+        historyPush(this.props.modulesManager, this.props.history, "grievance.route.ticket")
     }
 
     save = (ticket) => {
@@ -55,7 +55,7 @@ class TicketPage extends Component {
                 <TicketForm
                     overview={overview}
                     ticket_uuid={ticket_uuid}
-                    back={e => historyPush(modulesManager, history, "ticket.route.tickets")}
+                    back={e => historyPush(modulesManager, history, "grievance.route.tickets")}
                     add={rights.includes(RIGHT_TICKET_ADD) ? this.add : null}
                     save={rights.includes(RIGHT_TICKET_EDIT) ? this.save : null}
                 />

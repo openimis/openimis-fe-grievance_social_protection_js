@@ -31,7 +31,7 @@ class TicketFilter extends Component {
 
     debouncedOnChangeFilter = _debounce(
         this.props.onChangeFilters,
-        this.props.modulesManager.getConf("fe-ticket", "debounceTime", 800),
+        this.props.modulesManager.getConf("fe-grievance", "debounceTime", 800),
     );
 
     _filterValue = (k) => {
@@ -44,12 +44,12 @@ class TicketFilter extends Component {
         return (
             <Grid container className={classes.form}>
                 <ControlledField
-                    module="ticket"
+                    module="grievance"
                     id="ticketFilter.ticketCode"
                     field={
                         <Grid item xs={3} className={classes.item}>
                             <TextInput
-                                module="ticket"
+                                module="grievance"
                                 label="ticket.ticketCode"
                                 name="ticketCode"
                                 value={this._filterValue("ticketCode")}
@@ -67,12 +67,12 @@ class TicketFilter extends Component {
                     }
                 />
                 <ControlledField
-                    module="ticket"
+                    module="grievance"
                     id="ticket.ticketGrievanct"
                     field={
                         <Grid item xs={3} className={classes.item}>
                             <TextInput
-                                module="ticket"
+                                module="grievance"
                                 label="ticket.ticketGrievanct"
                                 name="name"
                                 value={this._filterValue("name")}
@@ -90,12 +90,12 @@ class TicketFilter extends Component {
                     }
                 />
                 <ControlledField
-                    module="ticket"
+                    module="grievance"
                     id="ticketFilter.ticketPriority"
                     field={
                         <Grid item xs={3} className={classes.item}>
                             <TextInput
-                                module="ticket"
+                                module="grievance"
                                 label="ticket.ticketPriority"
                                 name="ticketPriority"
                                 value={this._filterValue("ticketPriority")}
@@ -113,12 +113,12 @@ class TicketFilter extends Component {
                     }
                 />
                 <ControlledField
-                    module="ticket"
+                    module="grievance"
                     id="ticketFilter.ticketStatus"
                     field={
                         <Grid item xs={3} className={classes.item}>
                             <TextInput
-                                module="ticket"
+                                module="grievance"
                                 label="ticket.ticketStatus"
                                 name="ticketStatus"
                                 value={this._filterValue("ticketStatus")}

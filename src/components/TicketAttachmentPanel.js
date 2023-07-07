@@ -31,8 +31,8 @@ class TicketAttachmentPanel extends Component {
 
     constructor(props) {
         super(props);
-        this.rowsPerPageOptions = props.modulesManager.getConf("fe-ticket", "ticketFilter.rowsPerPageOptions", [10, 20, 50, 100]);
-        this.defaultPageSize = props.modulesManager.getConf("fe-ticket", "ticketFilter.defaultPageSize", 10);
+        this.rowsPerPageOptions = props.modulesManager.getConf("fe-grievance", "ticketFilter.rowsPerPageOptions", [10, 20, 50, 100]);
+        this.defaultPageSize = props.modulesManager.getConf("fe-grievance", "ticketFilter.defaultPageSize", 10);
     }
 
     query = () => {
@@ -170,7 +170,7 @@ class TicketAttachmentPanel extends Component {
                     <Table
                         module="programs"
                         //fetch={this.props.fetchTicketAttachments}
-                        header={formatMessageWithValues(intl, "ticket", "ticket.attachments.table")}
+                        header={formatMessageWithValues(intl, "grievance", "ticket.attachments.table")}
                         headers={headers}
                         itemFormatters={itemFormatters}
                         items={ticketAttachments}
@@ -191,10 +191,10 @@ class TicketAttachmentPanel extends Component {
 
 
 const mapStateToProps = state => ({
-    fetchingTicketAttachments: state.ticket.fetchingTicketAttachments,
-    errorTicketAttachments: state.ticket.errorTicketAttachments,
-    fetchedTicketAttachments: state.ticket.fetchedTicketAttachments,
-    ticketAttachments: state.ticket.ticketAttachments,
+    fetchingTicketAttachments: state.mapStateToProps.fetchingTicketAttachments,
+    errorTicketAttachments: state.mapStateToProps.errorTicketAttachments,
+    fetchedTicketAttachments: state.mapStateToProps.fetchedTicketAttachments,
+    ticketAttachments: state.mapStateToProps.ticketAttachments,
 });
 
 const mapDispatchToProps = dispatch => {

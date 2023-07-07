@@ -143,7 +143,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={5} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="ticket"
+                      module="grievance"
                       id={titleone}
                       values={titleParams}
                     />
@@ -250,7 +250,7 @@ class EditTicketPage extends Component {
               <Grid container className={classes.item}>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="ticket"
+                    module="grievance"
                     label="ticket.name"
                     value={
                       !!state_edited && !!state_edited.insuree
@@ -266,7 +266,7 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="ticket"
+                    module="grievance"
                     label="ticket.phone"
                     value={
                       !!state_edited && !!state_edited.insuree
@@ -280,7 +280,7 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="ticket"
+                    module="grievance"
                     label="ticket.email"
                     value={
                       !!state_edited && !!state_edited.insuree
@@ -304,7 +304,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={12} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="ticket"
+                      module="grievance"
                       id={titletwo}
                       values={titleParams}
                     />
@@ -324,7 +324,7 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <TextInput
-                    module="ticket"
+                    module="grievance"
                     label="ticket.witness"
                     value={state_edited.witness}
                     onChange={(v) => this.updateAttribute("witness", v)}
@@ -369,7 +369,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={12} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="ticket"
+                      module="grievance"
                       id={titlethree}
                       values={titleParams}
                     />
@@ -407,8 +407,8 @@ class EditTicketPage extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-  submittingMutation: state.ticket.submittingMutation,
-  mutation: state.ticket.mutation,
+  submittingMutation: state.grievance.submittingMutation,
+  mutation: state.grievance.mutation,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -433,7 +433,7 @@ const mstyles = {
   button: {
     fontSize: "3em",
     color: "#006273",
-    width: "40%",
+    // width: "40%",
     marginTop: "-20px",
     width: "10%",
     cursor: "pointer",

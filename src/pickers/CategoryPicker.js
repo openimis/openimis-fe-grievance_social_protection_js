@@ -45,7 +45,7 @@ class RawFilter extends Component {
         <Grid item xs={4} className={classes.item}>
           <TextInput
             autoFocus={true}
-            module="category"
+            module="grievance"
             label="category.slug"
             value={this.state.slug}
             onChange={(v) => this._onChange("slug", v)}
@@ -53,7 +53,7 @@ class RawFilter extends Component {
         </Grid>
         <Grid item xs={4} className={classes.item}>
           <TextInput
-            module="category"
+            module="grievance"
             label="category.categoryTitle"
             value={this.state.categoryTitle}
             onChange={(v) => this._onChange("categoryTitle", v)}
@@ -117,7 +117,7 @@ class CategoryPicker extends Component {
 
   debouncedGetSuggestion = _.debounce(
     this.getSuggestions,
-    this.props.modulesManager.getConf("fe-category", "debounceTime", 800),
+    this.props.modulesManager.getConf("fe-grievance", "debounceTime", 800),
   );
 
   onChangeRowsPerPage = (cnt) => {
@@ -172,7 +172,7 @@ class CategoryPicker extends Component {
     } = this.props;
     return (
       <Picker
-        module="category"
+        module="grievance"
         label={!!withLabel ? "category.label" : null}
         title={title}
         dialogTitle="category.picker.dialog.title"
@@ -197,8 +197,8 @@ class CategoryPicker extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  category: state.ticket.category,
-  categoryPageInfo: state.ticket.categoryPageInfo,
+  category: state.grievance.category,
+  categoryPageInfo: state.grievance.categoryPageInfo,
 });
 
 const mapDispatchToProps = (dispatch) => {

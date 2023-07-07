@@ -40,7 +40,7 @@ class TicketForm extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevState.ticket.ticketCode !== this.state.ticket.ticketCode) {
-            document.title = formatMessageWithValues(this.props.intl, "ticket", "ticket.title.bar", { label: ticketLabel(this.state.ticket) })
+            document.title = formatMessageWithValues(this.props.intl, "grievance", "ticket.title.bar", { label: ticketLabel(this.state.ticket) })
         }
         if (prevProps.fetchedTicket !== this.props.fetchedTicket
             && !!this.props.fetchedTicket
@@ -142,7 +142,7 @@ class TicketForm extends Component {
                 {(!!fetchedTicket || !ticket_uuid) && (
                     <Fragment>
                         <Form
-                            module="ticket"
+                            module="grievance"
                             edited_id={ticket_uuid}
                             edited={ticket}
                             reset={reset}
@@ -168,12 +168,12 @@ class TicketForm extends Component {
 
 const mapStateToProps = (state, props) => ({
     rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-    fetchingTicket: state.ticket.fetchingTicket,
-    errorTicket: state.ticket.errorTicket,
-    fetchedTicket: state.ticket.fetchedTicket,
-    ticket: state.ticket.ticket,
-    submittingMutation: state.ticket.submittingMutation,
-    mutation: state.ticket.mutation,
+    fetchingTicket: state.grievance.fetchingTicket,
+    errorTicket: state.grievance.errorTicket,
+    fetchedTicket: state.grievance.fetchedTicket,
+    ticket: state.grievance.ticket,
+    submittingMutation: state.grievance.submittingMutation,
+    mutation: state.grievance.mutation,
 })
 
 const mapDispatchToProps = dispatch => {

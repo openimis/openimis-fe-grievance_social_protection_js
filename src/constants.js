@@ -2,8 +2,8 @@ export const TICKET_STATUS =  ["Waiting", "Todo", "Inprogress", "Review", "Close
 
 export const TICKET_PRIORITY = ["Critical", "High", "Normal", "Low"]
 
-export const RIGHT_TICKET = 111041;
-export const RIGHT_TICKET_SEARCH = 111041;
-export const RIGHT_TICKET_ADD = 130002;
-export const RIGHT_TICKET_EDIT = 111003;
-export const RIGHT_TICKET_DELETE = 111044;
+export const RIGHT_TICKET = 123000;
+export const RIGHT_TICKET_SEARCH = 123000;
+export const RIGHT_TICKET_ADD = 123001;
+export const RIGHT_TICKET_EDIT = 123002;
+export const RIGHT_TICKET_DELETE = 123003;

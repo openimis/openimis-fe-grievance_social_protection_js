@@ -17,15 +17,22 @@ const styles = theme => ({
 class TicketsPage extends Component {
 
     onDoubleClick = (i, newTab = false) => {
-        historyPush(this.props.modulesManager, this.props.history, "ticket.route.ticket", [i.uuid], newTab)
+        historyPush(this.props.modulesManager, this.props.history, "grievance.route.ticket", [i.uuid], newTab)
     }
 
     onAdd = () => {
-        historyPush(this.props.modulesManager, this.props.history, "ticket.route.ticket");
+        historyPush(this.props.modulesManager, this.props.history, "grievance.route.ticket");
     }
 
     render() {
         const { intl, classes, rights } = this.props;
+        for (let right of this.props.rights) {
+            if (right >= 123000 && right <= 123007) {
+                console.log(right);
+            }
+        }
+
+        console.log(this.props.rights);
         return (
             <div className={classes.page}>
                 <TicketSearcher
@@ -39,7 +46,7 @@ class TicketsPage extends Component {
                                 <AddIcon />
                             </Fab>
                         </div>,
-                        formatMessage(intl, "ticket", "addNewticketTooltip")
+                        formatMessage(intl, "grievance", "addNewticketTooltip")
                     )
                 }
             </div >

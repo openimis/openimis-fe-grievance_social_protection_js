@@ -20,7 +20,7 @@ export function fetchCategoryForPicker(mm, filters) {
 export function fetchTicketSummaries(mm, filters) {
   var projections = [
     "id", "uuid", "ticketTitle", "ticketCode", "ticketDescription", "ticketStatus", "ticketPriority",
-    "ticketDuedate", "category{id, uuid, categoryTitle, slug}",
+    "ticketDueDate", "category{id, uuid, categoryTitle, slug}",
     "insuree{id, uuid, otherNames, lastName, dob, chfId}"]
   const payload = formatPageQueryWithCount("tickets",
     filters,
@@ -64,7 +64,7 @@ export function formatTicketGQL(ticket) {
     ${!!ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ""}
     ${!!ticket.ticketStatus ? `ticketStatus: "${formatGQLString(ticket.ticketStatus)}"` : ""}
     ${!!ticket.ticketPriority ? `ticketPriority: "${formatGQLString(ticket.ticketPriority)}"` : ""}
-    ${!!ticket.ticketDuedate ? `ticketDuedate: "${formatGQLString(ticket.ticketDuedate)}"` : ""}
+    ${!!ticket.ticketDueDate ? `ticketDueDate: "${formatGQLString(ticket.ticketDueDate)}"` : ""}
     ${!!ticket.dateSubmitted ? `dateSubmitted: "${formatGQLString(ticket.dateSubmitted)}"` : ""}
   `;
 }

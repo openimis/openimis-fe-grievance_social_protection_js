@@ -14,7 +14,7 @@ class TicketMainMenu extends Component {
     return (
       <MainMenuContribution
         {...this.props}
-        header={formatMessage(this.props.intl, "ticket", "mainMenu")}
+        header={formatMessage(this.props.intl, "grievance", "mainMenu")}
         icon={<AssignmentInd />}
         entries={entries}
       />

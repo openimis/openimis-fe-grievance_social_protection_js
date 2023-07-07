@@ -53,8 +53,8 @@ class TicketSearcher extends Component {
 
     constructor(props) {
         super(props);
-        this.rowsPerPageOptions = props.modulesManager.getConf("fe-ticket", "ticketFilter.rowsPerPageOptions", [10, 20, 50, 100]);
-        this.defaultPageSize = props.modulesManager.getConf("fe-ticket", "ticketFilter.defaultPageSize", 10);
+        this.rowsPerPageOptions = props.modulesManager.getConf("fe-grievance", "ticketFilter.rowsPerPageOptions", [10, 20, 50, 100]);
+        this.defaultPageSize = props.modulesManager.getConf("fe-grievance", "ticketFilter.defaultPageSize", 10);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -67,7 +67,7 @@ class TicketSearcher extends Component {
     }
 
     onAdd = () => {
-        historyPush(this.props.modulesManager, this.props.history, "ticket.route.addticket");
+        historyPush(this.props.modulesManager, this.props.history, "grievance.route.addticket");
     }
 
     fetch = (prms) => {
@@ -175,7 +175,7 @@ class TicketSearcher extends Component {
                                 <AddIcon />
                             </IconButton>
                         ),
-                        tooltip: formatMessage(intl, 'ticket', 'action.AddTicket.tooltip')
+                        tooltip: formatMessage(intl, 'grievance', 'action.AddTicket.tooltip')
                     }
                 ]
 
@@ -190,7 +190,7 @@ class TicketSearcher extends Component {
                     }}
                 />
                 <Searcher
-                    module="ticket"
+                    module="grievance"
                     cacheFiltersKey={cacheFiltersKey}
                     FilterPane={TicketFilter}
                     filterPaneContributionsKey={filterPaneContributionsKey}
@@ -199,7 +199,7 @@ class TicketSearcher extends Component {
                     fetchingItems={fetchingTickets}
                     fetchedItems={fetchedTickets}
                     errorItems={errorTickets}
-                    tableTitle={formatMessageWithValues(intl, "ticket", "ticketSummaries", { count })}
+                    tableTitle={formatMessageWithValues(intl, "grievance", "ticketSummaries", { count })}
                     rowsPerPageOptions={this.rowsPerPageOptions}
                     defaultPageSize={this.defaultPageSize}
                     fetch={this.fetch}
@@ -222,13 +222,13 @@ class TicketSearcher extends Component {
 
 const mapStateToProps = state => ({
     rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-    tickets: state.ticket.tickets,
-    ticketsPageInfo: state.ticket.ticketsPageInfo,
-    fetchingTickets: state.ticket.fetchingTickets,
-    fetchedTickets: state.ticket.fetchedTickets,
-    errorTickets: state.ticket.errorTickets,
-    submittingMutation: state.ticket.submittingMutation,
-    mutation: state.ticket.mutation,
+    tickets: state.grievance.tickets,
+    ticketsPageInfo: state.grievance.ticketsPageInfo,
+    fetchingTickets: state.grievance.fetchingTickets,
+    fetchedTickets: state.grievance.fetchedTickets,
+    errorTickets: state.grievance.errorTickets,
+    submittingMutation: state.grievance.submittingMutation,
+    mutation: state.grievance.mutation,
     confirmed: state.core.confirmed,
 });
 

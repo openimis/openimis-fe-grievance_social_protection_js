@@ -61,7 +61,7 @@ class AddTicketPage extends Component {
                             <Grid container className={classes.tableTitle}>
                                 <Grid item xs={8} className={classes.tableTitle}>
                                     <Typography>
-                                        <FormattedMessage module="ticket" id={titleone} values={titleParams} />
+                                        <FormattedMessage module="grievance" id={titleone} values={titleParams} />
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4} className={classes.tableTitle}>
@@ -78,7 +78,7 @@ class AddTicketPage extends Component {
                             <Grid container className={classes.item}>
                                 <Grid item xs={4} className={classes.item}>
                                     <TextInput
-                                        module="ticket" label="ticket.name"
+                                        module="grievance" label="ticket.name"
                                         value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.otherNames  +" "+ state_edited.insuree.lastName : ""}
                                         onChange={v => this.updateAttribute("name", v)}
                                         required={false} 
@@ -86,7 +86,7 @@ class AddTicketPage extends Component {
                                 </Grid>
                                 <Grid item xs={4} className={classes.item}>
                                     <TextInput
-                                        module="ticket" label="ticket.phone"
+                                        module="grievance" label="ticket.phone"
                                         value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.phone : ""}
                                         onChange={v => this.updateAttribute("phone", v)}
                                         required={false} 
@@ -94,7 +94,7 @@ class AddTicketPage extends Component {
                                 </Grid>
                                 <Grid item xs={4} className={classes.item}>
                                     <TextInput
-                                        module="ticket" label="ticket.email"
+                                        module="grievance" label="ticket.email"
                                         value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.email : ""}
                                         onChange={v => this.updateAttribute("email", v)}
                                         required={false} 
@@ -111,7 +111,7 @@ class AddTicketPage extends Component {
                             <Grid container className={classes.tableTitle}>
                                 <Grid item xs={12} className={classes.tableTitle}>
                                     <Typography>
-                                        <FormattedMessage module="ticket" id={titletwo} values={titleParams} />
+                                        <FormattedMessage module="grievance" id={titletwo} values={titleParams} />
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -127,7 +127,7 @@ class AddTicketPage extends Component {
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
                                     <TextInput
-                                        module="ticket" label="ticket.witness"
+                                        module="grievance" label="ticket.witness"
                                         value={state_edited.witness}
                                         onChange={v => this.updateAttribute("witness", v)}
                                         required={false} />
@@ -170,8 +170,8 @@ class AddTicketPage extends Component {
 }
 
 const mapStateToProps = (state, props) => ({
-    submittingMutation: state.ticket.submittingMutation,
-    mutation: state.ticket.mutation,
+    submittingMutation: state.grievance.submittingMutation,
+    mutation: state.grievance.mutation,
 });
 
 const mapDispatchToProps = dispatch => {
