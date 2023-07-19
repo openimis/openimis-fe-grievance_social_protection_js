@@ -191,10 +191,10 @@ class TicketAttachmentPanel extends Component {
 
 
 const mapStateToProps = state => ({
-    fetchingTicketAttachments: state.mapStateToProps.fetchingTicketAttachments,
-    errorTicketAttachments: state.mapStateToProps.errorTicketAttachments,
-    fetchedTicketAttachments: state.mapStateToProps.fetchedTicketAttachments,
-    ticketAttachments: state.mapStateToProps.ticketAttachments,
+    fetchingTicketAttachments: state.grievance.fetchingTicketAttachments,
+    errorTicketAttachments: state.grievance.errorTicketAttachments,
+    fetchedTicketAttachments: state.grievance.fetchedTicketAttachments,
+    ticketAttachments: state.grievance.ticketAttachments,
 });
 
 const mapDispatchToProps = dispatch => {

@@ -333,15 +333,15 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
-                    pubRef="ticket.DropDownCategoryPicker"
+                    pubRef="grievance.DropDownCategoryPicker"
                     value={state_edited.category}
                     onChange={(v) => this.updateAttribute("category", v)}
-                    required={false}
+                    required={true}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
-                    pubRef="ticket.TicketPriorityPicker"
+                    pubRef="grievance.TicketPriorityPicker"
                     value={state_edited.ticketPriority}
                     onChange={(v) => this.updateAttribute("ticketPriority", v)}
                     required={false}
