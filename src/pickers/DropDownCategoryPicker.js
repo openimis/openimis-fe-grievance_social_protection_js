@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useTranslations, Autocomplete, useGraphqlQuery } from '@openimis/fe-core';
+import React, { useState } from "react";
+import { useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
 
-function DropDownCategoryPicker(props) {
+const DropDownCategoryPicker = (props) => {
   const {
     onChange,
     readOnly,
@@ -16,7 +16,7 @@ function DropDownCategoryPicker(props) {
     multiple,
   } = props;
   const [searchString, setSearchString] = useState(null);
-  const { formatMessage } = useTranslations('ticket');
+  const { formatMessage } = useTranslations("ticket");
 
   const { isLoading, data, error } = useGraphqlQuery(
     `query CategoryPicker {
@@ -40,15 +40,15 @@ function DropDownCategoryPicker(props) {
       }
     }`,
     { searchString, first: 20 },
-    { skip: true },
+    { skip: true }
   );
 
   return (
     <Autocomplete
       multiple={multiple}
       required={required}
-      placeholder={placeholder ?? formatMessage('CategoryPicker.placeholder')}
-      label={label ?? formatMessage('CategoryPicker.label')}
+      placeholder={placeholder ?? formatMessage("CategoryPicker.placeholder")}
+      label={label ?? formatMessage("CategoryPicker.label")}
       error={error}
       withLabel={withLabel}
       withPlaceholder={withPlaceholder}
@@ -63,6 +63,6 @@ function DropDownCategoryPicker(props) {
       onInputChange={setSearchString}
     />
   );
-}
+};
 
 export default DropDownCategoryPicker;
