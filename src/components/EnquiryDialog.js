@@ -1,10 +1,11 @@
-import React, { useEffect, Fragment } from "react";
-import { injectIntl } from "react-intl";
-import { Dialog, Button, DialogActions, DialogContent } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { fetchInsuree } from "../actions";
+import React, { useEffect, Fragment } from 'react';
+import { injectIntl } from 'react-intl';
+import {
+  Dialog, Button, DialogActions, DialogContent,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   formatMessage,
   formatMessageWithValues,
@@ -13,8 +14,9 @@ import {
   ProgressOrError,
   withModulesManager,
   withHistory,
-} from "@openimis/fe-core";
-import InsureeSummary from "./InsureeSummary";
+} from '@openimis/fe-core';
+import { fetchInsuree } from '../actions';
+import InsureeSummary from './InsureeSummary';
 
 const useStyles = makeStyles(() => ({
   summary: {
@@ -22,8 +24,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const EnquiryDialog = (props) => {
-  const { intl, modulesManager, fetchInsuree, fetching, fetched, insuree, error, onClose, open, chfid } = props;
+function EnquiryDialog(props) {
+  const {
+    intl, modulesManager, fetchInsuree, fetching, fetched, insuree, error, onClose, open, chfid,
+  } = props;
   const classes = useStyles();
 
   useEffect(() => {
@@ -39,26 +43,26 @@ const EnquiryDialog = (props) => {
         {!!fetched && !insuree && (
           <Error
             error={{
-              code: formatMessage(intl, "insuree", "notFound"),
-              detail: formatMessageWithValues(intl, "insuree", "chfidNotFound", { chfid }),
+              code: formatMessage(intl, 'insuree', 'notFound'),
+              detail: formatMessageWithValues(intl, 'insuree', 'chfidNotFound', { chfid }),
             }}
           />
         )}
         {!fetching && insuree && (
-          <Fragment>
+          <>
             <InsureeSummary modulesManager={modulesManager} insuree={insuree} className={classes.summary} />
             <Contributions contributionKey="insuree.EnquiryDialog" insuree={insuree} />
-          </Fragment>
+          </>
         )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          {formatMessage(intl, "insuree", "close")}
+          {formatMessage(intl, 'insuree', 'close')}
         </Button>
       </DialogActions>
     </Dialog>
   );
-};
+}
 
 const mapStateToProps = (state) => ({
   fetching: state.insuree.fetchingInsuree,
