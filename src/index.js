@@ -48,7 +48,7 @@ const DEFAULT_CONFIG = {
   
 }
 
-export const GrievanceModule = (cfg) => {
+export const GrievanceSocialProtectionModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 }
 
