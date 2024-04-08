@@ -172,7 +172,7 @@ function reducer(
         fetchingGrievanceConfig: false,
         fetchedGrievanceConfig: true,
         errorGrievanceConfig: null,
-        grievanceConfig: parseData(action.payload.data.grievanceConfiguration),
+        grievanceConfig: action.payload.data.grievanceConfig,
       };
     case ERROR(ACTION_TYPE.GET_GRIEVANCE_CONFIGURATION):
       return {

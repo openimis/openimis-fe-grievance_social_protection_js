@@ -22,7 +22,7 @@ const ROUTE_TICKET_TICKET = 'ticket/ticket';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
-  reducers: [{ key: 'grievance', reducer }],
+  reducers: [{ key: 'grievanceSocialProtection', reducer }],
 
   refs: [
     { key: 'grievanceSocialProtection.route.tickets', ref: ROUTE_TICKET_TICKETS },

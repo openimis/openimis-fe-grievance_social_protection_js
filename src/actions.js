@@ -1,6 +1,6 @@
 import {
   graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery,
-  baseApiUrl, decodeId, openBlob,
+  baseApiUrl, decodeId, openBlob, formatQuery,
 } from "@openimis/fe-core";
 import {ACTION_TYPE} from "./reducer";
 
@@ -233,6 +233,6 @@ export function fetchInsureeTickets(mm, filters) {
 }
 
 export function fetchGrievanceConfiguration(params) {
-  const payload = formatPageQueryWithCount('grievanceConfiguration', params, GRIEVANCE_CONFIGURATION_PROJECTION())
+  const payload = formatQuery('grievanceConfig', params, GRIEVANCE_CONFIGURATION_PROJECTION())
   return graphql(payload, ACTION_TYPE.GET_GRIEVANCE_CONFIGURATION);
 }

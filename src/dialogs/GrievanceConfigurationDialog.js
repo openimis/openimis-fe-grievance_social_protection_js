@@ -9,18 +9,33 @@ import { fetchGrievanceConfiguration } from '../actions';
 import { MODULE_NAME } from '../constants';
 
 function GrievanceConfigurationDialog() {
-  console.log('ccccccc');
   const modulesManager = useModulesManager();
-  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const { formatMessage, formatMessageWithValues } = useTranslations(MODULE_NAME, modulesManager);
   const dispatch = useDispatch();
-  const grievanceConfiguration = useSelector((state) => state.grievance.grievanceConfig);
-  dispatch(fetchGrievanceConfiguration());
+  const grievanceConfiguration = useSelector((state) => state?.grievanceSocialProtection?.grievanceConfig);
+  const fetchedGrievanceConfig = useSelector((state) => state?.grievanceSocialProtection?.fetchedGrievanceConfig);
+
+  const isConfigMissing = (config) => Object.values(config).some((field) => !field);
+
   useEffect(() => {
-    coreAlert(
-      formatMessage('grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader'),
-      formatMessage('grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody'),
-    );
+    if (grievanceConfiguration && isConfigMissing(grievanceConfiguration)) {
+      const configString = JSON.stringify(grievanceConfiguration);
+      dispatch(coreAlert(
+        formatMessage('grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader'),
+        formatMessageWithValues(
+          'grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody',
+          { configString },
+        ),
+      ));
+    }
   }, [grievanceConfiguration]);
+
+  useEffect(() => {
+    if (!fetchedGrievanceConfig) {
+      dispatch(fetchGrievanceConfiguration());
+    }
+  }, [fetchedGrievanceConfig]);
+
   return null;
 }
 
