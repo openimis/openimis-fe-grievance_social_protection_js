@@ -1,7 +1,14 @@
 import {
   graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery,
-  baseApiUrl, decodeId, openBlob
+  baseApiUrl, decodeId, openBlob,
 } from "@openimis/fe-core";
+import {ACTION_TYPE} from "./reducer";
+
+const GRIEVANCE_CONFIGURATION_PROJECTION = () => [
+  'grievanceTypes',
+  'grievanceFlags',
+  'grievanceChannels',
+];
 
 const CATEGORY_FULL_PROJECTION = (mm) => [
   "id",
@@ -212,7 +219,6 @@ export function fetchInsureeTicket(mm, chfId) {
   return graphql(payload, 'TICKET_TICKET');
 }
 
-
 export function fetchInsureeTickets(mm, filters) {
   if (filters.filter((f) => f.startsWith("chfId")).length !== 0) {
     qry = "ticketsByInsuree";
@@ -224,4 +230,9 @@ export function fetchInsureeTickets(mm, filters) {
     GRIEVANCRE_BY_INSUREE_PROJECTION
   );
   return graphql(payload, RDX);
+}
+
+export function fetchGrievanceConfiguration(params) {
+  const payload = formatPageQueryWithCount('grievanceConfiguration', params, GRIEVANCE_CONFIGURATION_PROJECTION())
+  return graphql(payload, ACTION_TYPE.GET_GRIEVANCE_CONFIGURATION);
 }
