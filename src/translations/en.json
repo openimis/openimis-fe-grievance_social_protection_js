@@ -72,5 +72,7 @@
     "ticket.ticketCode":"Code",
     "ticket.ticketPriority":"Priority",
     "ticket.ticketStatus":"Status",
-    "ticket.ticketGrievanct" : "Grievant"
+    "ticket.ticketGrievanct" : "Grievant",
+    "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader": "Please fill the config.",
+    "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}"
 }
