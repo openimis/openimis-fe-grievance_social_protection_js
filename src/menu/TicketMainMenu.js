@@ -1,20 +1,19 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
-import { connect } from "react-redux";
-import { AssignmentInd } from "@material-ui/icons";
-import { formatMessage, MainMenuContribution, withModulesManager } from "@openimis/fe-core";
-
+import { connect } from 'react-redux';
+import { AssignmentInd } from '@material-ui/icons';
+import { formatMessage, MainMenuContribution, withModulesManager } from '@openimis/fe-core';
 
 class TicketMainMenu extends Component {
   render() {
     const { modulesManager, rights } = this.props;
-    let entries = [];
-    
+    const entries = [];
+
     if (!entries.length) return null;
     return (
       <MainMenuContribution
         {...this.props}
-        header={formatMessage(this.props.intl, "grievance", "mainMenu")}
+        header={formatMessage(this.props.intl, 'grievance', 'mainMenu')}
         icon={<AssignmentInd />}
         entries={entries}
       />
@@ -22,7 +21,7 @@ class TicketMainMenu extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
 });
 

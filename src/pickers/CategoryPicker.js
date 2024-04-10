@@ -1,12 +1,15 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
-import { injectIntl } from "react-intl";
-import { fetchCategoryForPicker } from "../actions";
-import { TextInput, Picker, withModulesManager } from "@openimis/fe-core";
-import _ from "lodash";
+/* eslint-disable react/destructuring-assignment,max-classes-per-file */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/sort-comp */
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { withTheme, withStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
+import { injectIntl } from 'react-intl';
+import { TextInput, Picker, withModulesManager } from '@openimis/fe-core';
+import _ from 'lodash';
+import { fetchCategoryForPicker } from '../actions';
 
 const styles = (theme) => ({
   label: {
@@ -18,17 +21,20 @@ const styles = (theme) => ({
 });
 
 class RawFilter extends Component {
-  state = {
-    slug: "",
-    categoryTitle: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      slug: '',
+      categoryTitle: '',
+    };
+  }
 
   stateToFilters = () => {
-    let filters = [];
-    if (!!this.state.slug) {
+    const filters = [];
+    if (this.state.slug) {
       filters.push(`slug_Istartswith: "${this.state.slug}"`);
     }
-    if (!!this.state.categoryTitle) {
+    if (this.state.categoryTitle) {
       filters.push(`categoryTitle_Istartswith: "${this.state.categoryTitle}"`);
     }
     return filters;
@@ -44,11 +50,11 @@ class RawFilter extends Component {
       <Grid container>
         <Grid item xs={4} className={classes.item}>
           <TextInput
-            autoFocus={true}
+            autoFocus
             module="grievance"
             label="category.slug"
             value={this.state.slug}
-            onChange={(v) => this._onChange("slug", v)}
+            onChange={(v) => this._onChange('slug', v)}
           />
         </Grid>
         <Grid item xs={4} className={classes.item}>
@@ -56,7 +62,7 @@ class RawFilter extends Component {
             module="grievance"
             label="category.categoryTitle"
             value={this.state.categoryTitle}
-            onChange={(v) => this._onChange("categoryTitle", v)}
+            onChange={(v) => this._onChange('categoryTitle', v)}
           />
         </Grid>
       </Grid>
@@ -76,7 +82,10 @@ const INIT_STATE = {
 };
 
 class CategoryPicker extends Component {
-  state = INIT_STATE;
+  constructor(props) {
+    super(props);
+    this.state = INIT_STATE;
+  }
 
   componentDidMount() {
     if (this.props.value) {
@@ -84,40 +93,44 @@ class CategoryPicker extends Component {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.reset !== this.props.reset) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState((state, props) => ({
         ...INIT_STATE,
         selected: props.value,
       }));
     } else if (!_.isEqual(prevProps.value, this.props.value)) {
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState((state, props) => ({ selected: props.value }));
     }
   }
 
-  formatSuggestion = (a) => (!!a ? `${a.categoryTitle} (${a.slug})` : "");
+  formatSuggestion = (a) => (a ? `${a.categoryTitle} (${a.slug})` : '');
 
   filtersToQueryParams = () => {
     let prms = [...(this.props.forcedFilter || []), ...this.state.filters];
     prms = prms.concat(`first: ${this.state.pageSize}`);
-    if (!!this.state.afterCursor) {
+    if (this.state.afterCursor) {
       prms = prms.concat(`after: "${this.state.afterCursor}"`);
     }
-    if (!!this.state.beforeCursor) {
+    if (this.state.beforeCursor) {
       prms = prms.concat(`before: "${this.state.beforeCursor}"`);
     }
     return prms;
   };
 
   getSuggestions = (filters) => {
-    this.setState({ filters }, (e) =>
-      this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
+    this.setState(
+      { filters },
+      () => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
     );
   };
 
   debouncedGetSuggestion = _.debounce(
     this.getSuggestions,
-    this.props.modulesManager.getConf("fe-grievance", "debounceTime", 800),
+    this.props.modulesManager.getConf('fe-grievance', 'debounceTime', 800),
   );
 
   onChangeRowsPerPage = (cnt) => {
@@ -128,7 +141,7 @@ class CategoryPicker extends Component {
         afterCursor: null,
         beforeCursor: null,
       },
-      (e) => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
+      () => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
     );
   };
 
@@ -144,7 +157,7 @@ class CategoryPicker extends Component {
           beforeCursor: null,
           afterCursor: props.categoryPageInfo.endCursor,
         }),
-        (e) => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
+        () => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
       );
     } else if (nbr < this.state.page) {
       this.setState(
@@ -153,7 +166,7 @@ class CategoryPicker extends Component {
           beforeCursor: props.categoryPageInfo.startCursor,
           afterCursor: null,
         }),
-        (e) => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
+        () => this.props.fetchCategoryForPicker(this.props.modulesManager, this.filtersToQueryParams()),
       );
     }
   };
@@ -173,7 +186,7 @@ class CategoryPicker extends Component {
     return (
       <Picker
         module="grievance"
-        label={!!withLabel ? "category.label" : null}
+        label={withLabel ? 'category.label' : null}
         title={title}
         dialogTitle="category.picker.dialog.title"
         IconRender={IconRender}
@@ -201,9 +214,7 @@ const mapStateToProps = (state) => ({
   categoryPageInfo: state.grievance.categoryPageInfo,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ fetchCategoryForPicker }, dispatch);
-};
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchCategoryForPicker }, dispatch);
 
 export default withModulesManager(
   connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(CategoryPicker)))),

@@ -1,181 +1,208 @@
-import React, { Component } from "react";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { Grid, Paper, Typography, Divider, IconButton } from "@material-ui/core";
-import { Save } from "@material-ui/icons";
-import { TextInput, journalize, PublishedComponent, FormattedMessage } from "@openimis/fe-core";
-import { createTicket } from "../actions";
+/* eslint-disable react/destructuring-assignment */
+import React, { Component } from 'react';
+import { withTheme, withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import {
+  Grid, Paper, Typography, Divider, IconButton,
+} from '@material-ui/core';
+import { Save } from '@material-ui/icons';
+import {
+  TextInput, journalize, PublishedComponent, FormattedMessage,
+} from '@openimis/fe-core';
+import { createTicket } from '../actions';
+import { EMPTY_STRING, MODULE_NAME } from '../constants';
 
-const styles = theme => ({
-    paper: theme.paper.paper,
-    tableTitle: theme.table.title,
-    item: theme.paper.item,
-    fullHeight: {
-        height: "100%"
-    },
+const styles = (theme) => ({
+  paper: theme.paper.paper,
+  tableTitle: theme.table.title,
+  item: theme.paper.item,
+  fullHeight: {
+    height: '100%',
+  },
 });
-
 
 class AddTicketPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      stateEdited: {},
+    };
+  }
 
-    state = {
-        state_edited: {}
+  // eslint-disable-next-line no-unused-vars
+  componentDidUpdate(prevPops, prevState, snapshort) {
+    if (prevPops.submittingMutation && !this.props.submittingMutation) {
+      this.props.journalize(this.props.mutation);
     }
+  }
 
-    componentDidUpdate(prevPops, prevState, snapshort) {
-        if (prevPops.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);
-        }
-    }
+  save = () => {
+    this.props.createTicket(
+      this.state.stateEdited,
+      `Created Ticket ${this.state.stateEdited.individual.firstName} ${this.state.stateEdited.individual.lastName}`,
+    );
+  };
 
-    save = e => {
-        this.props.createTicket(this.state.state_edited, `Created Ticket ${this.state.state_edited.insuree.otherNames} ${this.state.state_edited.insuree.lastName}`)
+  updateAttribute = (k, v) => {
+    this.setState((state) => ({
+      stateEdited: { ...state.stateEdited, [k]: v },
+    }));
+  };
 
-    }
+  render() {
+    const {
+      classes,
+      titleone = ' Ticket.ComplainantInformation',
+      titletwo = ' Ticket.DescriptionOfEvents',
+      titleParams = { label: EMPTY_STRING },
+    } = this.props;
 
-    updateAttribute = (k, v) => {
-        this.setState((state) => ({
-            state_edited: { ...state.state_edited, [k]: v }
-        }))
-    }
-
-    render() {
-        const {
-            intl, classes,
-            title = "Ticket.title", titleone = " Ticket.ComplainantInformation",
-            titletwo = " Ticket.DescriptionOfEvents",
-            titlethree = " Ticket.Resolution",
-            titleParams = { label: "" }, 
-            actions
-        } = this.props;
-
-        const {
-            state_edited
-        } = this.state;
-        return (
-            <div className={classes.page}>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Paper className={classes.paper}>
-                            <Grid container className={classes.tableTitle}>
-                                <Grid item xs={8} className={classes.tableTitle}>
-                                    <Typography>
-                                        <FormattedMessage module="grievance" id={titleone} values={titleParams} />
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4} className={classes.tableTitle}>
-                                    <PublishedComponent
-                                        pubRef="insuree.InsureePicker"
-                                        value={state_edited.insuree}
-                                        label="Complainant"
-                                        onChange={(v) => this.updateAttribute("insuree", v)}
-                                        required={true}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Divider />
-                            <Grid container className={classes.item}>
-                                <Grid item xs={4} className={classes.item}>
-                                    <TextInput
-                                        module="grievance" label="ticket.name"
-                                        value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.otherNames  +" "+ state_edited.insuree.lastName : ""}
-                                        onChange={v => this.updateAttribute("name", v)}
-                                        required={false} 
-                                        readOnly={true}/>
-                                </Grid>
-                                <Grid item xs={4} className={classes.item}>
-                                    <TextInput
-                                        module="grievance" label="ticket.phone"
-                                        value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.phone : ""}
-                                        onChange={v => this.updateAttribute("phone", v)}
-                                        required={false} 
-                                        readOnly={true}/>
-                                </Grid>
-                                <Grid item xs={4} className={classes.item}>
-                                    <TextInput
-                                        module="grievance" label="ticket.email"
-                                        value={!!state_edited && !!state_edited.insuree ? state_edited.insuree.email : ""}
-                                        onChange={v => this.updateAttribute("email", v)}
-                                        required={false} 
-                                        readOnly={true}/>
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                    </Grid>
+    const {
+      stateEdited,
+    } = this.state;
+    return (
+      <div className={classes.page}>
+        <Grid container>
+          <Grid item xs={12}>
+            <Paper className={classes.paper}>
+              <Grid container className={classes.tableTitle}>
+                <Grid item xs={8} className={classes.tableTitle}>
+                  <Typography>
+                    <FormattedMessage module={MODULE_NAME} id={titleone} values={titleParams} />
+                  </Typography>
                 </Grid>
-
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Paper className={classes.paper}>
-                            <Grid container className={classes.tableTitle}>
-                                <Grid item xs={12} className={classes.tableTitle}>
-                                    <Typography>
-                                        <FormattedMessage module="grievance" id={titletwo} values={titleParams} />
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                            <Divider />
-                            <Grid container className={classes.item}>
-                                <Grid item xs={6} className={classes.item}>
-                                    <PublishedComponent
-                                        pubRef="core.DatePicker"
-                                        label="ticket.eventDate"
-                                        value={state_edited.dateOfIncident}
-                                        required={false}
-                                        onChange={v => this.updateAttribute("dateOfIncident", v)} />
-                                </Grid>
-                                <Grid item xs={6} className={classes.item}>
-                                    <TextInput
-                                        module="grievance" label="ticket.witness"
-                                        value={state_edited.witness}
-                                        onChange={v => this.updateAttribute("witness", v)}
-                                        required={false} />
-                                </Grid>
-                                <Grid item xs={6} className={classes.item}>
-                                    <PublishedComponent
-                                        pubRef="grievance.DropDownCategoryPicker"
-                                        value={state_edited.category}
-                                        onChange={(v) => this.updateAttribute("category", v)}
-                                        required={true} />
-                                </Grid>
-                                <Grid item xs={6} className={classes.item}>
-                                    <PublishedComponent
-                                        pubRef="grievance.TicketPriorityPicker"
-                                        value={state_edited.ticketPriority}
-                                        onChange={(v) => this.updateAttribute("ticketPriority", v)}
-                                        required={false} />
-                                </Grid>
-                                <Grid item xs={12} className={classes.item}>
-                                    <TextInput
-                                        label="ticket.ticketDescription"
-                                        value={state_edited.ticketDescription}
-                                        onChange={v => this.updateAttribute("ticketDescription", v)}
-                                        required={false} />
-                                </Grid>
-                                <Grid item xs={11} className={classes.item}>
-                                </Grid>
-                                <Grid item xs={1} className={classes.item}>
-                                    <IconButton variant="contained" component="label" color="primary" onClick={this.save}>
-                                        <Save />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                    </Grid>
+                <Grid item xs={4} className={classes.tableTitle}>
+                  <PublishedComponent
+                    pubRef="individual.IndividualPicker"
+                    value={stateEdited.individual}
+                    label="Complainant"
+                    onChange={(v) => this.updateAttribute('individual', v)}
+                    required
+                  />
                 </Grid>
-            </div>
-        );
-    }
+              </Grid>
+              <Divider />
+              <Grid container className={classes.item}>
+                <Grid item xs={4} className={classes.item}>
+                  <TextInput
+                    module={MODULE_NAME}
+                    label="ticket.name"
+                    value={
+                      !!stateEdited
+                      && !!stateEdited.individual
+                        ? `${stateEdited.individual.firstName} ${stateEdited.individual.lastName}`
+                        : EMPTY_STRING
+                    }
+                    onChange={(v) => this.updateAttribute('name', v)}
+                    required={false}
+                    readOnly
+                  />
+                </Grid>
+                <Grid item xs={4} className={classes.item}>
+                  <TextInput
+                    module={MODULE_NAME}
+                    label="ticket.phone"
+                    value={!!stateEdited && !!stateEdited.individual
+                      ? stateEdited.individual?.jsonExt?.phone
+                      : EMPTY_STRING}
+                    onChange={(v) => this.updateAttribute('phone', v)}
+                    required={false}
+                    readOnly
+                  />
+                </Grid>
+                <Grid item xs={4} className={classes.item}>
+                  <TextInput
+                    module={MODULE_NAME}
+                    label="ticket.email"
+                    value={!!stateEdited && !!stateEdited.individual
+                      ? stateEdited.individual?.jsonExt?.email
+                      : EMPTY_STRING}
+                    onChange={(v) => this.updateAttribute('email', v)}
+                    required={false}
+                    readOnly
+                  />
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        <Grid container>
+          <Grid item xs={12}>
+            <Paper className={classes.paper}>
+              <Grid container className={classes.tableTitle}>
+                <Grid item xs={12} className={classes.tableTitle}>
+                  <Typography>
+                    <FormattedMessage module={MODULE_NAME} id={titletwo} values={titleParams} />
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider />
+              <Grid container className={classes.item}>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="core.DatePicker"
+                    label="ticket.eventDate"
+                    value={stateEdited.dateOfIncident}
+                    required={false}
+                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <TextInput
+                    module={MODULE_NAME}
+                    label="ticket.witness"
+                    value={stateEdited.witness}
+                    onChange={(v) => this.updateAttribute('witness', v)}
+                    required={false}
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="grievanceSocialProtection.DropDownCategoryPicker"
+                    value={stateEdited.category}
+                    onChange={(v) => this.updateAttribute('category', v)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="grievanceSocialProtection.TicketPriorityPicker"
+                    value={stateEdited.ticketPriority}
+                    onChange={(v) => this.updateAttribute('ticketPriority', v)}
+                    required={false}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.item}>
+                  <TextInput
+                    label="ticket.ticketDescription"
+                    value={stateEdited.ticketDescription}
+                    onChange={(v) => this.updateAttribute('ticketDescription', v)}
+                    required={false}
+                  />
+                </Grid>
+                <Grid item xs={11} className={classes.item} />
+                <Grid item xs={1} className={classes.item}>
+                  <IconButton variant="contained" component="label" color="primary" onClick={this.save}>
+                    <Save />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Grid>
+      </div>
+    );
+  }
 }
 
+// eslint-disable-next-line no-unused-vars
 const mapStateToProps = (state, props) => ({
-    submittingMutation: state.grievance.submittingMutation,
-    mutation: state.grievance.mutation,
+  submittingMutation: state.grievanceSocialProtection.submittingMutation,
+  mutation: state.grievanceSocialProtection.mutation,
 });
 
-const mapDispatchToProps = dispatch => {
-    return bindActionCreators({ createTicket, journalize }, dispatch)
-};
+const mapDispatchToProps = (dispatch) => bindActionCreators({ createTicket, journalize }, dispatch);
 
 export default withTheme(withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(AddTicketPage)));

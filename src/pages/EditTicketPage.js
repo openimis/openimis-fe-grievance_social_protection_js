@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+/* eslint-disable react/destructuring-assignment */
+import React, { Component } from 'react';
+import { withTheme, withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Grid,
   Paper,
@@ -10,88 +11,126 @@ import {
   IconButton,
   Modal,
   Box,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   journalize,
   TextInput,
   PublishedComponent,
   FormattedMessage,
-} from "@openimis/fe-core";
-import { updateTicket, createTicketAttachment, fetchTicket } from "../actions";
-import { Save } from "@material-ui/icons";
-import AttachIcon from "@material-ui/icons/AttachFile";
+} from '@openimis/fe-core';
+import { Save } from '@material-ui/icons';
+import AttachIcon from '@material-ui/icons/AttachFile';
+import { updateTicket, createTicketAttachment, fetchTicket } from '../actions';
+import {EMPTY_STRING, MODULE_NAME} from '../constants';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
   tableTitle: theme.table.title,
   item: theme.paper.item,
   fullHeight: {
-    height: "100%",
+    height: '100%',
   },
 });
 
 const style = {
-  background: "white",
-  width: "40%",
-  margin: "0 auto",
-  position: "relative",
-  top: "40%",
-  padding: "2em",
-  borderRadius: "10px",
+  background: 'white',
+  width: '40%',
+  margin: '0 auto',
+  position: 'relative',
+  top: '40%',
+  padding: '2em',
+  borderRadius: '10px',
+};
+
+const mstyles = {
+  title: {
+    fontSize: '1.3em',
+    fontWeight: '900',
+  },
+
+  button: {
+    fontSize: '3em',
+    color: '#006273',
+    // width: "40%",
+    marginTop: '-20px',
+    width: '10%',
+    cursor: 'pointer',
+  },
+  labels: {
+    display: 'flex',
+    width: '100%',
+  },
+
+  label: {
+    width: '45%',
+  },
+
+  inputs: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  input: {
+    width: '40%',
+  },
 };
 
 class EditTicketPage extends Component {
-  state = {
-    state_edited: {},
-    openFileModal: false,
-    file: null,
-    fileName: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      stateEdited: {},
+      openFileModal: false,
+      file: null,
+      fileName: EMPTY_STRING,
+    };
+  }
+
   componentDidMount() {
     if (this.props.edited) {
-        console.log("props edited", this.props.edited);
-      this.setState((state, props) => ({ state_edited: props.edited }));
+      this.setState((state, props) => ({ stateEdited: props.edited }));
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   componentDidUpdate(prevPops, prevState, snapshort) {
     if (prevPops.submittingMutation && !this.props.submittingMutation) {
       this.props.journalize(this.props.mutation);
     }
   }
 
-  save = (e) => {
+  save = () => {
     this.props.updateTicket(
-      this.state.state_edited,
-      `updated ticket ${this.state.state_edited.ticketCode}`
+      this.state.stateEdited,
+      `updated ticket ${this.state.stateEdited.ticketCode}`,
     );
   };
 
   updateAttribute = (k, v) => {
     this.setState((state) => ({
-      state_edited: { ...state.state_edited, [k]: v },
+      stateEdited: { ...state.stateEdited, [k]: v },
     }));
   };
 
   handleOpenModal = () => {
-    this.setState((prev) => ({
-      ...prev,
-      openFileModal: !this.state.openFileModal,
+    this.setState((prevState) => ({
+      ...prevState,
+      openFileModal: !prevState.openFileModal,
     }));
   };
 
   handleFileChange = (e) => {
-    let file = e.target.files[0];
+    const file = e.target.files[0];
     this.setState((prevState) => ({
       ...prevState,
-      file: file,
+      file,
     }));
   };
 
   handleFileRead = (e) => {
     const content = btoa(e.target.result);
-    let filename = this.state.file.name;
-    let mimeType = this.state.file.type;
+    const filename = this.state.file.name;
+    const mimeType = this.state.file.type;
     const docFile = {
       filename,
       mimeType,
@@ -99,7 +138,7 @@ class EditTicketPage extends Component {
       document: content,
       ticket: this.state.state_edited,
     };
-    this.props.createTicketAttachment(docFile, `Uploaded Ticket Attachment`);
+    this.props.createTicketAttachment(docFile, 'Uploaded Ticket Attachment');
   };
 
   handleFileUpload = (e) => {
@@ -118,22 +157,14 @@ class EditTicketPage extends Component {
 
   render() {
     const {
-      intl,
       classes,
-      ticket,
-      edited,
-      attachment = "Ticket.attachment",
-      title = "ticket.title",
-      titleone = " Ticket.ComplainantInformation",
-      titletwo = " Ticket.DescriptionOfEvents",
-      titlethree = " Ticket.Resolution",
-      titleParams = { label: "" },
-      ticket_uuid,
-      actions,
-      save,
+      titleone = ' Ticket.ComplainantInformation',
+      titletwo = ' Ticket.DescriptionOfEvents',
+      titlethree = ' Ticket.Resolution',
+      titleParams = { label: EMPTY_STRING },
     } = this.props;
 
-    const { state_edited } = this.state;
+    const { stateEdited } = this.state;
     return (
       <div className={classes.page}>
         <Grid container>
@@ -143,7 +174,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={5} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="grievance"
+                      module={MODULE_NAME}
                       id={titleone}
                       values={titleParams}
                     />
@@ -151,12 +182,12 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.tableTitle}>
                   <PublishedComponent
-                    pubRef="insuree.InsureePicker"
-                    value={state_edited.insuree}
+                    pubRef="individual.IndividualPicker"
+                    value={stateEdited.individual}
                     label="Complainant"
-                    onChange={(v) => this.updateAttribute("insuree", v)}
-                    required={true}
-                    readOnly={true}
+                    onChange={(v) => this.updateAttribute('individual', v)}
+                    required
+                    readOnly
                   />
                 </Grid>
                 <Grid item xs={4} className={classes.tableTitle}>
@@ -190,16 +221,16 @@ class EditTicketPage extends Component {
                               type="text"
                               value={
                                 this.state.file
-                                  ? this.state.file.type.split("/")[1]
-                                  : ""
+                                  ? this.state.file.type.split('/')[1]
+                                  : EMPTY_STRING
                               }
                               style={{
-                                width: "100%",
-                                border: "none",
-                                borderBottom: "1px solid #006273",
-                                outline: "none",
-                                color: " #006273",
-                                fontSize: "1.5em",
+                                width: '100%',
+                                border: 'none',
+                                borderBottom: '1px solid #006273',
+                                outline: 'none',
+                                color: ' #006273',
+                                fontSize: '1.5em',
                               }}
                             />
                           </div>
@@ -207,15 +238,15 @@ class EditTicketPage extends Component {
                             <input
                               type="text"
                               value={
-                                this.state.file ? this.state.file.name : ""
+                                this.state.file ? this.state.file.name : EMPTY_STRING
                               }
                               style={{
-                                width: "100%",
-                                border: "none",
-                                borderBottom: "1px solid #006273",
-                                outline: "none",
-                                color: " #006273",
-                                fontSize: "1.5em",
+                                width: '100%',
+                                border: 'none',
+                                borderBottom: '1px solid #006273',
+                                outline: 'none',
+                                color: ' #006273',
+                                fontSize: '1.5em',
                               }}
                             />
                           </div>
@@ -226,7 +257,7 @@ class EditTicketPage extends Component {
                                 <input
                                   type="file"
                                   name="uploadedFile"
-                                  style={{ display: "none" }}
+                                  style={{ display: 'none' }}
                                   onChange={this.handleFileChange}
                                 />
                               </form>
@@ -236,7 +267,7 @@ class EditTicketPage extends Component {
 
                         <hr />
 
-                        <div style={{ textAlign: "end" }}>
+                        <div style={{ textAlign: 'end' }}>
                           <IconButton>
                             <Save onClick={this.handleFileUpload} />
                           </IconButton>
@@ -250,46 +281,46 @@ class EditTicketPage extends Component {
               <Grid container className={classes.item}>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="grievance"
+                    module={MODULE_NAME}
                     label="ticket.name"
                     value={
-                      !!state_edited && !!state_edited.insuree
-                        ? state_edited.insuree.otherNames +
-                          " " +
-                          state_edited.insuree.lastName
-                        : ""
+                      !!stateEdited && !!stateEdited.individual
+                        ? `${stateEdited.individual.firstName
+                        } ${
+                          stateEdited.individual.lastName}`
+                        : EMPTY_STRING
                     }
-                    onChange={(v) => this.updateAttribute("name", v)}
+                    onChange={(v) => this.updateAttribute('name', v)}
                     required={false}
-                    readOnly={true}
+                    readOnly
                   />
                 </Grid>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="grievance"
+                    module={MODULE_NAME}
                     label="ticket.phone"
                     value={
-                      !!state_edited && !!state_edited.insuree
-                        ? state_edited.insuree.phone
-                        : ""
+                      !!stateEdited && !!stateEdited.individual
+                        ? stateEdited.individual?.jsonExt?.phone
+                        : EMPTY_STRING
                     }
-                    onChange={(v) => this.updateAttribute("phone", v)}
+                    onChange={(v) => this.updateAttribute('phone', v)}
                     required={false}
-                    readOnly={true}
+                    readOnly
                   />
                 </Grid>
                 <Grid item xs={4} className={classes.item}>
                   <TextInput
-                    module="grievance"
+                    module={MODULE_NAME}
                     label="ticket.email"
                     value={
-                      !!state_edited && !!state_edited.insuree
-                        ? state_edited.insuree.email
-                        : ""
+                      !!stateEdited && !!stateEdited.individual
+                        ? stateEdited.individual?.jsonExt?.email
+                        : EMPTY_STRING
                     }
-                    onChange={(v) => this.updateAttribute("email", v)}
+                    onChange={(v) => this.updateAttribute('email', v)}
                     required={false}
-                    readOnly={true}
+                    readOnly
                   />
                 </Grid>
               </Grid>
@@ -304,7 +335,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={12} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="grievance"
+                      module={MODULE_NAME}
                       id={titletwo}
                       values={titleParams}
                     />
@@ -317,43 +348,41 @@ class EditTicketPage extends Component {
                   <PublishedComponent
                     pubRef="core.DatePicker"
                     label="ticket.eventDate"
-                    value={state_edited.dateOfIncident}
+                    value={stateEdited.dateOfIncident}
                     required={false}
-                    onChange={(v) => this.updateAttribute("dateOfIncident", v)}
+                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <TextInput
-                    module="grievance"
+                    module={MODULE_NAME}
                     label="ticket.witness"
-                    value={state_edited.witness}
-                    onChange={(v) => this.updateAttribute("witness", v)}
+                    value={stateEdited.witness}
+                    onChange={(v) => this.updateAttribute('witness', v)}
                     required={false}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
-                    pubRef="grievance.DropDownCategoryPicker"
-                    value={state_edited.category}
-                    onChange={(v) => this.updateAttribute("category", v)}
-                    required={true}
+                    pubRef="grievanceSocialProtection.DropDownCategoryPicker"
+                    value={stateEdited.category}
+                    onChange={(v) => this.updateAttribute('category', v)}
+                    required
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
-                    pubRef="grievance.TicketPriorityPicker"
-                    value={state_edited.ticketPriority}
-                    onChange={(v) => this.updateAttribute("ticketPriority", v)}
+                    pubRef="grievanceSocialProtection.TicketPriorityPicker"
+                    value={stateEdited.ticketPriority}
+                    onChange={(v) => this.updateAttribute('ticketPriority', v)}
                     required={false}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
                   <TextInput
                     label="ticket.ticketDescription"
-                    value={state_edited.ticketDescription}
-                    onChange={(v) =>
-                      this.updateAttribute("ticketDescription", v)
-                    }
+                    value={stateEdited.ticketDescription}
+                    onChange={(v) => this.updateAttribute('ticketDescription', v)}
                     required={false}
                   />
                 </Grid>
@@ -369,7 +398,7 @@ class EditTicketPage extends Component {
                 <Grid item xs={12} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
-                      module="grievance"
+                      module={MODULE_NAME}
                       id={titlethree}
                       values={titleParams}
                     />
@@ -381,12 +410,12 @@ class EditTicketPage extends Component {
                 <Grid item xs={12} className={classes.item}>
                   <TextInput
                     label="ticket.resolution"
-                    value={state_edited.resolution}
-                    onChange={(v) => this.updateAttribute("resolution", v)}
+                    value={stateEdited.resolution}
+                    onChange={(v) => this.updateAttribute('resolution', v)}
                     required={false}
                   />
                 </Grid>
-                <Grid item xs={11} className={classes.item}></Grid>
+                <Grid item xs={11} className={classes.item} />
                 <Grid item xs={1} className={classes.item}>
                   <IconButton
                     variant="contained"
@@ -406,53 +435,21 @@ class EditTicketPage extends Component {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 const mapStateToProps = (state, props) => ({
-  submittingMutation: state.grievance.submittingMutation,
-  mutation: state.grievance.mutation,
+  submittingMutation: state.grievanceSocialProtection.submittingMutation,
+  mutation: state.grievanceSocialProtection.mutation,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators(
-    { fetchTicket, updateTicket, createTicketAttachment, journalize },
-    dispatch
-  );
-};
+const mapDispatchToProps = (dispatch) => bindActionCreators(
+  {
+    fetchTicket, updateTicket, createTicketAttachment, journalize,
+  },
+  dispatch,
+);
 
 export default withTheme(
   withStyles(styles)(
-    connect(mapStateToProps, mapDispatchToProps)(EditTicketPage)
-  )
+    connect(mapStateToProps, mapDispatchToProps)(EditTicketPage),
+  ),
 );
-
-const mstyles = {
-  title: {
-    fontSize: "1.3em",
-    fontWeight: "900",
-  },
-
-  button: {
-    fontSize: "3em",
-    color: "#006273",
-    // width: "40%",
-    marginTop: "-20px",
-    width: "10%",
-    cursor: "pointer",
-  },
-  labels: {
-    display: "flex",
-    width: "100%",
-  },
-
-  label: {
-    width: "45%",
-  },
-
-  inputs: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  input: {
-    width: "40%",
-  },
-};
