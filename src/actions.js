@@ -27,9 +27,10 @@ export function fetchCategoryForPicker(mm, filters) {
 
 export function fetchTicketSummaries(mm, filters) {
   const projections = [
-    'id', 'uuid', 'ticketTitle', 'ticketCode', 'ticketDescription', 'ticketStatus', 'ticketPriority',
-    'ticketDueDate', 'category{id, uuid, categoryTitle, slug}',
-    'insuree{id, uuid, otherNames, lastName, dob, chfId}'];
+    'id', 'title', 'code', 'description', 'status',
+    'priority', 'dueDate', 'reporter', 'reporterId',
+    'reporterType',
+  ];
   const payload = formatPageQueryWithCount(
     'tickets',
     filters,

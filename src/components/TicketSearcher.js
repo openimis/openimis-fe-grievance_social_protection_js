@@ -120,8 +120,8 @@ class TicketSearcher extends Component {
     ['ticketCode', true],
     ['insuree_id', true],
     ['insuree', true],
-    ['ticket_priority', true],
-    ['ticket_status', true],
+    ['priority', true],
+    ['status', true],
   ];
 
   adornedChfId = (ticket) => (
@@ -185,7 +185,7 @@ class TicketSearcher extends Component {
           fetch={this.fetch}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
-          defaultOrderBy="ticketCode"
+          defaultOrderBy="code"
           headers={this.headers}
           itemFormatters={this.itemFormatters}
           sorts={this.sorts}
