@@ -6,7 +6,7 @@ import { withTheme, withStyles } from '@material-ui/core/styles';
 import { Fab } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import {
-  historyPush, withModulesManager, withHistory, withTooltip, formatMessage,
+  historyPush, withModulesManager, withHistory, withTooltip, formatMessage, decodeId
 } from '@openimis/fe-core';
 import TicketSearcher from '../components/TicketSearcher';
 
@@ -18,12 +18,12 @@ const styles = (theme) => ({
 });
 
 class TicketsPage extends Component {
-  onDoubleClick = (i, newTab = false) => {
+  onDoubleClick = (ticket, newTab = false) => {
     historyPush(
       this.props.modulesManager,
       this.props.history,
       'grievanceSocialProtection.route.ticket',
-      [i.uuid],
+      [decodeId(ticket.id)],
       newTab,
     );
   };

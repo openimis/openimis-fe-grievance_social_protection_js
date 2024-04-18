@@ -10,6 +10,8 @@ import {
   Contributions,
   ControlledField,
   TextInput,
+  PublishedComponent,
+  decodeId,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
@@ -38,6 +40,16 @@ class TicketFilter extends Component {
     return !!filters && !!filters[k] ? filters[k].value : null;
   };
 
+  _onChangeReporter = (k, v) => {
+    this.props.onChangeFilters([
+      {
+        id: k,
+        value: v,
+        filter: `${k}: "${decodeId(v?.id)}"`,
+      },
+    ]);
+  };
+
   render() {
     const {
       classes, filters, onChangeFilters,
@@ -52,13 +64,13 @@ class TicketFilter extends Component {
               <TextInput
                 module={MODULE_NAME}
                 label="ticket.ticketCode"
-                name="ticketCode"
-                value={this._filterValue('ticketCode')}
+                name="code"
+                value={this._filterValue('code')}
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
-                    id: 'ticketCode',
+                    id: 'code',
                     value: v,
-                    filter: `ticketCode_Istartswith: "${v}"`,
+                    filter: `code_Istartswith: "${v}"`,
                   },
                 ])}
               />
@@ -67,40 +79,37 @@ class TicketFilter extends Component {
         />
         <ControlledField
           module={MODULE_NAME}
-          id="ticket.ticketGrievanct"
+          id="ticket.reporter"
           field={(
             <Grid item xs={3} className={classes.item}>
-              <TextInput
-                module={MODULE_NAME}
-                label="ticket.ticketGrievanct"
-                name="name"
-                value={this._filterValue('name')}
-                onChange={(v) => this.debouncedOnChangeFilter([
-                  {
-                    id: 'name',
-                    value: v,
-                    filter: `name_Istartswith: "${v}"`,
-                  },
-                ])}
+              <PublishedComponent
+                pubRef="individual.IndividualPicker"
+                withNull
+                label="Individual"
+                value={this._filterValue('reporterId')}
+                onChange={(v) => this._onChangeReporter(
+                  'reporterId',
+                  v || null,
+                )}
               />
             </Grid>
                       )}
         />
         <ControlledField
           module={MODULE_NAME}
-          id="ticketFilter.ticketPriority"
+          id="ticketFilter.priority"
           field={(
             <Grid item xs={3} className={classes.item}>
               <TextInput
                 module={MODULE_NAME}
                 label="ticket.ticketPriority"
-                name="ticketPriority"
-                value={this._filterValue('ticketPriority')}
+                name="priority"
+                value={this._filterValue('priority')}
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
-                    id: 'ticketPriority',
+                    id: 'priority',
                     value: v,
-                    filter: `ticketPriority_Icontains: "${v}"`,
+                    filter: `priority_Icontains: "${v}"`,
                   },
                 ])}
               />
@@ -109,19 +118,19 @@ class TicketFilter extends Component {
         />
         <ControlledField
           module={MODULE_NAME}
-          id="ticketFilter.ticketStatus"
+          id="ticketFilter.status"
           field={(
             <Grid item xs={3} className={classes.item}>
               <TextInput
                 module={MODULE_NAME}
                 label="ticket.ticketStatus"
-                name="ticketStatus"
-                value={this._filterValue('ticketStatus')}
+                name="status"
+                value={this._filterValue('status')}
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
-                    id: 'ticketStatus',
+                    id: 'status',
                     value: v,
-                    filter: `ticketStatus_Icontains: "${v}"`,
+                    filter: `status_Icontains: "${v}"`,
                   },
                 ])}
               />

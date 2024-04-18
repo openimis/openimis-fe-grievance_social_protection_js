@@ -40,7 +40,7 @@ class AddTicketPage extends Component {
   save = () => {
     this.props.createTicket(
       this.state.stateEdited,
-      `Created Ticket ${this.state.stateEdited.individual.firstName} ${this.state.stateEdited.individual.lastName}`,
+      `Created Ticket ${this.state.stateEdited.reporter.firstName} ${this.state.stateEdited.reporter.lastName}`,
     );
   };
 
@@ -48,6 +48,14 @@ class AddTicketPage extends Component {
     this.setState((state) => ({
       stateEdited: { ...state.stateEdited, [k]: v },
     }));
+  };
+
+  extractFieldFromJsonExt = (stateEdited, field) => {
+    if (stateEdited && stateEdited.reporter && stateEdited.reporter.jsonExt) {
+      const jsonExt = JSON.parse(stateEdited.reporter.jsonExt || '{}');
+      return jsonExt[field] || '';
+    }
+    return '';
   };
 
   render() {
@@ -61,6 +69,7 @@ class AddTicketPage extends Component {
     const {
       stateEdited,
     } = this.state;
+
     return (
       <div className={classes.page}>
         <Grid container>
@@ -75,9 +84,9 @@ class AddTicketPage extends Component {
                 <Grid item xs={4} className={classes.tableTitle}>
                   <PublishedComponent
                     pubRef="individual.IndividualPicker"
-                    value={stateEdited.individual}
+                    value={stateEdited.reporter}
                     label="Complainant"
-                    onChange={(v) => this.updateAttribute('individual', v)}
+                    onChange={(v) => this.updateAttribute('reporter', v)}
                     required
                   />
                 </Grid>
@@ -90,8 +99,9 @@ class AddTicketPage extends Component {
                     label="ticket.name"
                     value={
                       !!stateEdited
-                      && !!stateEdited.individual
-                        ? `${stateEdited.individual.firstName} ${stateEdited.individual.lastName}`
+                      && !!stateEdited.reporter
+                        // eslint-disable-next-line max-len
+                        ? `${stateEdited.reporter.firstName} ${stateEdited.reporter.lastName} ${stateEdited.reporter.dob}`
                         : EMPTY_STRING
                     }
                     onChange={(v) => this.updateAttribute('name', v)}
@@ -103,8 +113,8 @@ class AddTicketPage extends Component {
                   <TextInput
                     module={MODULE_NAME}
                     label="ticket.phone"
-                    value={!!stateEdited && !!stateEdited.individual
-                      ? stateEdited.individual?.jsonExt?.phone
+                    value={!!stateEdited && !!stateEdited.reporter
+                      ? this.extractFieldFromJsonExt(stateEdited, 'phone')
                       : EMPTY_STRING}
                     onChange={(v) => this.updateAttribute('phone', v)}
                     required={false}
@@ -115,8 +125,8 @@ class AddTicketPage extends Component {
                   <TextInput
                     module={MODULE_NAME}
                     label="ticket.email"
-                    value={!!stateEdited && !!stateEdited.individual
-                      ? stateEdited.individual?.jsonExt?.email
+                    value={!!stateEdited && !!stateEdited.reporter
+                      ? this.extractFieldFromJsonExt(stateEdited, 'email')
                       : EMPTY_STRING}
                     onChange={(v) => this.updateAttribute('email', v)}
                     required={false}
@@ -141,21 +151,20 @@ class AddTicketPage extends Component {
               <Divider />
               <Grid container className={classes.item}>
                 <Grid item xs={6} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="core.DatePicker"
-                    label="ticket.eventDate"
-                    value={stateEdited.dateOfIncident}
+                  <TextInput
+                    label="ticket.title"
+                    value={stateEdited.title}
+                    onChange={(v) => this.updateAttribute('title', v)}
                     required={false}
-                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
-                  <TextInput
-                    module={MODULE_NAME}
-                    label="ticket.witness"
-                    value={stateEdited.witness}
-                    onChange={(v) => this.updateAttribute('witness', v)}
+                  <PublishedComponent
+                    pubRef="core.DatePicker"
+                    label="ticket.dateOfIncident"
+                    value={stateEdited.dateOfIncident}
                     required={false}
+                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -168,17 +177,33 @@ class AddTicketPage extends Component {
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
+                    pubRef="grievanceSocialProtection.FlagPicker"
+                    value={stateEdited.flags}
+                    onChange={(v) => this.updateAttribute('flags', v)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="grievanceSocialProtection.ChannelPicker"
+                    value={stateEdited.channel}
+                    onChange={(v) => this.updateAttribute('channel', v)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
                     pubRef="grievanceSocialProtection.TicketPriorityPicker"
-                    value={stateEdited.ticketPriority}
-                    onChange={(v) => this.updateAttribute('ticketPriority', v)}
+                    value={stateEdited.priority}
+                    onChange={(v) => this.updateAttribute('priority', v)}
                     required={false}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
                   <TextInput
                     label="ticket.ticketDescription"
-                    value={stateEdited.ticketDescription}
-                    onChange={(v) => this.updateAttribute('ticketDescription', v)}
+                    value={stateEdited.description}
+                    onChange={(v) => this.updateAttribute('description', v)}
                     required={false}
                   />
                 </Grid>

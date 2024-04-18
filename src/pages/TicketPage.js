@@ -21,7 +21,7 @@ class TicketPage extends Component {
   };
 
   save = (ticket) => {
-    if (!ticket.uuid) {
+    if (!ticket.id) {
       this.props.createTicket(
         this.props.modulesManager,
         ticket,
@@ -29,7 +29,7 @@ class TicketPage extends Component {
           this.props.intl,
           'ticket',
           'createTicket.mutationLabel',
-          { label: ticket.ticketCode ? ticket.ticketCode : '' },
+          { label: ticket.code ? ticket.code : '' },
         ),
       );
     } else {
@@ -40,7 +40,7 @@ class TicketPage extends Component {
           this.props.intl,
           'ticket',
           'updateTicket.mutationLabel',
-          { label: ticket.ticketCode ? ticket.ticketCode : '' },
+          { label: ticket.code ? ticket.code : '' },
         ),
       );
     }

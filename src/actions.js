@@ -4,6 +4,7 @@ import {
 } from '@openimis/fe-core';
 import { ACTION_TYPE } from './reducer';
 import { FETCH_INDIVIDUAL_REF } from './constants';
+import { isBase64Encoded } from './utils/utils';
 
 const GRIEVANCE_CONFIGURATION_PROJECTION = () => [
   'grievanceTypes',
@@ -29,7 +30,8 @@ export function fetchTicketSummaries(mm, filters) {
   const projections = [
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
-    'reporterType',
+    'reporterType', 'category', 'flags', 'channel',
+    'resolution', 'title', 'dateOfIncident',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -41,18 +43,16 @@ export function fetchTicketSummaries(mm, filters) {
 
 export function fetchTicket(mm, uuid) {
   const filters = [
-    `ticketUuid: "${uuid}"`,
+    `id: "${uuid}"`,
   ];
   const projections = [
-    'id', 'uuid', 'ticketTitle', 'ticketCode', 'ticketDescription',
-    'name', 'phone', 'email', 'dateOfIncident', 'nameOfComplainant', 'witness',
-    'resolution', 'ticketStatus', 'ticketPriority', 'dateSubmitted', 'dateSubmitted',
-    'category{id, uuid, categoryTitle, slug}',
-    'insuree{id, uuid, otherNames, lastName, dob, chfId, phone, email}',
-    'attachment{edges{node{id, uuid, filename, mimeType, url, document, date}}}',
+    'id', 'title', 'code', 'description', 'status',
+    'priority', 'dueDate', 'reporter', 'reporterId',
+    'reporterType', 'category', 'flags', 'channel',
+    'resolution', 'title', 'dateOfIncident',
   ];
   const payload = formatPageQueryWithCount(
-    'ticketDetails',
+    'tickets',
     filters,
     projections,
   );
@@ -61,22 +61,52 @@ export function fetchTicket(mm, uuid) {
 
 export function formatTicketGQL(ticket) {
   return `
-    ${ticket.uuid !== undefined && ticket.uuid !== null ? `uuid: "${ticket.uuid}"` : ''}
-    ${ticket.ticketCode ? `ticketCode: "${formatGQLString(ticket.ticketCode)}"` : ''}
-    ${ticket.ticketDescription ? `ticketDescription: "${formatGQLString(ticket.ticketDescription)}"` : ''}
-    ${!!ticket.insuree && !!ticket.insuree.id ? `insureeUuid: "${ticket.insuree.uuid}"` : ''}
-    ${!!ticket.category && !!ticket.category.id ? `categoryUuid: "${ticket.category.uuid}"` : ''}
-    ${ticket.name ? `name: "${formatGQLString(ticket.name)}"` : ''}
-    ${ticket.phone ? `phone: "${formatGQLString(ticket.phone)}"` : ''}
-    ${ticket.email ? `email: "${formatGQLString(ticket.email)}"` : ''}
-    ${ticket.dateOfIncident ? `dateOfIncident: "${formatGQLString(ticket.dateOfIncident)}"` : ''}
-    ${ticket.witness ? `witness: "${formatGQLString(ticket.witness)}"` : ''}
+    ${ticket.id !== undefined && ticket.id !== null ? `id: "${ticket.id}"` : ''}
+    ${ticket.code ? `code: "${formatGQLString(ticket.code)}"` : ''}
+    ${!!ticket.category && !!ticket.category ? `category: "${ticket.category}"` : ''}
+    ${!!ticket.title && !!ticket.title ? `title: "${ticket.title}"` : ''}
+    ${!!ticket.description && !!ticket.description ? `description: "${ticket.description}"` : ''}
+    ${ticket.reporter
+    ? (isBase64Encoded(ticket.reporter.id)
+      ? `reporterId: "${decodeId(ticket.reporter.id)}"`
+      : `reporterId: "${ticket.reporter.id}"`)
+    : ''}
+    ${!!ticket.reporter && !!ticket.reporter ? `reporterType: "Individual"` : ''}
     ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
     ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
-    ${ticket.ticketStatus ? `ticketStatus: "${formatGQLString(ticket.ticketStatus)}"` : ''}
-    ${ticket.ticketPriority ? `ticketPriority: "${formatGQLString(ticket.ticketPriority)}"` : ''}
-    ${ticket.ticketDueDate ? `ticketDueDate: "${formatGQLString(ticket.ticketDueDate)}"` : ''}
+    ${ticket.status ? `status: "${formatGQLString(ticket.status)}"` : ''}
+    ${ticket.priority ? `priority: "${formatGQLString(ticket.priority)}"` : ''}
+    ${ticket.dueDate ? `dueDate: "${formatGQLString(ticket.dueDate)}"` : ''}
     ${ticket.dateSubmitted ? `dateSubmitted: "${formatGQLString(ticket.dateSubmitted)}"` : ''}
+    ${ticket.dateOfIncident ? `dateOfIncident: "${formatGQLString(ticket.dateOfIncident)}"` : ''}
+    ${!!ticket.channel && !!ticket.channel ? `channel: "${ticket.channel}"` : ''}
+    ${!!ticket.flags && !!ticket.flags ? `flags: "${ticket.flags}"` : ''}
+  `;
+}
+
+export function formatUpdateTicketGQL(ticket) {
+  // eslint-disable-next-line no-param-reassign
+  ticket.reporter = JSON.parse(JSON.parse(ticket.reporter || '{}'), '{}');
+  return `
+    ${ticket.id !== undefined && ticket.id !== null ? `id: "${ticket.id}"` : ''}
+    ${!!ticket.category && !!ticket.category ? `category: "${ticket.category}"` : ''}
+    ${!!ticket.title && !!ticket.title ? `title: "${ticket.title}"` : ''}
+    ${!!ticket.description && !!ticket.description ? `description: "${ticket.description}"` : ''}
+    ${ticket.reporter
+    ? (isBase64Encoded(ticket.reporter.id)
+      ? `reporterId: "${decodeId(ticket.reporter.id)}"`
+      : `reporterId: "${ticket.reporter.id}"`)
+    : ''}
+    ${!!ticket.reporter && !!ticket.reporter ? `reporterType: "Individual"` : ''}
+    ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
+    ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
+    ${ticket.status ? `status: ${formatGQLString(ticket.status)}` : ''}
+    ${ticket.priority ? `priority: "${formatGQLString(ticket.priority)}"` : ''}
+    ${ticket.dueDate ? `dueDate: "${formatGQLString(ticket.dueDate)}"` : ''}
+    ${ticket.dateSubmitted ? `dateSubmitted: "${formatGQLString(ticket.dateSubmitted)}"` : ''}
+    ${ticket.dateOfIncident ? `dateOfIncident: "${formatGQLString(ticket.dateOfIncident)}"` : ''}
+    ${!!ticket.channel && !!ticket.channel ? `channel: "${ticket.channel}"` : ''}
+    ${!!ticket.flags && !!ticket.flags ? `flags: "${ticket.flags}"` : ''}
   `;
 }
 
@@ -101,13 +131,13 @@ export function createTicket(ticket, clientMutationLabel) {
 }
 
 export function updateTicket(ticket, clientMutationLabel) {
-  const mutation = formatMutation('updateTicket', formatTicketGQL(ticket), clientMutationLabel);
+  const mutation = formatMutation('updateTicket', formatUpdateTicketGQL(ticket), clientMutationLabel);
   const requestedDateTime = new Date();
   return graphql(mutation.payload, ['TICKET_MUTATION_REQ', 'TICKET_UPDATE_TICKET_RESP', 'TICKET_MUTATION_ERR'], {
     clientMutationId: mutation.clientMutationId,
     clientMutationLabel,
     requestedDateTime,
-    ticketUuid: ticket.uuid,
+    id: ticket.id,
   });
 }
 

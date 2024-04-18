@@ -1,10 +1,12 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-undef */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable class-methods-use-this */
 import React, { Component, Fragment } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { IconButton } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 import { Search as SearchIcon } from '@material-ui/icons';
 import {
@@ -14,10 +16,16 @@ import {
   Searcher,
   withHistory,
   withModulesManager,
+  PublishedComponent,
+  formatMessage,
+  historyPush,
+  decodeId,
 } from '@openimis/fe-core';
+import EditIcon from '@material-ui/icons/Edit';
 // import AddIcon from '@material-ui/icons/Add';
-import { MODULE_NAME } from '../constants';
+import { MODULE_NAME, RIGHT_TICKET_EDIT } from '../constants';
 import { fetchTicketSummaries, resolveTicket } from '../actions';
+import { isEmptyObject } from '../utils/utils';
 
 import TicketFilter from './TicketFilter';
 import EnquiryDialog from './EnquiryDialog';
@@ -109,43 +117,68 @@ class TicketSearcher extends Component {
   // };
 
   headers = () => [
-    'tickets.ticketCode',
-    'tickets.beneficaryCode',
+    'tickets.code',
     'tickets.beneficary',
     'tickets.priority',
     'tickets.status',
   ];
 
   sorts = () => [
-    ['ticketCode', true],
+    ['code', true],
     ['insuree_id', true],
     ['insuree', true],
     ['priority', true],
     ['status', true],
   ];
 
-  adornedChfId = (ticket) => (
-    <>
-      <IconButton
-        size="small"
-        onClick={() => !ticket.clientMutationId && this.setState({ enquiryOpen: true, chfid: ticket.insuree.chfId })}
-      >
-        <SearchIcon />
-      </IconButton>
-      {ticket.insuree.chfId}
-    </>
-  );
+  itemFormatters = () => {
+    const formatters = [
+      (ticket) => ticket.code,
+      (ticket) => {
+        const individual = typeof ticket.reporter === 'object'
+          ? ticket.reporter : JSON.parse(JSON.parse(ticket.reporter || '{}') || '{}');
+        return (
+          individual
+            ? (
+              <PublishedComponent
+                pubRef="individual.IndividualPicker"
+                readOnly
+                withNull
+                label="Individual"
+                required
+                value={
+                  individual !== undefined
+                  && individual !== null ? (isEmptyObject(individual)
+                      ? null : individual) : null
+                }
+              />
+            ) : '');
+      },
+      (ticket) => ticket.priority,
+      (ticket) => ticket.status,
+    ];
 
-  itemFormatters = () => [
-    (ticket) => ticket.ticketCode,
-    // ticket => ticket.insuree.chfId,
-    (ticket) => this.adornedChfId(ticket),
-    // ticket => <Button onClick={this._onClick} color="primary">{ticket.insuree.chfId}</Button>,
-    (ticket) => `${ticket.insuree.otherNames} ${ticket.insuree.lastName}`,
-    (ticket) => ticket.ticketPriority,
-    (ticket) => ticket.ticketStatus,
-
-  ];
+    if (this.props.rights.includes(RIGHT_TICKET_EDIT)) {
+      formatters.push((ticket) => (
+        <Tooltip title={formatMessage(this.props.intl, MODULE_NAME, 'editButtonTooltip')}>
+          <IconButton
+            onClick={() => {
+              historyPush(
+                this.props.modulesManager,
+                this.props.history,
+                'grievanceSocialProtection.route.ticket',
+                [decodeId(ticket.id)],
+                false,
+              );
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+      ));
+    }
+    return formatters;
+  };
 
   rowDisabled = (selection, i) => !!i.validityTo;
 

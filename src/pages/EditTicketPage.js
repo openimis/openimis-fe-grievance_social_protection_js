@@ -21,7 +21,7 @@ import {
 import { Save } from '@material-ui/icons';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { updateTicket, createTicketAttachment, fetchTicket } from '../actions';
-import {EMPTY_STRING, MODULE_NAME} from '../constants';
+import { EMPTY_STRING, MODULE_NAME } from '../constants';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -79,7 +79,8 @@ class EditTicketPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stateEdited: {},
+      stateEdited: props.ticket,
+      reporter: {},
       openFileModal: false,
       file: null,
       fileName: EMPTY_STRING,
@@ -87,8 +88,9 @@ class EditTicketPage extends Component {
   }
 
   componentDidMount() {
-    if (this.props.edited) {
-      this.setState((state, props) => ({ stateEdited: props.edited }));
+    if (this.props.edited_id) {
+      this.setState({ stateEdited: this.props.ticket });
+      this.setState({ reporter: JSON.parse(JSON.parse(this.props.ticket.reporter || '{}'), '{}') });
     }
   }
 
@@ -102,7 +104,7 @@ class EditTicketPage extends Component {
   save = () => {
     this.props.updateTicket(
       this.state.stateEdited,
-      `updated ticket ${this.state.stateEdited.ticketCode}`,
+      `updated ticket ${this.state.stateEdited.code}`,
     );
   };
 
@@ -110,6 +112,16 @@ class EditTicketPage extends Component {
     this.setState((state) => ({
       stateEdited: { ...state.stateEdited, [k]: v },
     }));
+  };
+
+  extractFieldFromJsonExt = (reporter, field) => {
+    if (reporter) {
+      if (reporter.jsonExt) {
+        return reporter.jsonExt[field] || '';
+      }
+      return '';
+    }
+    return '';
   };
 
   handleOpenModal = () => {
@@ -164,7 +176,7 @@ class EditTicketPage extends Component {
       titleParams = { label: EMPTY_STRING },
     } = this.props;
 
-    const { stateEdited } = this.state;
+    const { stateEdited, reporter } = this.state;
     return (
       <div className={classes.page}>
         <Grid container>
@@ -183,9 +195,9 @@ class EditTicketPage extends Component {
                 <Grid item xs={3} className={classes.tableTitle}>
                   <PublishedComponent
                     pubRef="individual.IndividualPicker"
-                    value={stateEdited.individual}
+                    value={reporter}
                     label="Complainant"
-                    onChange={(v) => this.updateAttribute('individual', v)}
+                    onChange={(v) => this.updateAttribute('reporter', v)}
                     required
                     readOnly
                   />
@@ -284,10 +296,9 @@ class EditTicketPage extends Component {
                     module={MODULE_NAME}
                     label="ticket.name"
                     value={
-                      !!stateEdited && !!stateEdited.individual
-                        ? `${stateEdited.individual.firstName
-                        } ${
-                          stateEdited.individual.lastName}`
+                      reporter
+                        // eslint-disable-next-line max-len
+                        ? `${reporter.firstName} ${reporter.lastName} ${reporter.dob}`
                         : EMPTY_STRING
                     }
                     onChange={(v) => this.updateAttribute('name', v)}
@@ -299,11 +310,9 @@ class EditTicketPage extends Component {
                   <TextInput
                     module={MODULE_NAME}
                     label="ticket.phone"
-                    value={
-                      !!stateEdited && !!stateEdited.individual
-                        ? stateEdited.individual?.jsonExt?.phone
-                        : EMPTY_STRING
-                    }
+                    value={!!stateEdited && !!stateEdited.reporter
+                      ? this.extractFieldFromJsonExt(reporter, 'phone')
+                      : EMPTY_STRING}
                     onChange={(v) => this.updateAttribute('phone', v)}
                     required={false}
                     readOnly
@@ -313,11 +322,9 @@ class EditTicketPage extends Component {
                   <TextInput
                     module={MODULE_NAME}
                     label="ticket.email"
-                    value={
-                      !!stateEdited && !!stateEdited.individual
-                        ? stateEdited.individual?.jsonExt?.email
-                        : EMPTY_STRING
-                    }
+                    value={!!stateEdited && !!stateEdited.reporter
+                      ? this.extractFieldFromJsonExt(reporter, 'email')
+                      : EMPTY_STRING}
                     onChange={(v) => this.updateAttribute('email', v)}
                     required={false}
                     readOnly
@@ -345,21 +352,20 @@ class EditTicketPage extends Component {
               <Divider />
               <Grid container className={classes.item}>
                 <Grid item xs={6} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="core.DatePicker"
-                    label="ticket.eventDate"
-                    value={stateEdited.dateOfIncident}
+                  <TextInput
+                    label="ticket.title"
+                    value={stateEdited.title}
+                    onChange={(v) => this.updateAttribute('title', v)}
                     required={false}
-                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
-                  <TextInput
-                    module={MODULE_NAME}
-                    label="ticket.witness"
-                    value={stateEdited.witness}
-                    onChange={(v) => this.updateAttribute('witness', v)}
+                  <PublishedComponent
+                    pubRef="core.DatePicker"
+                    label="ticket.dateOfIncident"
+                    value={stateEdited.dateOfIncident}
                     required={false}
+                    onChange={(v) => this.updateAttribute('dateOfIncident', v)}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -372,17 +378,33 @@ class EditTicketPage extends Component {
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
                   <PublishedComponent
+                    pubRef="grievanceSocialProtection.FlagPicker"
+                    value={stateEdited.flags}
+                    onChange={(v) => this.updateAttribute('flags', v)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="grievanceSocialProtection.ChannelPicker"
+                    value={stateEdited.channel}
+                    onChange={(v) => this.updateAttribute('channel', v)}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
                     pubRef="grievanceSocialProtection.TicketPriorityPicker"
-                    value={stateEdited.ticketPriority}
-                    onChange={(v) => this.updateAttribute('ticketPriority', v)}
+                    value={stateEdited.priority}
+                    onChange={(v) => this.updateAttribute('priority', v)}
                     required={false}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
                   <TextInput
-                    label="ticket.ticketDescription"
-                    value={stateEdited.ticketDescription}
-                    onChange={(v) => this.updateAttribute('ticketDescription', v)}
+                    label="ticket.description"
+                    value={stateEdited.description}
+                    onChange={(v) => this.updateAttribute('description', v)}
                     required={false}
                   />
                 </Grid>
@@ -439,6 +461,10 @@ class EditTicketPage extends Component {
 const mapStateToProps = (state, props) => ({
   submittingMutation: state.grievanceSocialProtection.submittingMutation,
   mutation: state.grievanceSocialProtection.mutation,
+  fetchingTicket: state.grievanceSocialProtection.fetchingTicket,
+  errorTicket: state.grievanceSocialProtection.errorTicket,
+  fetchedTicket: state.grievanceSocialProtection.fetchedTicket,
+  ticket: state.grievanceSocialProtection.ticket,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(

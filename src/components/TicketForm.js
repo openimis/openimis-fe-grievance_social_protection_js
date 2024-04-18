@@ -49,7 +49,7 @@ class TicketForm extends Component {
             && !!this.props.ticket) {
       this.setState((state, props) => ({
         ticket: { ...props.ticket },
-        ticketUuid: props.ticket.uuid,
+        ticketUuid: props.ticket.id,
         lockNew: false,
       }));
     } else if (prevState.ticketUuid !== this.state.ticketUuid) {
@@ -72,17 +72,16 @@ class TicketForm extends Component {
   }
 
   reload = () => {
-    this.props.fetchTicketAttachments(
-      this.props.modulesManager,
-      this.state.ticketUuid,
-      this.state.ticket.code,
-
-    );
+    //this.props.fetchTicketAttachments(
+    //  this.props.modulesManager,
+    //  this.state.ticketUuid,
+    //  this.state.ticket.code,
+    //);
   };
 
   canSave = () => {
-    if (!this.state.ticket.name) return false;
-    if (!this.state.ticket.insuree) return false;
+    //if (!this.state.ticket.name) return false;
+    //if (!this.state.ticket.insuree) return false;
     if (!this.state.ticket.category) return false;
     return true;
   };
@@ -118,14 +117,6 @@ class TicketForm extends Component {
     const readOnly = lockNew || !!ticket.validityTo;
     const actions = [];
 
-    if (ticketUuid) {
-      actions.push({
-        doIt: () => this.reload(ticketUuid),
-        icon: <ReplayIcon />,
-        onlyIfDirty: !readOnly,
-      });
-    }
-
     return (
       <>
         <ProgressOrError progress={fetchingTicket} error={errorTicket} />
@@ -141,7 +132,7 @@ class TicketForm extends Component {
           back={back}
           save={save ? this._save : null}
           canSave={this.canSave}
-          reload={(ticketUuid || readOnly) && this.reload}
+          //reload={(ticketUuid || readOnly) && this.reload}
           readOnly={readOnly}
           overview={overview}
           Panels={ticketUuid ? [EditTicketPage, TicketAttachmentPanel] : [AddTicketPage]}

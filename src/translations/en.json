@@ -34,6 +34,10 @@
     "CategoryPicker.label" : "Category",
     " Ticket.DescriptionOfEvents" : "DETAILS OF EVENT LEADING TO GRIEVANCE (Provide a detailed account of the occurrence)",
     "CategoryPicker.placeholder": "Category",
+    "FlagPicker.label" : "Flag",
+    "FlagPicker.placeholder" : "Flag",
+    "ChannelPicker.label" : "Channel",
+    "ChannelPicker.placeholder" : "Channel",
     "ticket.eventDate": "Date of Event",
     "ticket.eventLocation": "Location of Event",
     "ticket.witness": "Witness (if applicable)",
@@ -49,7 +53,7 @@
     "action.AddTicket.tooltip":"Add Ticket",
     "addNewticketTooltip":"Add Ticket",
     "ticket.resolution":"RESOLUTION (Provide a detailed account of the occurrence.  Include the names of any additional persons involved)",
-    "ticket.title":"Ticket",
+    "ticket.title":"Ticket Title",
     "Ticket Status.Waiting":"Waiting",
     "Ticket Status.Todo":"Todo",
     "Ticket Status.Inprogress":"Inprogress",
@@ -73,6 +77,8 @@
     "ticket.ticketPriority":"Priority",
     "ticket.ticketStatus":"Status",
     "ticket.ticketGrievanct" : "Grievant",
+    "ticket.description" : "Description",
+    "ticket.editButtonTooltip": "Edit Ticket",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader": "Please fill the config.",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}"
 }
