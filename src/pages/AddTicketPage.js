@@ -257,7 +257,13 @@ class AddTicketPage extends Component {
                 </Grid>
                 <Grid item xs={11} className={classes.item} />
                 <Grid item xs={1} className={classes.item}>
-                  <IconButton variant="contained" component="label" color="primary" onClick={this.save}>
+                  <IconButton
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={this.save}
+                    disabled={!stateEdited.reporter}
+                  >
                     <Save />
                   </IconButton>
                 </Grid>

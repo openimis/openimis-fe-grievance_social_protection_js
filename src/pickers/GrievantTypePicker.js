@@ -9,7 +9,7 @@ function GrievantTypePicker(props) {
   return (
     <ConstantBasedPicker
       module="grievanceSocialProtection"
-      label="grievant"
+      label="grievantType"
       constants={GRIEVANT_TYPE_LIST}
       onChange={onChange}
       value={value}

@@ -79,6 +79,10 @@
     "ticket.ticketGrievanct" : "Grievant",
     "ticket.description" : "Description",
     "ticket.editButtonTooltip": "Edit Ticket",
+    "grievantType": "Grievant Type",
+    "grievantType.null": "None",
+    "grievantType.individual": "Individual",
+    "grievantType.beneficiary": "Beneficiary",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader": "Please fill the config.",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}"
 }
