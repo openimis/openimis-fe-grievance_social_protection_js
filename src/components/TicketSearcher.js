@@ -218,7 +218,7 @@ class TicketSearcher extends Component {
           fetch={this.fetch}
           rowIdentifier={this.rowIdentifier}
           filtersToQueryParams={this.filtersToQueryParams}
-          defaultOrderBy="code"
+          defaultOrderBy="-dateCreated"
           headers={this.headers}
           itemFormatters={this.itemFormatters}
           sorts={this.sorts}

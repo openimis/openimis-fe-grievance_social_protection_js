@@ -31,7 +31,7 @@ export function fetchTicketSummaries(mm, filters) {
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'category', 'flags', 'channel',
-    'resolution', 'title', 'dateOfIncident',
+    'resolution', 'title', 'dateOfIncident', 'dateCreated',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -49,7 +49,7 @@ export function fetchTicket(mm, uuid) {
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'category', 'flags', 'channel',
-    'resolution', 'title', 'dateOfIncident',
+    'resolution', 'title', 'dateOfIncident', 'dateCreated',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
