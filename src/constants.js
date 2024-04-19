@@ -12,3 +12,4 @@ export const MODULE_NAME = 'grievanceSocialProtection';
 export const FETCH_INDIVIDUAL_REF = 'individual.actions.fetchIndividuals';
 
 export const EMPTY_STRING = '';
+export const GRIEVANT_TYPE_LIST = ['individual', 'beneficiary'];

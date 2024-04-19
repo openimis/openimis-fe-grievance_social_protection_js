@@ -12,6 +12,7 @@ import {
 } from '@openimis/fe-core';
 import { createTicket } from '../actions';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
+import GrievantTypePicker from '../pickers/GrievantTypePicker';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -27,6 +28,8 @@ class AddTicketPage extends Component {
     super(props);
     this.state = {
       stateEdited: {},
+      grievantType: null,
+      benefitPlan: null,
     };
   }
 
@@ -58,6 +61,20 @@ class AddTicketPage extends Component {
     return '';
   };
 
+  updateTypeOfGrievant = (field, value) => {
+    this.updateAttribute('reporter', null);
+    this.setState((state) => ({
+      grievantType: value,
+    }));
+  };
+
+  updateBenefitPlan = (field, value) => {
+    this.updateAttribute('reporter', null);
+    this.setState((state) => ({
+      benefitPlan: value,
+    }));
+  };
+
   render() {
     const {
       classes,
@@ -68,6 +85,8 @@ class AddTicketPage extends Component {
 
     const {
       stateEdited,
+      grievantType,
+      benefitPlan,
     } = this.state;
 
     return (
@@ -81,15 +100,44 @@ class AddTicketPage extends Component {
                     <FormattedMessage module={MODULE_NAME} id={titleone} values={titleParams} />
                   </Typography>
                 </Grid>
-                <Grid item xs={4} className={classes.tableTitle}>
-                  <PublishedComponent
-                    pubRef="individual.IndividualPicker"
-                    value={stateEdited.reporter}
-                    label="Complainant"
-                    onChange={(v) => this.updateAttribute('reporter', v)}
+              </Grid>
+              <Grid container className={classes.item}>
+                <Grid item xs={3} className={classes.item}>
+                  <GrievantTypePicker
+                    module={MODULE_NAME}
+                    label="type"
+                    readOnly={!!stateEdited.id}
+                    withNull
                     required
+                    value={grievantType?.replace(/\s+/g, '') ?? ''}
+                    onChange={(v) => this.updateTypeOfGrievant('grievantType', v)}
+                    withLabel
                   />
                 </Grid>
+                {grievantType === 'individual' && (
+                  <>
+                    <Grid item xs={3} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="socialProtection.BenefitPlanPicker"
+                        withNull
+                        label="socialProtection.benefitPlan"
+                        value={benefitPlan}
+                        required={false}
+                        onChange={(v) => this.updateBenefitPlan('benefitPlan', v)}
+                      />
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="individual.IndividualPicker"
+                        value={stateEdited.reporter}
+                        label="Complainant"
+                        onChange={(v) => this.updateAttribute('reporter', v)}
+                        required
+                        benefitPlan={benefitPlan}
+                      />
+                    </Grid>
+                  </>
+                )}
               </Grid>
               <Divider />
               <Grid container className={classes.item}>
