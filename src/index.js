@@ -6,7 +6,7 @@ import { ListAlt } from '@material-ui/icons';
 import { FormattedMessage } from '@openimis/fe-core';
 import messages_en from './translations/en.json';
 import reducer from './reducer';
-import TicketMainMenu from './menu/TicketMainMenu';
+import GrievanceMainMenu from './menu/GrievanceMainMenu';
 import TicketsPage from './pages/TicketsPage';
 import TicketPage from './pages/TicketPage';
 import TicketSearcher from './components/TicketSearcher';
@@ -44,15 +44,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_TICKET_TICKETS, component: TicketsPage },
     { path: `${ROUTE_TICKET_TICKET}/:ticket_uuid?`, component: TicketPage },
   ],
-
-  'admin.MainMenu': [
-    {
-      text: <FormattedMessage module={MODULE_NAME} id="menu.ticket" />,
-      icon: <ListAlt />,
-      route: `/${ROUTE_TICKET_TICKETS}`,
-    },
-  ],
-  'core.MainMenu': [TicketMainMenu],
+  'core.MainMenu': [GrievanceMainMenu],
 
 };
 
