@@ -10,7 +10,7 @@ import {
   Form, formatMessageWithValues, journalize, ProgressOrError, withModulesManager,
 } from '@openimis/fe-core';
 import { bindActionCreators } from 'redux';
-import { fetchTicket, fetchTicketAttachments } from '../actions';
+import { fetchGrievanceConfiguration, fetchTicket, fetchTicketAttachments } from '../actions';
 import { ticketLabel } from '../utils/utils';
 import EditTicketPage from '../pages/EditTicketPage';
 import AddTicketPage from '../pages/AddTicketPage';
@@ -58,6 +58,7 @@ class TicketForm extends Component {
         this.state.ticketUuid,
         null,
       );
+      this.props.fetchGrievanceConfiguration();
     } else if (prevProps.ticketUuid && !this.props.ticketUuid) {
       this.setState({ ticket: this._newTicket(), lockNew: false, ticketUuid: null });
     } else if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -102,6 +103,7 @@ class TicketForm extends Component {
       fetchingTicket,
       fetchedTicket,
       errorTicket,
+      grievanceConfig,
       save, back,
     } = this.props;
 
@@ -116,6 +118,8 @@ class TicketForm extends Component {
 
     const readOnly = lockNew || !!ticket.validityTo;
     const actions = [];
+
+    console.log(grievanceConfig, 'config');
 
     return (
       <>
@@ -154,11 +158,13 @@ const mapStateToProps = (state, props) => ({
   ticket: state.grievanceSocialProtection.ticket,
   submittingMutation: state.grievanceSocialProtection.submittingMutation,
   mutation: state.grievanceSocialProtection.mutation,
+  grievanceConfig: state.grievanceSocialProtection.grievanceConfig,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchTicket,
   fetchTicketAttachments,
+  fetchGrievanceConfiguration,
   journalize,
 }, dispatch);
 

@@ -176,23 +176,21 @@ class EditTicketPage extends Component {
       titleParams = { label: EMPTY_STRING },
     } = this.props;
 
-    const { stateEdited, reporter } = this.state;
+    const { stateEdited, reporter, grievanceConfig } = this.state;
     return (
       <div className={classes.page}>
         <Grid container>
           <Grid item xs={12}>
             <Paper className={classes.paper}>
               <Grid container className={classes.tableTitle}>
-                <Grid item xs={5} className={classes.tableTitle}>
+                <Grid item xs={8} className={classes.tableTitle}>
                   <Typography>
-                    <FormattedMessage
-                      module={MODULE_NAME}
-                      id={titleone}
-                      values={titleParams}
-                    />
+                    <FormattedMessage module={MODULE_NAME} id={titleone} values={titleParams} />
                   </Typography>
                 </Grid>
-                <Grid item xs={3} className={classes.tableTitle}>
+              </Grid>
+              <Grid container className={classes.item}>
+                <Grid item xs={3} className={classes.item}>
                   <PublishedComponent
                     pubRef="individual.IndividualPicker"
                     value={reporter}
@@ -202,7 +200,7 @@ class EditTicketPage extends Component {
                     readOnly
                   />
                 </Grid>
-                <Grid item xs={4} className={classes.tableTitle}>
+                <Grid item xs={4} className={classes.item}>
                   <IconButton
                     variant="contained"
                     component="label"
@@ -465,6 +463,7 @@ const mapStateToProps = (state, props) => ({
   errorTicket: state.grievanceSocialProtection.errorTicket,
   fetchedTicket: state.grievanceSocialProtection.fetchedTicket,
   ticket: state.grievanceSocialProtection.ticket,
+  grievanceConfig: state.grievanceSocialProtection.grievanceConfig,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(

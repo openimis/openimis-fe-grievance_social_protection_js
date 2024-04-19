@@ -1,28 +1,39 @@
-import React, { Component } from 'react';
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/jsx-props-no-spreading */
+
+import React from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { AssignmentInd } from '@material-ui/icons';
+import { ListAlt } from '@material-ui/icons';
 import { formatMessage, MainMenuContribution, withModulesManager } from '@openimis/fe-core';
+import { GRIEVANCE_MAIN_MENU_CONTRIBUTION_KEY, MODULE_NAME } from '../constants';
 
-class TicketMainMenu extends Component {
-  render() {
-    const { modulesManager, rights } = this.props;
-    const entries = [];
+function GrievanceMainMenu(props) {
+  const ROUTE_TICKET_TICKETS = 'ticket/tickets';
+  const entries = [
+    {
+      text: formatMessage(props.intl, MODULE_NAME, 'menu.grievance.grievances'),
+      icon: <ListAlt />,
+      route: `/${ROUTE_TICKET_TICKETS}`,
+    },
+  ];
+  entries.push(
+    ...props.modulesManager
+      .getContribs(GRIEVANCE_MAIN_MENU_CONTRIBUTION_KEY)
+      .filter((c) => !c.filter || c.filter(props.rights)),
+  );
 
-    if (!entries.length) return null;
-    return (
-      <MainMenuContribution
-        {...this.props}
-        header={formatMessage(this.props.intl, 'grievance', 'mainMenu')}
-        icon={<AssignmentInd />}
-        entries={entries}
-      />
-    );
-  }
+  return (
+    <MainMenuContribution
+      {...props}
+      header={formatMessage(props.intl, MODULE_NAME, 'mainMenuGrievance')}
+      entries={entries}
+    />
+  );
 }
 
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
 });
 
-export default withModulesManager(injectIntl(connect(mapStateToProps)(TicketMainMenu)));
+export default injectIntl(withModulesManager(connect(mapStateToProps)(GrievanceMainMenu)));
