@@ -6,16 +6,17 @@ import { ListAlt } from '@material-ui/icons';
 import { FormattedMessage } from '@openimis/fe-core';
 import messages_en from './translations/en.json';
 import reducer from './reducer';
-import TicketMainMenu from './menu/TicketMainMenu';
+import GrievanceMainMenu from './menu/GrievanceMainMenu';
 import TicketsPage from './pages/TicketsPage';
 import TicketPage from './pages/TicketPage';
 import TicketSearcher from './components/TicketSearcher';
 import TicketPriorityPicker from './pickers/TicketPriorityPicker';
 import TicketStatusPicker from './pickers/TicketStatusPicker';
-import DropDownCategoryPicker from './pickers/DropDownCategoryPicker';
 import CategoryPicker from './pickers/CategoryPicker';
 import GrievanceConfigurationDialog from './dialogs/GrievanceConfigurationDialog';
 import { MODULE_NAME } from './constants';
+import ChannelPicker from './pickers/ChannelPicker';
+import FlagPicker from './pickers/FlagsPicker';
 
 const ROUTE_TICKET_TICKETS = 'ticket/tickets';
 const ROUTE_TICKET_TICKET = 'ticket/ticket';
@@ -32,8 +33,10 @@ const DEFAULT_CONFIG = {
 
     { key: 'grievanceSocialProtection.TicketStatusPicker', ref: TicketStatusPicker },
     { key: 'grievanceSocialProtection.TicketPriorityPicker', ref: TicketPriorityPicker },
-    { key: 'grievanceSocialProtection.DropDownCategoryPicker', ref: DropDownCategoryPicker },
+    { key: 'grievanceSocialProtection.DropDownCategoryPicker', ref: CategoryPicker },
     { key: 'grievanceSocialProtection.CategoryPicker', ref: CategoryPicker },
+    { key: 'grievanceSocialProtection.FlagPicker', ref: FlagPicker },
+    { key: 'grievanceSocialProtection.ChannelPicker', ref: ChannelPicker },
     { key: 'grievanceSocialProtection.GrievanceConfigurationDialog', ref: GrievanceConfigurationDialog },
 
   ],
@@ -41,15 +44,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_TICKET_TICKETS, component: TicketsPage },
     { path: `${ROUTE_TICKET_TICKET}/:ticket_uuid?`, component: TicketPage },
   ],
-
-  'admin.MainMenu': [
-    {
-      text: <FormattedMessage module={MODULE_NAME} id="menu.ticket" />,
-      icon: <ListAlt />,
-      route: `/${ROUTE_TICKET_TICKETS}`,
-    },
-  ],
-  'core.MainMenu': [TicketMainMenu],
+  'core.MainMenu': [GrievanceMainMenu],
 
 };
 

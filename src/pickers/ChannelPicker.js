@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslations, Autocomplete, useGraphqlQuery } from '@openimis/fe-core';
 
-function CategoryPicker(props) {
+function ChannelPicker(props) {
   const {
     onChange,
     readOnly,
@@ -19,9 +19,9 @@ function CategoryPicker(props) {
   const { formatMessage } = useTranslations('ticket');
 
   const { isLoading, data, error } = useGraphqlQuery(
-    `query CategoryPicker {
+    `query ChannelPicker {
         grievanceConfig{
-          grievanceTypes
+          grievanceChannels
         }
     }`,
     { searchString, first: 20 },
@@ -32,13 +32,13 @@ function CategoryPicker(props) {
     <Autocomplete
       multiple={multiple}
       required={required}
-      placeholder={placeholder ?? formatMessage('CategoryPicker.placeholder')}
-      label={label ?? formatMessage('CategoryPicker.label')}
+      placeholder={placeholder ?? formatMessage('ChannelPicker.placeholder')}
+      label={label ?? formatMessage('ChannelPicker.label')}
       error={error}
       withLabel={withLabel}
       withPlaceholder={withPlaceholder}
       readOnly={readOnly}
-      options={data?.grievanceConfig?.grievanceTypes.map((type) => type) ?? []}
+      options={data?.grievanceConfig?.grievanceChannels.map((channel) => channel) ?? []}
       isLoading={isLoading}
       value={value}
       getOptionLabel={(option) => `${option}`}
@@ -50,4 +50,4 @@ function CategoryPicker(props) {
   );
 }
 
-export default CategoryPicker;
+export default ChannelPicker;

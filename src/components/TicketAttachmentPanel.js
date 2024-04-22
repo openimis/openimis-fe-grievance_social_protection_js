@@ -1,208 +1,191 @@
-import React, { Component } from "react";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { connect } from "react-redux";
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/sort-comp */
+import React, { Component } from 'react';
+import { withTheme, withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { bindActionCreators } from "redux";
-import { formatMessageWithValues, withModulesManager, withHistory, Table, ProgressOrError } from "@openimis/fe-core";
-import { fetchTicketAttachments, downloadAttachment } from "../actions";
-import { Paper, Link, IconButton } from "@material-ui/core";
-import ReplayIcon from "@material-ui/icons/Replay";
+import { bindActionCreators } from 'redux';
+import {
+  formatMessageWithValues, withModulesManager, withHistory, Table, ProgressOrError,
+} from '@openimis/fe-core';
+import { Paper, Link, IconButton } from '@material-ui/core';
+import ReplayIcon from '@material-ui/icons/Replay';
+import FileIcon from '@material-ui/icons/InsertDriveFile';
+import { fetchTicketAttachments, downloadAttachment } from '../actions';
+import { MODULE_NAME, EMPTY_STRING } from '../constants';
 
-
-const styles = theme => ({
-    paper: theme.paper.paper,
-    tableTitle: theme.table.title,
-    item: theme.table.item,
-    fullHeight: {
-        height: "100%"
-    },
+const styles = (theme) => ({
+  paper: theme.paper.paper,
+  tableTitle: theme.table.title,
+  item: theme.table.item,
+  fullHeight: {
+    height: '100%',
+  },
 });
-
 
 class TicketAttachmentPanel extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 0,
+      pageSize: 5,
+    };
+    this.rowsPerPageOptions = props.modulesManager.getConf(
+      'fe-grievance_social_protection',
+      'ticketFilter.rowsPerPageOptions',
+      [10, 20, 50, 100],
+    );
+    this.defaultPageSize = props.modulesManager.getConf(
+      'fe-grievance_social_protection',
+      'ticketFilter.defaultPageSize',
+      10,
+    );
+  }
 
-    state = {
-        edited: null,
+  query = () => {
+    if (this.props.edited) {
+      this.props.fetchTicketAttachments(this.props.edited);
+    }
+  };
+
+  onChangeRowsPerPage = (cnt) => {
+    this.setState(
+      {
+        pageSize: cnt,
         page: 0,
-        pageSize: 5,
-        afterCursor: null,
-        beforeCursor: null,
-    }
+      },
+      () => this.query(),
+    );
+  };
 
-    constructor(props) {
-        super(props);
-        this.rowsPerPageOptions = props.modulesManager.getConf("fe-grievance", "ticketFilter.rowsPerPageOptions", [10, 20, 50, 100]);
-        this.defaultPageSize = props.modulesManager.getConf("fe-grievance", "ticketFilter.defaultPageSize", 10);
-    }
+  componentDidMount() {
+    this.setState({ }, () => this.onChangeRowsPerPage(this.defaultPageSize));
+  }
 
-    query = () => {
-        if (this.props.edited) {
-            this.props.fetchTicketAttachments(this.props.edited);
-        }
-    }
-
-    onChangeRowsPerPage = (cnt) => {
-        this.setState(
-            {
-                pageSize: cnt,
-                page: 0,
-                afterCursor: null,
-                beforeCursor: null,
-            },
-            e => this.query()
-        )
-    }
-
-    componentDidMount() {
-        this.setState({ orderBy: null }, e => this.onChangeRowsPerPage(this.defaultPageSize))
-    }
-
-    ticketChanged = (prevProps) => (!prevProps.ticket && !!this.props.ticket) ||
-        (
-            !!prevProps.ticket &&
-            !!this.props.ticket &&
-            (prevProps.ticket.uuid == null || prevProps.ticket.uuid !== this.props.ticket.uuid)
-        )
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.ticketChanged(prevProps)) {
-            this.query();
-            this.setState({ reload: false })
-        }
-    }
-
-    queryPrms = () => {
-        let prms = [];
-        if (!!this.state.orderBy) {
-            prms.push(`orderBy: "${this.state.orderBy}"`)
-        }
-        if (!!this.props.ticket && !!this.props.ticket.uuid) {
-            prms.push(`uuid:"${this.props.ticket.uuid}"`);
-            return prms;
-        }
-        return null;
-    }
-
-    onChangePage = (page, nbr) => {
-
-        if (nbr > this.state.page) {
-            this.setState((state, props) => ({
-                page: this.state.page + 1,
-                beforeCursor: null,
-                afterCursor: this.props.programsPageInfo.endCursor,
-            }),
-                e => this.query(uuid)
-            )
-
-        } else if (nbr < this.state.page) {
-            this.setState((state, props) => ({
-                page: this.state.page - 1,
-                beforeCursor: this.props.programsPageInfo.startCursor,
-                afterCursor: null,
-            }),
-                e => this.query(uuid)
-            )
-
-        }
-    }
-
-    download = (a) => {
-        this.props.downloadAttachment(a);
-    };
-
-    reload = () => {
-        this.props.fetchTicketAttachments(this.props.edited);
-    }
-
-    fileSelected = (f, i) => {
-        if (!!f.target.files) {
-            const file = f.target.files[0];
-            let ticketAttachments = [...this.state.ticketAttachments];
-            ticketAttachments[i].filename = file.name;
-            ticketAttachments[i].mime = file.type;
-        }
-    };
-
-    formatFileName(a, i) {
-        if (!!a.id)
-            return (
-                <Link onClick={(e) => this.download(a)} reset={this.state.reset}>
-                    {a.filename || ""}
-                </Link>
-            );
-        if (!!a.filename) return <i>{a.filename}</i>;
-        return (
-            <IconButton variant="contained" component="label">
-                <FileIcon />
-                <input type="file" style={{ display: "none" }} onChange={(f) => this.fileSelected(f, i)} />
-            </IconButton>
+  ticketChanged = (prevProps) => (!prevProps.ticket && !!this.props.ticket)
+        || (
+          !!prevProps.ticket
+            && !!this.props.ticket
+            && (prevProps.ticket.uuid == null || prevProps.ticket.uuid !== this.props.ticket.uuid)
         );
+
+  // eslint-disable-next-line no-unused-vars
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.ticketChanged(prevProps)) {
+      this.query();
     }
+  }
 
-    render() {
-        const { intl, classes, fetchingTicketAttachments, errorTicketAttachments, ticketAttachments } = this.props;
+  onChangePage = (page, nbr) => {
+    this.setState((prevState) => {
+      if (nbr > prevState.page) {
+        return { page: prevState.page + 1 };
+      } if (nbr < prevState.page) {
+        return { page: prevState.page - 1 };
+      }
+      // If nbr === prevState.page, return null to indicate no state update
+      return null;
+    }, () => {
+      this.query();
+    });
+  };
 
-        let headers = [
-            "ticket.attachments.table.filename",
-            "ticket.attachments.table.date",
-            "ticket.attachments.table.file",
-        ]
+  download = (a) => {
+    this.props.downloadAttachment(a);
+  };
 
-        let itemFormatters = [
-            e => e.filename,
-            e => e.date,
-            (a, i) => this.formatFileName(a, i),
+  reload = () => {
+    this.props.fetchTicketAttachments(this.props.edited);
+  };
 
-        ]
-
-
-        return (
-            <div className={classes.page} >
-
-                < ProgressOrError progress={fetchingTicketAttachments} error={errorTicketAttachments} />
-
-                <Paper className={classes.paper}>
-                <div style={{ textAlign: 'end',background:"#b7d4d8", height:"2.5em",}}>
-                        <IconButton variant="contained" component="label" onClick={this.reload}>
-                            <ReplayIcon />
-                        </IconButton>
-                    </div>
-                    <Table
-                        module="programs"
-                        //fetch={this.props.fetchTicketAttachments}
-                        header={formatMessageWithValues(intl, "grievance", "ticket.attachments.table")}
-                        headers={headers}
-                        itemFormatters={itemFormatters}
-                        items={ticketAttachments}
-                        withPagination={true}
-                        page={this.state.page}
-                        pageSize={this.state.pageSize}
-                        onChangePage={this.onChangePage}
-                        onChangeRowsPerPage={this.onChangeRowsPerPage}
-                        rowsPerPageOptions={this.rowsPerPageOptions}
-                        defaultPageSize={this.defaultPageSize}
-                        rights={this.rights}
-                    /></Paper>
-
-            </div>
-        )
+  fileSelected = (f, i) => {
+    if (f.target.files) {
+      const file = f.target.files[0];
+      const ticketAttachments = [...this.state.ticketAttachments];
+      ticketAttachments[i].filename = file.name;
+      ticketAttachments[i].mime = file.type;
     }
+  };
+
+  formatFileName(a, i) {
+    if (a.id) {
+      return (
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
+        <Link onClick={() => this.download(a)} reset={this.state.reset}>
+          {a.filename || EMPTY_STRING}
+        </Link>
+      );
+    }
+    if (a.filename) return <i>{a.filename}</i>;
+    return (
+      <IconButton variant="contained" component="label">
+        <FileIcon />
+        <input type="file" style={{ display: 'none' }} onChange={(f) => this.fileSelected(f, i)} />
+      </IconButton>
+    );
+  }
+
+  render() {
+    const {
+      intl, classes, fetchingTicketAttachments, errorTicketAttachments, ticketAttachments,
+    } = this.props;
+
+    const headers = [
+      'ticket.attachments.table.filename',
+      'ticket.attachments.table.date',
+      'ticket.attachments.table.file',
+    ];
+
+    const itemFormatters = [
+      (e) => e.filename,
+      (e) => e.date,
+      (a, i) => this.formatFileName(a, i),
+
+    ];
+
+    return (
+      <div className={classes.page}>
+
+        <ProgressOrError progress={fetchingTicketAttachments} error={errorTicketAttachments} />
+
+        <Paper className={classes.paper}>
+          <div style={{ textAlign: 'end', background: '#b7d4d8', height: '2.5em' }}>
+            <IconButton variant="contained" component="label" onClick={this.reload}>
+              <ReplayIcon />
+            </IconButton>
+          </div>
+          <Table
+            module="programs"
+                        // fetch={this.props.fetchTicketAttachments}
+            header={formatMessageWithValues(intl, MODULE_NAME, 'ticket.attachments.table')}
+            headers={headers}
+            itemFormatters={itemFormatters}
+            items={ticketAttachments}
+            withPagination
+            page={this.state.page}
+            pageSize={this.state.pageSize}
+            onChangePage={this.onChangePage}
+            onChangeRowsPerPage={this.onChangeRowsPerPage}
+            rowsPerPageOptions={this.rowsPerPageOptions}
+            defaultPageSize={this.defaultPageSize}
+            rights={this.rights}
+          />
+        </Paper>
+
+      </div>
+    );
+  }
 }
 
-
-const mapStateToProps = state => ({
-    fetchingTicketAttachments: state.grievance.fetchingTicketAttachments,
-    errorTicketAttachments: state.grievance.errorTicketAttachments,
-    fetchedTicketAttachments: state.grievance.fetchedTicketAttachments,
-    ticketAttachments: state.grievance.ticketAttachments,
+const mapStateToProps = (state) => ({
+  fetchingTicketAttachments: state.grievanceSocialProtection.fetchingTicketAttachments,
+  errorTicketAttachments: state.grievanceSocialProtection.errorTicketAttachments,
+  fetchedTicketAttachments: state.grievanceSocialProtection.fetchedTicketAttachments,
+  ticketAttachments: state.grievanceSocialProtection.ticketAttachments,
 });
 
-const mapDispatchToProps = dispatch => {
-
-    return bindActionCreators({ fetchTicketAttachments, downloadAttachment, }, dispatch);
-};
-
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchTicketAttachments, downloadAttachment }, dispatch);
 
 export default withHistory(withModulesManager(connect(mapStateToProps, mapDispatchToProps)(
-    injectIntl(withTheme(withStyles(styles)(TicketAttachmentPanel))
-    ))));
+  injectIntl(withTheme(withStyles(styles)(TicketAttachmentPanel))),
+)));

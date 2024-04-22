@@ -4,6 +4,7 @@
 import {
   parseData, pageInfo, formatServerError, formatGraphQLError,
   dispatchMutationReq, dispatchMutationResp, dispatchMutationErr,
+  decodeId,
 } from '@openimis/fe-core';
 import { ERROR, REQUEST, SUCCESS } from './utils/action-type';
 
@@ -80,13 +81,14 @@ function reducer(
         errorTicket: null,
       };
     case 'TICKET_TICKET_RESP':
-      var tickt = parseData(action.payload.data.ticketDetails);
       return {
-
         ...state,
         fetchingTicket: false,
         fetchedTicket: true,
-        ticket: (!!tickt && tickt.length > 0) ? tickt[0] : null,
+        ticket: parseData(action.payload.data.tickets).map((ticket) => ({
+          ...ticket,
+          id: decodeId(ticket.id),
+        }))?.[0],
         errorTicket: formatGraphQLError(action.payload),
       };
     case 'CATEGORY_CATEGORY_REQ':
