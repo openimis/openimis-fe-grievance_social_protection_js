@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery,
   baseApiUrl, decodeId, openBlob, formatQuery,
@@ -10,6 +11,7 @@ const GRIEVANCE_CONFIGURATION_PROJECTION = () => [
   'grievanceTypes',
   'grievanceFlags',
   'grievanceChannels',
+  'grievanceDefaultResolutionsByCategory{category, resolutionTime}',
 ];
 
 const CATEGORY_FULL_PROJECTION = () => [
@@ -50,6 +52,7 @@ export function fetchTicket(mm, uuid) {
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'category', 'flags', 'channel',
     'resolution', 'title', 'dateOfIncident', 'dateCreated',
+    'attendingStaff {id, username}',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -65,6 +68,7 @@ export function formatTicketGQL(ticket) {
     ${ticket.code ? `code: "${formatGQLString(ticket.code)}"` : ''}
     ${!!ticket.category && !!ticket.category ? `category: "${ticket.category}"` : ''}
     ${!!ticket.title && !!ticket.title ? `title: "${ticket.title}"` : ''}
+    ${!!ticket.attendingStaff && !!ticket.attendingStaff ? `attendingStaffId: "${decodeId(ticket.attendingStaff.id)}"` : ''}
     ${!!ticket.description && !!ticket.description ? `description: "${ticket.description}"` : ''}
     ${ticket.reporter
     ? (isBase64Encoded(ticket.reporter.id)
@@ -92,6 +96,7 @@ export function formatUpdateTicketGQL(ticket) {
     ${!!ticket.category && !!ticket.category ? `category: "${ticket.category}"` : ''}
     ${!!ticket.title && !!ticket.title ? `title: "${ticket.title}"` : ''}
     ${!!ticket.description && !!ticket.description ? `description: "${ticket.description}"` : ''}
+    ${!!ticket.attendingStaff && !!ticket.attendingStaff ? `attendingStaffId: "${decodeId(ticket.attendingStaff.id)}"` : ''}
     ${ticket.reporter
     ? (isBase64Encoded(ticket.reporter.id)
       ? `reporterId: "${decodeId(ticket.reporter.id)}"`
@@ -119,7 +124,13 @@ export function resolveTicketGQL(ticket) {
   `;
 }
 
-export function createTicket(ticket, clientMutationLabel) {
+export function createTicket(ticket, grievanceConfig, clientMutationLabel) {
+  const resolutionTimeMap = {};
+  grievanceConfig.grievanceDefaultResolutionsByCategory.forEach((item) => {
+    resolutionTimeMap[item.category] = item.resolutionTime;
+  });
+  // eslint-disable-next-line no-param-reassign
+  ticket.resolution = resolutionTimeMap[ticket.category];
   const mutation = formatMutation('createTicket', formatTicketGQL(ticket), clientMutationLabel);
   const requestedDateTime = new Date();
   return graphql(mutation.payload, ['TICKET_MUTATION_REQ', 'TICKET_CREATE_TICKET_RESP', 'TICKET_MUTATION_ERR'], {

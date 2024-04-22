@@ -29,6 +29,7 @@ class TicketForm extends Component {
   }
 
   componentDidMount() {
+    this.props.fetchGrievanceConfiguration();
     if (this.props.ticketUuid) {
       this.setState((state, props) => ({ ticketUuid: props.ticketUuid }));
     }
@@ -58,7 +59,6 @@ class TicketForm extends Component {
         this.state.ticketUuid,
         null,
       );
-      this.props.fetchGrievanceConfiguration();
     } else if (prevProps.ticketUuid && !this.props.ticketUuid) {
       this.setState({ ticket: this._newTicket(), lockNew: false, ticketUuid: null });
     } else if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -118,8 +118,6 @@ class TicketForm extends Component {
 
     const readOnly = lockNew || !!ticket.validityTo;
     const actions = [];
-
-    console.log(grievanceConfig, 'config');
 
     return (
       <>

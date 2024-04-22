@@ -81,6 +81,8 @@
     "ticket.ticketGrievanct" : "Reporter",
     "ticket.description" : "Description",
     "ticket.editButtonTooltip": "Edit Grievance",
+    "ticket.attendingStaff": "Attending Staff",
+    "attendingStaff": "Attending Staff",
     "grievantType": "Reporter Type",
     "grievantType.null": "None",
     "grievantType.individual": "Individual",

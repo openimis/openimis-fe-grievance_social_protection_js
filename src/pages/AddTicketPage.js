@@ -43,6 +43,7 @@ class AddTicketPage extends Component {
   save = () => {
     this.props.createTicket(
       this.state.stateEdited,
+      this.props.grievanceConfig,
       `Created Ticket ${this.state.stateEdited.reporter.firstName} ${this.state.stateEdited.reporter.lastName}`,
     );
   };
@@ -247,6 +248,15 @@ class AddTicketPage extends Component {
                     required={false}
                   />
                 </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="admin.UserPicker"
+                    value={stateEdited.attendingStaff}
+                    module="core"
+                    label="ticket.attendingStaff"
+                    onChange={(v) => this.updateAttribute('attendingStaff', v)}
+                  />
+                </Grid>
                 <Grid item xs={12} className={classes.item}>
                   <TextInput
                     label="ticket.ticketDescription"
@@ -280,6 +290,7 @@ class AddTicketPage extends Component {
 const mapStateToProps = (state, props) => ({
   submittingMutation: state.grievanceSocialProtection.submittingMutation,
   mutation: state.grievanceSocialProtection.mutation,
+  grievanceConfig: state.grievanceSocialProtection.grievanceConfig,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({ createTicket, journalize }, dispatch);

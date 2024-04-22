@@ -81,6 +81,7 @@ class EditTicketPage extends Component {
     this.state = {
       stateEdited: props.ticket,
       reporter: {},
+      grievanceConfig: {},
       openFileModal: false,
       file: null,
       fileName: EMPTY_STRING,
@@ -89,6 +90,7 @@ class EditTicketPage extends Component {
 
   componentDidMount() {
     if (this.props.edited_id) {
+      this.setState({ grievanceConfig: this.props.grievanceConfig });
       this.setState({ stateEdited: this.props.ticket });
       this.setState({ reporter: JSON.parse(JSON.parse(this.props.ticket.reporter || '{}'), '{}') });
     }
@@ -174,9 +176,11 @@ class EditTicketPage extends Component {
       titletwo = ' Ticket.DescriptionOfEvents',
       titlethree = ' Ticket.Resolution',
       titleParams = { label: EMPTY_STRING },
+      grievanceConfig,
     } = this.props;
 
-    const { stateEdited, reporter, grievanceConfig } = this.state;
+    const { stateEdited, reporter } = this.state;
+
     return (
       <div className={classes.page}>
         <Grid container>
@@ -396,6 +400,15 @@ class EditTicketPage extends Component {
                     value={stateEdited.priority}
                     onChange={(v) => this.updateAttribute('priority', v)}
                     required={false}
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="admin.UserPicker"
+                    value={stateEdited.attendingStaff}
+                    module="core"
+                    label="ticket.attendingStaff"
+                    onChange={(v) => this.updateAttribute('attendingStaff', v)}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
