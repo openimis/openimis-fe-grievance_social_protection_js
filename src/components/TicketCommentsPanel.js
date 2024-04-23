@@ -8,8 +8,11 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
-  withModulesManager, withHistory,
-  Table, ProgressOrError, PublishedComponent,
+  withModulesManager,
+  withHistory,
+  Table, ProgressOrError,
+  PublishedComponent,
+  formatDateTimeFromISO,
 } from '@openimis/fe-core';
 import {
   Paper, IconButton,
@@ -193,7 +196,7 @@ class TicketCommentPanel extends Component {
         return picker;
       },
       (comment) => comment.comment,
-      (comment) => comment.dateCreated,
+      (comment) => formatDateTimeFromISO(this.props.modulesManager, intl, comment.dateCreated),
 
     ];
 
@@ -234,6 +237,7 @@ class TicketCommentPanel extends Component {
             rowsPerPageOptions={this.rowsPerPageOptions}
             defaultPageSize={this.defaultPageSize}
             rights={this.rights}
+            defaultOrderBy="-dateCreated"
           />
         </Paper>
 

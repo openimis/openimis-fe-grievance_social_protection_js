@@ -67,6 +67,7 @@ export function fetchComments(ticket) {
   if (ticket && ticket.id) {
     const filters = [
       `ticket_Id: "${ticket.id}"`,
+      'orderBy: ["-dateCreated"]',
     ];
     const projections = [
       'id',
