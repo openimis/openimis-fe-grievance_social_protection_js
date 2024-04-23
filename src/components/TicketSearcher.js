@@ -113,6 +113,7 @@ class TicketSearcher extends Component {
     'tickets.beneficary',
     'tickets.priority',
     'tickets.status',
+    'tickets.category',
   ];
 
   sorts = () => [
@@ -121,6 +122,7 @@ class TicketSearcher extends Component {
     ['reporter_id', true],
     ['priority', true],
     ['status', true],
+    ['category', true],
   ];
 
   itemFormatters = () => {
@@ -169,6 +171,7 @@ class TicketSearcher extends Component {
       },
       (ticket) => ticket.priority,
       (ticket) => ticket.status,
+      (ticket) => ticket.category,
     ];
 
     if (this.props.rights.includes(RIGHT_TICKET_EDIT)) {

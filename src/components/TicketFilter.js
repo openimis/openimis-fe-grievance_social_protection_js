@@ -158,6 +158,26 @@ class TicketFilter extends Component {
             </Grid>
                       )}
         />
+        <ControlledField
+          module={MODULE_NAME}
+          id="ticket.category"
+          field={(
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="grievanceSocialProtection.DropDownCategoryPicker"
+                withNull
+                value={this._filterValue('category')}
+                onChange={(v) => this.debouncedOnChangeFilter([
+                  {
+                    id: 'category',
+                    value: v,
+                    filter: `category_Icontains: "${v}"`,
+                  },
+                ])}
+              />
+            </Grid>
+                      )}
+        />
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}
