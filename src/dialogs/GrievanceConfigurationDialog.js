@@ -36,7 +36,15 @@ function GrievanceConfigurationDialog({
   };
   const isMatchingConfigObject = (obj) => !(typeof obj !== 'object' || obj === null || Array.isArray(obj));
 
-  const isConfigMissing = (config) => Object.values(config).some((field) => !field);
+  const isConfigMissing = (config) => Object.values(config).some((field) => {
+    if (Array.isArray(field) && field.length === 0) {
+      return true;
+    }
+    if (typeof field === 'object' && Object.keys(field).length === 0) {
+      return true;
+    }
+    return !field;
+  });
 
   const shouldDisplay = () => grievanceConfiguration
         && doesUserHaveRights()
