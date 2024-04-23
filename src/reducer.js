@@ -44,6 +44,11 @@ function reducer(
 
     submittingMutation: false,
     mutation: {},
+
+    fetchingTicketComments: false,
+    fetchedTicketComments: false,
+    errorTicketComments: null,
+    ticketComments: null,
   },
   action,
 ) {
@@ -90,6 +95,30 @@ function reducer(
           id: decodeId(ticket.id),
         }))?.[0],
         errorTicket: formatGraphQLError(action.payload),
+      };
+    case 'COMMENT_COMMENTS_REQ':
+      return {
+        ...state,
+        fetchingTicketComments: true,
+        fetchedTicketComments: false,
+        ticketComments: [],
+        ticketCommentsPageInfo: { totalCount: 0 },
+        errorTicketComments: null,
+      };
+    case 'COMMENT_COMMENTS_RESP':
+      return {
+        ...state,
+        fetchingTicketComments: false,
+        fetchedTicketComments: true,
+        ticketComments: parseData(action.payload.data.comments),
+        ticketCommentsPageInfo: pageInfo(action.payload.data.comments),
+        errorTicketComments: formatGraphQLError(action.payload),
+      };
+    case 'COMMENT_COMMENTS_ERR':
+      return {
+        ...state,
+        fetchingTicketComments: false,
+        error: formatServerError(action.payload),
       };
     case 'CATEGORY_CATEGORY_REQ':
       return {

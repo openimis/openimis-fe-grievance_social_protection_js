@@ -1,4 +1,4 @@
-export const TICKET_STATUS = ['Waiting', 'Todo', 'Inprogress', 'Review', 'Close'];
+export const TICKET_STATUS = ['RECEIVED', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
 
 export const TICKET_PRIORITY = ['Critical', 'High', 'Normal', 'Low'];
 
@@ -12,5 +12,5 @@ export const MODULE_NAME = 'grievanceSocialProtection';
 export const FETCH_INDIVIDUAL_REF = 'individual.actions.fetchIndividuals';
 
 export const EMPTY_STRING = '';
-export const GRIEVANT_TYPE_LIST = ['individual', 'beneficiary'];
+export const GRIEVANT_TYPE_LIST = ['individual', 'beneficiary', 'user'];
 export const GRIEVANCE_MAIN_MENU_CONTRIBUTION_KEY = 'grievance.MainMenu';

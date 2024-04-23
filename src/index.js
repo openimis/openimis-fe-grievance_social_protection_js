@@ -1,9 +1,6 @@
 // Disable due to core architecture
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
-import React from 'react';
-import { ListAlt } from '@material-ui/icons';
-import { FormattedMessage } from '@openimis/fe-core';
 import messages_en from './translations/en.json';
 import reducer from './reducer';
 import GrievanceMainMenu from './menu/GrievanceMainMenu';
@@ -14,7 +11,6 @@ import TicketPriorityPicker from './pickers/TicketPriorityPicker';
 import TicketStatusPicker from './pickers/TicketStatusPicker';
 import CategoryPicker from './pickers/CategoryPicker';
 import GrievanceConfigurationDialog from './dialogs/GrievanceConfigurationDialog';
-import { MODULE_NAME } from './constants';
 import ChannelPicker from './pickers/ChannelPicker';
 import FlagPicker from './pickers/FlagsPicker';
 

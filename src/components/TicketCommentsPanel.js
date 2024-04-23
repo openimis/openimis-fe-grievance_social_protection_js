@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
@@ -6,13 +7,14 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
-  formatMessageWithValues, withModulesManager, withHistory, Table, ProgressOrError,
+  withModulesManager, withHistory, Table, ProgressOrError,
 } from '@openimis/fe-core';
-import { Paper, Link, IconButton } from '@material-ui/core';
+import {
+  Paper, IconButton,
+} from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
-import { fetchTicketAttachments, downloadAttachment } from '../actions';
-import { MODULE_NAME, EMPTY_STRING } from '../constants';
+import { fetchComments, createTicketComment } from '../actions';
+import GrievanceCommentDialog from '../dialogs/GrievanceCommentDialog';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -23,12 +25,14 @@ const styles = (theme) => ({
   },
 });
 
-class TicketAttachmentPanel extends Component {
+class TicketCommentPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       page: 0,
       pageSize: 5,
+      comment: {},
+      commenterType: null,
     };
     this.rowsPerPageOptions = props.modulesManager.getConf(
       'fe-grievance_social_protection',
@@ -44,7 +48,7 @@ class TicketAttachmentPanel extends Component {
 
   query = () => {
     if (this.props.edited) {
-      this.props.fetchTicketAttachments(this.props.edited);
+      this.props.fetchComments(this.props.edited);
     }
   };
 
@@ -90,77 +94,96 @@ class TicketAttachmentPanel extends Component {
     });
   };
 
-  download = (a) => {
-    this.props.downloadAttachment(a);
-  };
-
   reload = () => {
-    this.props.fetchTicketAttachments(this.props.edited);
+    this.props.fetchComments(this.props.edited);
   };
 
-  fileSelected = (f, i) => {
-    if (f.target.files) {
-      const file = f.target.files[0];
-      const ticketAttachments = [...this.state.ticketAttachments];
-      ticketAttachments[i].filename = file.name;
-      ticketAttachments[i].mime = file.type;
-    }
+  updateCommenterType = (field, value) => {
+    this.updateCommentAttribute('commenter', null);
+    this.setState((state) => ({
+      commenterType: value,
+    }));
   };
 
-  formatFileName(a, i) {
-    if (a.id) {
-      return (
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid
-        <Link onClick={() => this.download(a)} reset={this.state.reset}>
-          {a.filename || EMPTY_STRING}
-        </Link>
+  updateCommentAttribute = (k, v) => {
+    this.setState((state) => ({
+      comment: { ...state.comment, [k]: v },
+    }));
+  };
+
+  handleOpenModal = () => {
+    this.setState((prevState) => ({
+      ...prevState,
+      openCommentModal: !prevState.openCommentModal,
+    }));
+  };
+
+  handleComment = (e) => {
+    e.preventDefault();
+    if (this.state.comment) {
+      this.props.createTicketComment(
+        this.state.comment,
+        this.props.edited,
+        this.state.commenterType,
+        'Added Ticket Comment',
       );
     }
-    if (a.filename) return <i>{a.filename}</i>;
-    return (
-      <IconButton variant="contained" component="label">
-        <FileIcon />
-        <input type="file" style={{ display: 'none' }} onChange={(f) => this.fileSelected(f, i)} />
-      </IconButton>
-    );
-  }
+    this.setState((prev) => ({
+      ...prev,
+      openCommentModal: false,
+      comment: {},
+      commenterType: null,
+    }));
+  };
 
   render() {
     const {
-      intl, classes, fetchingTicketAttachments, errorTicketAttachments, ticketAttachments,
+      intl, classes, fetchingTicketComments,
+      errorTicketComments, ticketComments,
     } = this.props;
 
     const headers = [
-      'ticket.attachments.table.filename',
-      'ticket.attachments.table.date',
-      'ticket.attachments.table.file',
+      'ticket.commenter',
+      'ticket.comment',
+      'ticket.dateCreated',
     ];
 
     const itemFormatters = [
-      (e) => e.filename,
-      (e) => e.date,
-      (a, i) => this.formatFileName(a, i),
+      (e) => e?.commenter ?? 'Anonymous User',
+      (e) => e.comment,
+      (e) => e.dateCreated,
 
     ];
+
+    const { comment, commenterType } = this.state;
 
     return (
       <div className={classes.page}>
 
-        <ProgressOrError progress={fetchingTicketAttachments} error={errorTicketAttachments} />
+        <ProgressOrError progress={fetchingTicketComments} error={errorTicketComments} />
 
         <Paper className={classes.paper}>
           <div style={{ textAlign: 'end', background: '#b7d4d8', height: '2.5em' }}>
             <IconButton variant="contained" component="label" onClick={this.reload}>
               <ReplayIcon />
             </IconButton>
+            <GrievanceCommentDialog
+              handleComment={this.handleComment}
+              openCommentModal={this.state.openCommentModal}
+              handleOpenModal={this.handleOpenModal}
+              updateCommentAttribute={this.updateCommentAttribute}
+              comment={comment}
+              updateCommenterType={this.updateCommenterType}
+              commenterType={commenterType}
+            />
           </div>
           <Table
             module="programs"
-                        // fetch={this.props.fetchTicketAttachments}
-            header={formatMessageWithValues(intl, MODULE_NAME, 'ticket.attachments.table')}
+            fetch={this.props.fetchComments}
+            header="Comments"
             headers={headers}
             itemFormatters={itemFormatters}
-            items={ticketAttachments}
+            items={ticketComments}
             withPagination
             page={this.state.page}
             pageSize={this.state.pageSize}
@@ -178,14 +201,16 @@ class TicketAttachmentPanel extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  fetchingTicketAttachments: state.grievanceSocialProtection.fetchingTicketAttachments,
-  errorTicketAttachments: state.grievanceSocialProtection.errorTicketAttachments,
-  fetchedTicketAttachments: state.grievanceSocialProtection.fetchedTicketAttachments,
-  ticketAttachments: state.grievanceSocialProtection.ticketAttachments,
+  fetchingTicketComments: state.grievanceSocialProtection.fetchingTicketComments,
+  errorTicketComments: state.grievanceSocialProtection.errorTicketComments,
+  fetchedTicketComments: state.grievanceSocialProtection.fetchedTicketComments,
+  ticketComments: state.grievanceSocialProtection.ticketComments,
 });
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchTicketAttachments, downloadAttachment }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  fetchComments, createTicketComment,
+}, dispatch);
 
 export default withHistory(withModulesManager(connect(mapStateToProps, mapDispatchToProps)(
-  injectIntl(withTheme(withStyles(styles)(TicketAttachmentPanel))),
+  injectIntl(withTheme(withStyles(styles)(TicketCommentPanel))),
 )));

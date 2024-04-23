@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
-import { Search as SearchIcon } from '@material-ui/icons';
 import {
   coreConfirm,
   formatMessageWithValues,
@@ -108,16 +107,9 @@ class TicketSearcher extends Component {
     return prms;
   };
 
-  // _onClick = (i, newTab = false) => {
-  //   historyPush(this.props.modulesManager, this.props.history, 'insuree.route.insuree', [i.uuid], newTab);
-  // };
-
-  // resolveTicket = (e) => {
-  //   this.props.resolveTicket(this.props.edited_id);
-  // };
-
   headers = () => [
     'tickets.code',
+    'tickets.title',
     'tickets.beneficary',
     'tickets.priority',
     'tickets.status',
@@ -125,8 +117,8 @@ class TicketSearcher extends Component {
 
   sorts = () => [
     ['code', true],
-    ['insuree_id', true],
-    ['insuree', true],
+    ['title', true],
+    ['reporter_id', true],
     ['priority', true],
     ['status', true],
   ];
@@ -134,6 +126,7 @@ class TicketSearcher extends Component {
   itemFormatters = () => {
     const formatters = [
       (ticket) => ticket.code,
+      (ticket) => ticket.title,
       (ticket) => {
         const individual = typeof ticket.reporter === 'object'
           ? ticket.reporter : JSON.parse(JSON.parse(ticket.reporter || '{}') || '{}');
@@ -152,7 +145,7 @@ class TicketSearcher extends Component {
                       ? null : individual) : null
                 }
               />
-            ) : '');
+            ) : formatMessage(this.props.intl, MODULE_NAME, 'anonymousUser'));
       },
       (ticket) => ticket.priority,
       (ticket) => ticket.status,
