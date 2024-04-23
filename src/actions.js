@@ -33,8 +33,8 @@ export function fetchTicketSummaries(mm, filters) {
   const projections = [
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
-    'reporterType', 'category', 'flags', 'channel',
-    'resolution', 'title', 'dateOfIncident', 'dateCreated',
+    'reporterType', 'reporterTypeName', 'category', 'flags',
+    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -73,6 +73,7 @@ export function fetchComments(ticket) {
       'commenter',
       'commenterId',
       'commenterType',
+      'commenterTypeName',
       'comment',
       'dateCreated',
     ];

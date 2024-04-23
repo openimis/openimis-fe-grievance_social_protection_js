@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
@@ -7,7 +8,8 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
-  withModulesManager, withHistory, Table, ProgressOrError,
+  withModulesManager, withHistory,
+  Table, ProgressOrError, PublishedComponent,
 } from '@openimis/fe-core';
 import {
   Paper, IconButton,
@@ -15,6 +17,7 @@ import {
 import ReplayIcon from '@material-ui/icons/Replay';
 import { fetchComments, createTicketComment } from '../actions';
 import GrievanceCommentDialog from '../dialogs/GrievanceCommentDialog';
+import { isEmptyObject } from '../utils/utils';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -149,9 +152,48 @@ class TicketCommentPanel extends Component {
     ];
 
     const itemFormatters = [
-      (e) => e?.commenter ?? 'Anonymous User',
-      (e) => e.comment,
-      (e) => e.dateCreated,
+      (comment) => {
+        const commenter = typeof comment.commenter === 'object'
+          ? comment.commenter : JSON.parse(JSON.parse(comment.commenter || '{}') || '{}');
+        let picker = '';
+        if (comment.commenterTypeName === 'individual') {
+          picker = (
+            <PublishedComponent
+              pubRef="individual.IndividualPicker"
+              readOnly
+              withNull
+              label="ticket.commenter"
+              required
+              value={
+                commenter !== undefined
+                && commenter !== null ? (isEmptyObject(commenter)
+                    ? null : commenter) : null
+              }
+            />
+          );
+        }
+        if (comment.commenterTypeName === 'user') {
+          picker = (
+            <PublishedComponent
+              pubRef="admin.UserPicker"
+              readOnly
+              value={
+                commenter !== undefined
+                && commenter !== null ? (isEmptyObject(commenter)
+                    ? null : commenter) : null
+              }
+              module="core"
+              label="ticket.commenter"
+            />
+          );
+        }
+        if (comment.commenterTypeName === null) {
+          picker = 'Anonymous User';
+        }
+        return picker;
+      },
+      (comment) => comment.comment,
+      (comment) => comment.dateCreated,
 
     ];
 

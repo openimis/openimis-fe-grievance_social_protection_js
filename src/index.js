@@ -16,6 +16,7 @@ import FlagPicker from './pickers/FlagsPicker';
 
 const ROUTE_TICKET_TICKETS = 'ticket/tickets';
 const ROUTE_TICKET_TICKET = 'ticket/ticket';
+const ROUTE_TICKET_NEW_TICKET = 'ticket/newTicket';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
@@ -39,6 +40,7 @@ const DEFAULT_CONFIG = {
   'core.Router': [
     { path: ROUTE_TICKET_TICKETS, component: TicketsPage },
     { path: `${ROUTE_TICKET_TICKET}/:ticket_uuid?`, component: TicketPage },
+    { path: `${ROUTE_TICKET_NEW_TICKET}`, component: TicketPage },
   ],
   'core.MainMenu': [GrievanceMainMenu],
 

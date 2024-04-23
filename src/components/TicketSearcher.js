@@ -128,24 +128,44 @@ class TicketSearcher extends Component {
       (ticket) => ticket.code,
       (ticket) => ticket.title,
       (ticket) => {
-        const individual = typeof ticket.reporter === 'object'
+        const reporter = typeof ticket.reporter === 'object'
           ? ticket.reporter : JSON.parse(JSON.parse(ticket.reporter || '{}') || '{}');
-        return (
-          individual
-            ? (
-              <PublishedComponent
-                pubRef="individual.IndividualPicker"
-                readOnly
-                withNull
-                label="Individual"
-                required
-                value={
-                  individual !== undefined
-                  && individual !== null ? (isEmptyObject(individual)
-                      ? null : individual) : null
-                }
-              />
-            ) : formatMessage(this.props.intl, MODULE_NAME, 'anonymousUser'));
+        let picker = '';
+        if (ticket.reporterTypeName === 'individual') {
+          picker = (
+            <PublishedComponent
+              pubRef="individual.IndividualPicker"
+              readOnly
+              withNull
+              label="ticket.reporter"
+              required
+              value={
+                reporter !== undefined
+                && reporter !== null ? (isEmptyObject(reporter)
+                    ? null : reporter) : null
+              }
+            />
+          );
+        }
+        if (ticket.reporterTypeName === 'user') {
+          picker = (
+            <PublishedComponent
+              pubRef="admin.UserPicker"
+              readOnly
+              value={
+                reporter !== undefined
+                && reporter !== null ? (isEmptyObject(reporter)
+                    ? null : reporter) : null
+              }
+              module="core"
+              label="ticket.reporter"
+            />
+          );
+        }
+        if (ticket.reporterTypeName === null) {
+          picker = `${formatMessage(this.props.intl, MODULE_NAME, 'anonymousUser')}`;
+        }
+        return picker;
       },
       (ticket) => ticket.priority,
       (ticket) => ticket.status,
