@@ -5,16 +5,15 @@
 import React, { Component, Fragment } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import ReplayIcon from '@material-ui/icons/Replay';
 import {
   Form, formatMessageWithValues, journalize, ProgressOrError, withModulesManager,
 } from '@openimis/fe-core';
 import { bindActionCreators } from 'redux';
-import { fetchGrievanceConfiguration, fetchTicket, fetchTicketAttachments } from '../actions';
+import { fetchComments, fetchGrievanceConfiguration, fetchTicket } from '../actions';
 import { ticketLabel } from '../utils/utils';
 import EditTicketPage from '../pages/EditTicketPage';
 import AddTicketPage from '../pages/AddTicketPage';
-import TicketAttachmentPanel from './TicketAttachmentPanel';
+import TicketCommentPanel from './TicketCommentsPanel';
 import { MODULE_NAME } from '../constants';
 
 class TicketForm extends Component {
@@ -73,16 +72,13 @@ class TicketForm extends Component {
   }
 
   reload = () => {
-    //this.props.fetchTicketAttachments(
-    //  this.props.modulesManager,
-    //  this.state.ticketUuid,
-    //  this.state.ticket.code,
-    //);
+    this.props.fetchComments(
+      this.state.ticket,
+    );
   };
 
   canSave = () => {
     if (!this.state.ticket.reporter) return false;
-    //if (!this.state.ticket.insuree) return false;
     if (!this.state.ticket.category) return false;
     return true;
   };
@@ -103,7 +99,6 @@ class TicketForm extends Component {
       fetchingTicket,
       fetchedTicket,
       errorTicket,
-      grievanceConfig,
       save, back,
     } = this.props;
 
@@ -134,10 +129,10 @@ class TicketForm extends Component {
           back={back}
           save={save ? this._save : null}
           canSave={this.canSave}
-          //reload={(ticketUuid || readOnly) && this.reload}
+          reload={(ticketUuid || readOnly) && this.reload}
           readOnly={readOnly}
           overview={overview}
-          Panels={ticketUuid ? [EditTicketPage, TicketAttachmentPanel] : [AddTicketPage]}
+          Panels={ticketUuid ? [EditTicketPage, TicketCommentPanel] : [AddTicketPage]}
           onEditedChanged={this.onEditedChanged}
           actions={actions}
         />
@@ -161,7 +156,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchTicket,
-  fetchTicketAttachments,
+  fetchComments,
   fetchGrievanceConfiguration,
   journalize,
 }, dispatch);

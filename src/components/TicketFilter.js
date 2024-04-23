@@ -79,6 +79,27 @@ class TicketFilter extends Component {
         />
         <ControlledField
           module={MODULE_NAME}
+          id="ticketFilter.ticketTitle"
+          field={(
+            <Grid item xs={3} className={classes.item}>
+              <TextInput
+                module={MODULE_NAME}
+                label="ticket.ticketTitle"
+                name="title"
+                value={this._filterValue('title')}
+                onChange={(v) => this.debouncedOnChangeFilter([
+                  {
+                    id: 'title',
+                    value: v,
+                    filter: `title_Istartswith: "${v}"`,
+                  },
+                ])}
+              />
+            </Grid>
+                      )}
+        />
+        <ControlledField
+          module={MODULE_NAME}
           id="ticket.reporter"
           field={(
             <Grid item xs={3} className={classes.item}>
@@ -100,10 +121,10 @@ class TicketFilter extends Component {
           id="ticketFilter.priority"
           field={(
             <Grid item xs={3} className={classes.item}>
-              <TextInput
-                module={MODULE_NAME}
+              <PublishedComponent
+                pubRef="grievanceSocialProtection.TicketPriorityPicker"
+                withNull
                 label="ticket.ticketPriority"
-                name="priority"
                 value={this._filterValue('priority')}
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
@@ -118,19 +139,39 @@ class TicketFilter extends Component {
         />
         <ControlledField
           module={MODULE_NAME}
-          id="ticketFilter.status"
+          id="ticket.status"
           field={(
             <Grid item xs={3} className={classes.item}>
-              <TextInput
-                module={MODULE_NAME}
+              <PublishedComponent
+                pubRef="grievanceSocialProtection.TicketStatusPicker"
+                withNull
                 label="ticket.ticketStatus"
-                name="status"
                 value={this._filterValue('status')}
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
                     id: 'status',
                     value: v,
-                    filter: `status_Icontains: "${v}"`,
+                    filter: `status_Icontains: ${v}`,
+                  },
+                ])}
+              />
+            </Grid>
+                      )}
+        />
+        <ControlledField
+          module={MODULE_NAME}
+          id="ticket.category"
+          field={(
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="grievanceSocialProtection.DropDownCategoryPicker"
+                withNull
+                value={this._filterValue('category')}
+                onChange={(v) => this.debouncedOnChangeFilter([
+                  {
+                    id: 'category',
+                    value: v,
+                    filter: `category_Icontains: "${v}"`,
                   },
                 ])}
               />

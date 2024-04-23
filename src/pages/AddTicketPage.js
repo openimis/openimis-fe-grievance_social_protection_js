@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import { withTheme, withStyles } from '@material-ui/core/styles';
@@ -44,7 +45,7 @@ class AddTicketPage extends Component {
     this.props.createTicket(
       this.state.stateEdited,
       this.props.grievanceConfig,
-      `Created Ticket ${this.state.stateEdited.reporter.firstName} ${this.state.stateEdited.reporter.lastName}`,
+      `Created Ticket ${this.state.stateEdited.title.firstName}`,
     );
   };
 
@@ -54,6 +55,7 @@ class AddTicketPage extends Component {
     }));
   };
 
+  // eslint-disable-next-line class-methods-use-this
   extractFieldFromJsonExt = (stateEdited, field) => {
     if (stateEdited && stateEdited.reporter && stateEdited.reporter.jsonExt) {
       const jsonExt = JSON.parse(stateEdited.reporter.jsonExt || '{}');
@@ -109,7 +111,6 @@ class AddTicketPage extends Component {
                     label="type"
                     readOnly={!!stateEdited.id}
                     withNull
-                    required
                     value={grievantType?.replace(/\s+/g, '') ?? ''}
                     onChange={(v) => this.updateTypeOfGrievant('grievantType', v)}
                     withLabel
@@ -123,7 +124,6 @@ class AddTicketPage extends Component {
                         withNull
                         label="socialProtection.benefitPlan"
                         value={benefitPlan}
-                        required={false}
                         onChange={(v) => this.updateBenefitPlan('benefitPlan', v)}
                       />
                     </Grid>
@@ -133,7 +133,6 @@ class AddTicketPage extends Component {
                         value={stateEdited.reporter}
                         label="Complainant"
                         onChange={(v) => this.updateAttribute('reporter', v)}
-                        required
                         benefitPlan={benefitPlan}
                       />
                     </Grid>
@@ -253,7 +252,6 @@ class AddTicketPage extends Component {
                     pubRef="admin.UserPicker"
                     value={stateEdited.attendingStaff}
                     module="core"
-                    label="ticket.attendingStaff"
                     onChange={(v) => this.updateAttribute('attendingStaff', v)}
                   />
                 </Grid>
@@ -272,7 +270,7 @@ class AddTicketPage extends Component {
                     component="label"
                     color="primary"
                     onClick={this.save}
-                    disabled={!stateEdited.reporter}
+                    disabled={!stateEdited.channel || !stateEdited.flags || !stateEdited.channel}
                   >
                     <Save />
                   </IconButton>

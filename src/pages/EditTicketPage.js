@@ -1,3 +1,6 @@
+/* eslint-disable class-methods-use-this */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import { withTheme, withStyles } from '@material-ui/core/styles';
@@ -9,8 +12,6 @@ import {
   Typography,
   Divider,
   IconButton,
-  Modal,
-  Box,
 } from '@material-ui/core';
 import {
   journalize,
@@ -19,8 +20,7 @@ import {
   FormattedMessage,
 } from '@openimis/fe-core';
 import { Save } from '@material-ui/icons';
-import AttachIcon from '@material-ui/icons/AttachFile';
-import { updateTicket, createTicketAttachment, fetchTicket } from '../actions';
+import { updateTicket, fetchTicket, createTicketComment } from '../actions';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
 
 const styles = (theme) => ({
@@ -32,49 +32,6 @@ const styles = (theme) => ({
   },
 });
 
-const style = {
-  background: 'white',
-  width: '40%',
-  margin: '0 auto',
-  position: 'relative',
-  top: '40%',
-  padding: '2em',
-  borderRadius: '10px',
-};
-
-const mstyles = {
-  title: {
-    fontSize: '1.3em',
-    fontWeight: '900',
-  },
-
-  button: {
-    fontSize: '3em',
-    color: '#006273',
-    // width: "40%",
-    marginTop: '-20px',
-    width: '10%',
-    cursor: 'pointer',
-  },
-  labels: {
-    display: 'flex',
-    width: '100%',
-  },
-
-  label: {
-    width: '45%',
-  },
-
-  inputs: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  input: {
-    width: '40%',
-  },
-};
-
 class EditTicketPage extends Component {
   constructor(props) {
     super(props);
@@ -82,9 +39,6 @@ class EditTicketPage extends Component {
       stateEdited: props.ticket,
       reporter: {},
       grievanceConfig: {},
-      openFileModal: false,
-      file: null,
-      fileName: EMPTY_STRING,
     };
   }
 
@@ -92,7 +46,9 @@ class EditTicketPage extends Component {
     if (this.props.edited_id) {
       this.setState({ grievanceConfig: this.props.grievanceConfig });
       this.setState({ stateEdited: this.props.ticket });
-      this.setState({ reporter: JSON.parse(JSON.parse(this.props.ticket.reporter || '{}'), '{}') });
+      if (this.props.ticket.reporter) {
+        this.setState({ reporter: JSON.parse(JSON.parse(this.props.ticket.reporter || '{}'), '{}') });
+      }
     }
   }
 
@@ -126,49 +82,6 @@ class EditTicketPage extends Component {
     return '';
   };
 
-  handleOpenModal = () => {
-    this.setState((prevState) => ({
-      ...prevState,
-      openFileModal: !prevState.openFileModal,
-    }));
-  };
-
-  handleFileChange = (e) => {
-    const file = e.target.files[0];
-    this.setState((prevState) => ({
-      ...prevState,
-      file,
-    }));
-  };
-
-  handleFileRead = (e) => {
-    const content = btoa(e.target.result);
-    const filename = this.state.file.name;
-    const mimeType = this.state.file.type;
-    const docFile = {
-      filename,
-      mimeType,
-      date: this.state.state_edited.dateOfIncident,
-      document: content,
-      ticket: this.state.state_edited,
-    };
-    this.props.createTicketAttachment(docFile, 'Uploaded Ticket Attachment');
-  };
-
-  handleFileUpload = (e) => {
-    e.preventDefault();
-    if (this.state.file) {
-      const reader = new FileReader();
-      reader.onloadend = this.handleFileRead;
-      reader.readAsBinaryString(this.state.file);
-    }
-
-    this.setState((prev) => ({
-      ...prev,
-      openFileModal: false,
-    }));
-  };
-
   render() {
     const {
       classes,
@@ -179,12 +92,15 @@ class EditTicketPage extends Component {
       grievanceConfig,
     } = this.props;
 
-    const { stateEdited, reporter } = this.state;
+    const {
+      stateEdited, reporter,
+    } = this.state;
 
     return (
       <div className={classes.page}>
         <Grid container>
           <Grid item xs={12}>
+            {stateEdited.reporter && (
             <Paper className={classes.paper}>
               <Grid container className={classes.tableTitle}>
                 <Grid item xs={8} className={classes.tableTitle}>
@@ -203,92 +119,6 @@ class EditTicketPage extends Component {
                     required
                     readOnly
                   />
-                </Grid>
-                <Grid item xs={4} className={classes.item}>
-                  <IconButton
-                    variant="contained"
-                    component="label"
-                    color="primary"
-                  >
-                    <AttachIcon onClick={this.handleOpenModal} />
-                  </IconButton>
-
-                  <Modal
-                    open={this.state.openFileModal}
-                    onClose={this.handleOpenModal}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box sx={style}>
-                      <main>
-                        <div className="title">
-                          <h2 style={mstyles.title}>Attachments of Ticket</h2>
-                        </div>
-                        <hr />
-                        <div style={mstyles.labels}>
-                          <p style={mstyles.label}>Type</p>
-                          <p style={mstyles.label}>Title</p>
-                        </div>
-                        <div style={mstyles.inputs}>
-                          <div style={mstyles.input}>
-                            <input
-                              type="text"
-                              value={
-                                this.state.file
-                                  ? this.state.file.type.split('/')[1]
-                                  : EMPTY_STRING
-                              }
-                              style={{
-                                width: '100%',
-                                border: 'none',
-                                borderBottom: '1px solid #006273',
-                                outline: 'none',
-                                color: ' #006273',
-                                fontSize: '1.5em',
-                              }}
-                            />
-                          </div>
-                          <div style={mstyles.input}>
-                            <input
-                              type="text"
-                              value={
-                                this.state.file ? this.state.file.name : EMPTY_STRING
-                              }
-                              style={{
-                                width: '100%',
-                                border: 'none',
-                                borderBottom: '1px solid #006273',
-                                outline: 'none',
-                                color: ' #006273',
-                                fontSize: '1.5em',
-                              }}
-                            />
-                          </div>
-                          <div style={mstyles.button}>
-                            <IconButton variant="contained" component="label">
-                              <AttachIcon />
-                              <form>
-                                <input
-                                  type="file"
-                                  name="uploadedFile"
-                                  style={{ display: 'none' }}
-                                  onChange={this.handleFileChange}
-                                />
-                              </form>
-                            </IconButton>
-                          </div>
-                        </div>
-
-                        <hr />
-
-                        <div style={{ textAlign: 'end' }}>
-                          <IconButton>
-                            <Save onClick={this.handleFileUpload} />
-                          </IconButton>
-                        </div>
-                      </main>
-                    </Box>
-                  </Modal>
                 </Grid>
               </Grid>
               <Divider />
@@ -334,6 +164,7 @@ class EditTicketPage extends Component {
                 </Grid>
               </Grid>
             </Paper>
+            )}
           </Grid>
         </Grid>
 
@@ -407,8 +238,15 @@ class EditTicketPage extends Component {
                     pubRef="admin.UserPicker"
                     value={stateEdited.attendingStaff}
                     module="core"
-                    label="ticket.attendingStaff"
                     onChange={(v) => this.updateAttribute('attendingStaff', v)}
+                  />
+                </Grid>
+                <Grid item xs={6} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="grievanceSocialProtection.TicketStatusPicker"
+                    value={stateEdited.status}
+                    onChange={(v) => this.updateAttribute('status', v)}
+                    required={false}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
@@ -440,7 +278,7 @@ class EditTicketPage extends Component {
               </Grid>
               <Divider />
               <Grid container className={classes.item}>
-                <Grid item xs={12} className={classes.item}>
+                <Grid item xs={4} className={classes.item}>
                   <TextInput
                     label="ticket.resolution"
                     value={stateEdited.resolution}
@@ -481,7 +319,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(
   {
-    fetchTicket, updateTicket, createTicketAttachment, journalize,
+    fetchTicket, updateTicket, createTicketComment, journalize,
   },
   dispatch,
 );

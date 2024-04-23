@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable max-len */
 import {
   graphql, formatMutation, formatPageQueryWithCount, formatGQLString, formatPageQuery,
@@ -32,8 +33,8 @@ export function fetchTicketSummaries(mm, filters) {
   const projections = [
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
-    'reporterType', 'category', 'flags', 'channel',
-    'resolution', 'title', 'dateOfIncident', 'dateCreated',
+    'reporterType', 'reporterTypeName', 'category', 'flags',
+    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -62,6 +63,31 @@ export function fetchTicket(mm, uuid) {
   return graphql(payload, 'TICKET_TICKET');
 }
 
+export function fetchComments(ticket) {
+  if (ticket && ticket.id) {
+    const filters = [
+      `ticket_Id: "${ticket.id}"`,
+      'orderBy: ["-dateCreated"]',
+    ];
+    const projections = [
+      'id',
+      'commenter',
+      'commenterId',
+      'commenterType',
+      'commenterTypeName',
+      'comment',
+      'dateCreated',
+    ];
+    const payload = formatPageQueryWithCount(
+      'comments',
+      filters,
+      projections,
+    );
+    return graphql(payload, 'COMMENT_COMMENTS');
+  }
+  return { type: 'COMMENT_COMMENTS', payload: { data: [] } };
+}
+
 export function formatTicketGQL(ticket) {
   return `
     ${ticket.id !== undefined && ticket.id !== null ? `id: "${ticket.id}"` : ''}
@@ -75,7 +101,7 @@ export function formatTicketGQL(ticket) {
       ? `reporterId: "${decodeId(ticket.reporter.id)}"`
       : `reporterId: "${ticket.reporter.id}"`)
     : ''}
-    ${!!ticket.reporter && !!ticket.reporter ? `reporterType: "Individual"` : ''}
+    ${!!ticket.reporter && !!ticket.reporter ? 'reporterType: "Individual"' : ''}
     ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
     ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
     ${ticket.status ? `status: "${formatGQLString(ticket.status)}"` : ''}
@@ -90,7 +116,7 @@ export function formatTicketGQL(ticket) {
 
 export function formatUpdateTicketGQL(ticket) {
   // eslint-disable-next-line no-param-reassign
-  ticket.reporter = JSON.parse(JSON.parse(ticket.reporter || '{}'), '{}');
+  if (ticket.reporter) ticket.reporter = JSON.parse(JSON.parse(ticket.reporter || '{}'), '{}');
   return `
     ${ticket.id !== undefined && ticket.id !== null ? `id: "${ticket.id}"` : ''}
     ${!!ticket.category && !!ticket.category ? `category: "${ticket.category}"` : ''}
@@ -102,7 +128,7 @@ export function formatUpdateTicketGQL(ticket) {
       ? `reporterId: "${decodeId(ticket.reporter.id)}"`
       : `reporterId: "${ticket.reporter.id}"`)
     : ''}
-    ${!!ticket.reporter && !!ticket.reporter ? `reporterType: "Individual"` : ''}
+    ${!!ticket.reporter && !!ticket.reporter ? 'reporterType: "Individual"' : ''}
     ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
     ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
     ${ticket.status ? `status: ${formatGQLString(ticket.status)}` : ''}
@@ -196,6 +222,16 @@ export function formatTicketAttachmentGQL(ticketattachment) {
   `;
 }
 
+export function formatTicketCommentGQL(ticketComment, ticket, commenterType) {
+  return `
+    ${ticketComment.uuid !== undefined && ticketComment.uuid !== null ? `uuid: "${ticketComment.uuid}"` : ''}
+    ${ticket.id ? `ticketId: "${ticket.id}"` : ''}
+    ${ticketComment.commenter ? `commenterId: "${decodeId(ticketComment.commenter.id)}"` : ''}
+    ${commenterType ? `commenterType: "${commenterType}"` : ''}
+    ${ticketComment.comment ? `comment: "${formatGQLString(ticketComment.comment)}"` : ''}
+  `;
+}
+
 export function createTicketAttachment(ticketattachment, clientMutationLabel) {
   const mutation = formatMutation(
     'createTicketAttachment',
@@ -215,17 +251,29 @@ export function createTicketAttachment(ticketattachment, clientMutationLabel) {
   );
 }
 
+export function createTicketComment(ticketComment, ticket, commenterType, clientMutationLabel) {
+  const mutation = formatMutation(
+    'createComment',
+    formatTicketCommentGQL(ticketComment, ticket, commenterType),
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  return graphql(
+    mutation.payload,
+    ['TICKET_ATTACHMENT_MUTATION_REQ', 'TICKET_CREATE_TICKET_ATTACHMENT_RESP', 'TICKET_ATTACHMENT_MUTATION_ERR'],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+
+    },
+  );
+}
+
 export function fetchIndividual(mm, id) {
   const fetchIndividualCallable = mm.getRef(FETCH_INDIVIDUAL_REF);
   return fetchIndividualCallable([`id: ${id}`]);
 }
-
-const GRIEVANCRE_BY_INSUREE_PROJECTION = [
-  'ticketUuid',
-  'ticketCode',
-  'ticketPriority',
-  'ticketStatus',
-];
 
 export function fetchInsureeTicket(mm, chfId) {
   const filters = [

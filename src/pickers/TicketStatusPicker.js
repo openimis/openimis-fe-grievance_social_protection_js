@@ -7,7 +7,11 @@ import { TICKET_STATUS } from '../constants';
 // eslint-disable-next-line react/prefer-stateless-function
 class TicketStatusPicker extends Component {
   render() {
-    const { readOnly = false } = this.props;
+    const {
+      readOnly = false,
+      value,
+      onChange,
+    } = this.props;
 
     return (
       <ConstantBasedPicker
@@ -15,6 +19,8 @@ class TicketStatusPicker extends Component {
         label="Ticket Status"
         constants={TICKET_STATUS}
         readOnly={readOnly}
+        value={value}
+        onChange={(option) => onChange(option, option ? `${option}` : null)}
         {...this.props}
       />
     );

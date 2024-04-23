@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
-import { Search as SearchIcon } from '@material-ui/icons';
 import {
   coreConfirm,
   formatMessageWithValues,
@@ -108,54 +107,71 @@ class TicketSearcher extends Component {
     return prms;
   };
 
-  // _onClick = (i, newTab = false) => {
-  //   historyPush(this.props.modulesManager, this.props.history, 'insuree.route.insuree', [i.uuid], newTab);
-  // };
-
-  // resolveTicket = (e) => {
-  //   this.props.resolveTicket(this.props.edited_id);
-  // };
-
   headers = () => [
     'tickets.code',
+    'tickets.title',
     'tickets.beneficary',
     'tickets.priority',
     'tickets.status',
+    'tickets.category',
   ];
 
   sorts = () => [
     ['code', true],
-    ['insuree_id', true],
-    ['insuree', true],
+    ['title', true],
+    ['reporter_id', true],
     ['priority', true],
     ['status', true],
+    ['category', true],
   ];
 
   itemFormatters = () => {
     const formatters = [
       (ticket) => ticket.code,
+      (ticket) => ticket.title,
       (ticket) => {
-        const individual = typeof ticket.reporter === 'object'
+        const reporter = typeof ticket.reporter === 'object'
           ? ticket.reporter : JSON.parse(JSON.parse(ticket.reporter || '{}') || '{}');
-        return (
-          individual
-            ? (
-              <PublishedComponent
-                pubRef="individual.IndividualPicker"
-                readOnly
-                withNull
-                label="Individual"
-                required
-                value={
-                  individual !== undefined
-                  && individual !== null ? (isEmptyObject(individual)
-                      ? null : individual) : null
-                }
-              />
-            ) : '');
+        let picker = '';
+        if (ticket.reporterTypeName === 'individual') {
+          picker = (
+            <PublishedComponent
+              pubRef="individual.IndividualPicker"
+              readOnly
+              withNull
+              label="ticket.reporter"
+              required
+              value={
+                reporter !== undefined
+                && reporter !== null ? (isEmptyObject(reporter)
+                    ? null : reporter) : null
+              }
+            />
+          );
+        }
+        if (ticket.reporterTypeName === 'user') {
+          picker = (
+            <PublishedComponent
+              pubRef="admin.UserPicker"
+              readOnly
+              value={
+                reporter !== undefined
+                && reporter !== null ? (isEmptyObject(reporter)
+                    ? null : reporter) : null
+              }
+              module="core"
+              label="ticket.reporter"
+            />
+          );
+        }
+        if (ticket.reporterTypeName === null) {
+          picker = `${formatMessage(this.props.intl, MODULE_NAME, 'anonymousUser')}`;
+        }
+        return picker;
       },
       (ticket) => ticket.priority,
       (ticket) => ticket.status,
+      (ticket) => ticket.category,
     ];
 
     if (this.props.rights.includes(RIGHT_TICKET_EDIT)) {
