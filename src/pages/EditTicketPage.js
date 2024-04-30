@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable no-unused-vars */
@@ -46,6 +47,7 @@ class EditTicketPage extends Component {
     if (this.props.edited_id) {
       this.setState({ grievanceConfig: this.props.grievanceConfig });
       this.setState({ stateEdited: this.props.ticket });
+      console.log('this.props.ticket.reporter', this.props.ticket);
       if (this.props.ticket.reporter) {
         this.setState({ reporter: JSON.parse(JSON.parse(this.props.ticket.reporter || '{}'), '{}') });
       }
@@ -96,6 +98,8 @@ class EditTicketPage extends Component {
       stateEdited, reporter,
     } = this.state;
 
+    console.log('reporter', reporter);
+
     return (
       <div className={classes.page}>
         <Grid container>
@@ -128,10 +132,11 @@ class EditTicketPage extends Component {
                     module={MODULE_NAME}
                     label="ticket.name"
                     value={
-                      reporter
-                        // eslint-disable-next-line max-len
-                        ? `${reporter.firstName} ${reporter.lastName} ${reporter.dob}`
-                        : EMPTY_STRING
+                      reporter && reporter.individual
+                        ? `${reporter.individual.firstName} ${reporter.individual.lastName} ${reporter.individual.dob}`
+                        : reporter
+                          ? `${reporter.firstName} ${reporter.lastName} ${reporter.dob}`
+                          : EMPTY_STRING
                     }
                     onChange={(v) => this.updateAttribute('name', v)}
                     required={false}

@@ -149,6 +149,22 @@ class TicketSearcher extends Component {
             />
           );
         }
+        if (ticket.reporterTypeName === 'beneficiary') {
+          picker = (
+            <PublishedComponent
+              pubRef="socialProtection.BeneficiaryPicker"
+              readOnly
+              withNull
+              label="ticket.reporter"
+              required
+              value={
+                reporter !== undefined
+                && reporter !== null ? (isEmptyObject(reporter)
+                    ? null : reporter) : null
+              }
+            />
+          );
+        }
         if (ticket.reporterTypeName === 'user') {
           picker = (
             <PublishedComponent
