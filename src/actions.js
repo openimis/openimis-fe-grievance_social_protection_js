@@ -7,7 +7,9 @@ import {
 import { ACTION_TYPE } from './reducer';
 import { FETCH_INDIVIDUAL_REF } from './constants';
 import { isBase64Encoded } from './utils/utils';
-import {CLEAR, ERROR, REQUEST, SUCCESS} from './utils/action-type';
+import {
+  CLEAR, ERROR, REQUEST, SUCCESS,
+} from './utils/action-type';
 
 const GRIEVANCE_CONFIGURATION_PROJECTION = () => [
   'grievanceTypes',
@@ -35,7 +37,7 @@ export function fetchTicketSummaries(mm, filters) {
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'reporterTypeName', 'category', 'flags',
-    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated', 'version'
+    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated', 'version', 'isHistory',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -45,16 +47,13 @@ export function fetchTicketSummaries(mm, filters) {
   return graphql(payload, 'TICKET_TICKETS');
 }
 
-export function fetchTicket(mm, uuid) {
-  const filters = [
-    `id: "${uuid}"`,
-  ];
+export function fetchTicket(mm, filters) {
   const projections = [
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'category', 'flags', 'channel',
     'resolution', 'title', 'dateOfIncident', 'dateCreated',
-    'attendingStaff {id, username}', 'version',
+    'attendingStaff {id, username}', 'version', 'isHistory,', 'jsonExt'
   ];
   const payload = formatPageQueryWithCount(
     'tickets',

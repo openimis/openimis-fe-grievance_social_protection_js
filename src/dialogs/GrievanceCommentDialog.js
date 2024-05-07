@@ -31,6 +31,7 @@ function GrievanceCommentDialog({
   comment,
   updateCommenterType,
   commenterType,
+  disabled,
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -41,6 +42,7 @@ function GrievanceCommentDialog({
         variant="outlined"
         color="#DFEDEF"
         className={classes.button}
+        disabled={disabled}
         style={{
           border: '0px',
           marginTop: '6px',

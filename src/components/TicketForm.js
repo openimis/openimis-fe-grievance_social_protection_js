@@ -18,8 +18,7 @@ import { ticketLabel } from '../utils/utils';
 import EditTicketPage from '../pages/EditTicketPage';
 import AddTicketPage from '../pages/AddTicketPage';
 import TicketCommentPanel from './TicketCommentsPanel';
-import { MODULE_NAME } from '../constants';
-import {version} from "@babel/core";
+import { MODULE_NAME, TICKET_STATUSES } from '../constants';
 
 class TicketForm extends Component {
   constructor(props) {
@@ -36,9 +35,6 @@ class TicketForm extends Component {
     this.props.fetchGrievanceConfiguration();
     if (this.props.ticketUuid) {
       this.setState((state, props) => ({ ticketUuid: props.ticketUuid }));
-    }
-    if (this.props.ticketVersion) {
-      this.setState((state, props) => ({ ticketVersion: props.ticketVersion }));
     }
   }
 
@@ -66,10 +62,11 @@ class TicketForm extends Component {
         lockNew: false,
       }));
     } else if (prevState.ticketUuid !== this.state.ticketUuid) {
+      const filters = [`id: "${this.state.ticketUuid}"`];
+      if (this.props.ticketVersion) filters.push(`ticketVersion: ${this.props.ticketVersion}`);
       this.props.fetchTicket(
         this.props.modulesManager,
-        this.state.ticketUuid,
-        null,
+        filters,
       );
     } else if (prevProps.ticketUuid && !this.props.ticketUuid) {
       this.setState({ ticket: this._newTicket(), lockNew: false, ticketUuid: null });
@@ -79,8 +76,7 @@ class TicketForm extends Component {
       if (this.props?.ticket?.id) {
         this.props.fetchTicket(
           this.props.modulesManager,
-          this.state.ticketUuid,
-          null,
+          [`id: "${this.state.ticketUuid}"`],
         );
       }
     }
@@ -144,7 +140,8 @@ class TicketForm extends Component {
       {
         doIt: this.reopenTicket,
         icon: <LockOpenIcon />,
-        onlyIfDirty: !readOnly,
+        onlyIfDirty: ticket.status !== TICKET_STATUSES.CLOSED,
+        disabled: ticket.isHistory,
       },
     ];
 

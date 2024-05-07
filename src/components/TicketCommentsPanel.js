@@ -3,24 +3,23 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
-import { withTheme, withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
-  withModulesManager,
-  withHistory,
-  Table, ProgressOrError,
-  PublishedComponent,
   formatDateTimeFromISO,
   formatMessage,
+  ProgressOrError,
+  PublishedComponent,
+  Table,
+  withHistory,
+  withModulesManager,
 } from '@openimis/fe-core';
-import {
-  Paper, IconButton, Tooltip,
-} from '@material-ui/core';
+import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import DoneIcon from '@material-ui/icons/Done';
-import { fetchComments, createTicketComment, resolveGrievanceByComment } from '../actions';
+import { createTicketComment, fetchComments, resolveGrievanceByComment } from '../actions';
 import GrievanceCommentDialog from '../dialogs/GrievanceCommentDialog';
 import { isEmptyObject } from '../utils/utils';
 import { MODULE_NAME, TICKET_STATUSES } from '../constants';
@@ -73,6 +72,13 @@ class TicketCommentPanel extends Component {
 
   componentDidMount() {
     this.setState({ }, () => this.onChangeRowsPerPage(this.defaultPageSize));
+    if (!this.isReadOnly()) {
+      this.interval = setInterval(this.reload, 5000);
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   ticketChanged = (prevProps) => {
@@ -157,11 +163,19 @@ class TicketCommentPanel extends Component {
     );
   };
 
-  isTicketClosed = () => this.props?.ticket?.status === TICKET_STATUSES.CLOSED;
+  isReadOnly = () => this.props?.ticket?.status === TICKET_STATUSES.CLOSED || this.props?.ticket?.isHistory;
+
+  filterComments = (comments) => {
+    if (!comments) return comments;
+    const jsonExt = this.props.ticket?.jsonExt;
+    const commentIds = jsonExt ? JSON.parse(jsonExt)?.comment_ids : null;
+    if (!commentIds) return [];
+    return comments.filter((comment) => commentIds.includes(comment.id));
+  };
 
   render() {
     const {
-      intl, classes, fetchingTicketComments,
+      intl, classes,
       errorTicketComments, ticketComments,
     } = this.props;
 
@@ -221,7 +235,7 @@ class TicketCommentPanel extends Component {
         <Tooltip title={formatMessage(this.props.intl, MODULE_NAME, 'resolveButtonTooltip')}>
           <IconButton
             onClick={() => { this.resolveGrievanceByComment(comment); }}
-            disabled={this.isTicketClosed()}
+            disabled={this.isReadOnly()}
             style={comment.isResolution ? { color: 'green' } : null}
           >
             <DoneIcon />
@@ -236,11 +250,11 @@ class TicketCommentPanel extends Component {
     return (
       <div className={classes.page}>
 
-        <ProgressOrError progress={fetchingTicketComments} error={errorTicketComments} />
+        <ProgressOrError error={errorTicketComments} />
 
         <Paper className={classes.paper}>
           <div style={{ textAlign: 'end', background: '#b7d4d8', height: '2.5em' }}>
-            <IconButton variant="contained" component="label" onClick={this.reload}>
+            <IconButton variant="contained" component="label" onClick={this.reload} disabled={this.isReadOnly()}>
               <ReplayIcon />
             </IconButton>
             <GrievanceCommentDialog
@@ -251,6 +265,7 @@ class TicketCommentPanel extends Component {
               comment={comment}
               updateCommenterType={this.updateCommenterType}
               commenterType={commenterType}
+              disabled={this.isReadOnly()}
             />
           </div>
           <Table
@@ -259,7 +274,7 @@ class TicketCommentPanel extends Component {
             header={formatMessage(this.props.intl, MODULE_NAME, 'TicketCommentsPanel.table.header')}
             headers={headers}
             itemFormatters={itemFormatters}
-            items={ticketComments}
+            items={this.isReadOnly() ? this.filterComments(ticketComments) : ticketComments}
             withPagination
             page={this.state.page}
             pageSize={this.state.pageSize}

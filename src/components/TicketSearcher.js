@@ -187,6 +187,7 @@ class TicketSearcher extends Component {
       formatters.push((ticket) => (
         <Tooltip title={formatMessage(this.props.intl, MODULE_NAME, 'editButtonTooltip')}>
           <IconButton
+            disabled={ticket?.isHistory}
             onClick={() => {
               historyPush(
                 this.props.modulesManager,

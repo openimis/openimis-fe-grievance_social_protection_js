@@ -49,9 +49,9 @@ class TicketPage extends Component {
 
   render() {
     const {
-      classes, modulesManager, history, rights, ticketUuid, overview, ticket, ticketVersion
+      classes, modulesManager, history, rights, ticketUuid, overview, ticket, ticketVersion,
     } = this.props;
-    const readOnly = ticket?.status === TICKET_STATUSES.CLOSED;
+    const readOnly = ticket?.status === TICKET_STATUSES.CLOSED || ticket?.isHistory;
     if (!rights.includes(RIGHT_TICKET_EDIT)) return null;
     return (
       <div className={`${readOnly ? classes.lockedPage : null} ${classes.page}`}>

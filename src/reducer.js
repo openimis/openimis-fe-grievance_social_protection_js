@@ -6,7 +6,9 @@ import {
   dispatchMutationReq, dispatchMutationResp, dispatchMutationErr,
   decodeId,
 } from '@openimis/fe-core';
-import {CLEAR, ERROR, REQUEST, SUCCESS} from './utils/action-type';
+import {
+  CLEAR, ERROR, REQUEST, SUCCESS,
+} from './utils/action-type';
 
 export const ACTION_TYPE = {
   GET_GRIEVANCE_CONFIGURATION: 'GET_GRIEVANCE_CONFIGURATION',
@@ -116,9 +118,9 @@ function reducer(
     case 'COMMENT_COMMENTS_REQ':
       return {
         ...state,
-        fetchingTicketComments: true,
+        fetchingTicketComments: false,
         fetchedTicketComments: false,
-        ticketComments: [],
+        ticketComments: state.ticketComments || [],
         ticketCommentsPageInfo: { totalCount: 0 },
         errorTicketComments: null,
       };
@@ -127,9 +129,9 @@ function reducer(
         ...state,
         fetchingTicketComments: false,
         fetchedTicketComments: true,
-        ticketComments: parseData(action.payload.data.comments).map((comment) => {
-          return { ...comment, id: decodeId(comment.id) };
-        }),
+        ticketComments: parseData(action.payload.data.comments).map(
+          (comment) => ({ ...comment, id: decodeId(comment.id) }),
+        ),
         ticketCommentsPageInfo: pageInfo(action.payload.data.comments),
         errorTicketComments: formatGraphQLError(action.payload),
       };
@@ -137,6 +139,7 @@ function reducer(
       return {
         ...state,
         fetchingTicketComments: false,
+        ticketComments: [],
         error: formatServerError(action.payload),
       };
     case 'CATEGORY_CATEGORY_REQ':
