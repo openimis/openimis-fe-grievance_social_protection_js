@@ -9,6 +9,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {
   PublishedComponent,
   TextInput,
+  useTranslations,
+  useModulesManager,
 } from '@openimis/fe-core';
 import { withTheme, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
@@ -30,6 +32,8 @@ function GrievanceCommentDialog({
   updateCommenterType,
   commenterType,
 }) {
+  const modulesManager = useModulesManager();
+  const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   return (
     <>
       <Button
@@ -83,8 +87,8 @@ function GrievanceCommentDialog({
                   <PublishedComponent
                     pubRef="admin.UserPicker"
                     value={comment.commenter}
-                    module="core"
-                    label="ticket.commenter"
+                    module={MODULE_NAME}
+                    label={formatMessage('ticket.commenter')}
                     onChange={(v) => updateCommentAttribute('commenter', v)}
                   />
                 </Grid>

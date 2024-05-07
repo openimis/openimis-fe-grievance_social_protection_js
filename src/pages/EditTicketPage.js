@@ -92,6 +92,8 @@ class EditTicketPage extends Component {
       grievanceConfig,
     } = this.props;
 
+    const propsReadOnly = this.props.readOnly;
+
     const {
       stateEdited, reporter,
     } = this.state;
@@ -189,7 +191,8 @@ class EditTicketPage extends Component {
                     label="ticket.title"
                     value={stateEdited.title}
                     onChange={(v) => this.updateAttribute('title', v)}
-                    required={false}
+                    required
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -199,6 +202,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.dateOfIncident}
                     required={false}
                     onChange={(v) => this.updateAttribute('dateOfIncident', v)}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -207,6 +211,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.category}
                     onChange={(v) => this.updateAttribute('category', v)}
                     required
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -215,6 +220,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.flags}
                     onChange={(v) => this.updateAttribute('flags', v)}
                     required
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -223,6 +229,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.channel}
                     onChange={(v) => this.updateAttribute('channel', v)}
                     required
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -231,6 +238,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.priority}
                     onChange={(v) => this.updateAttribute('priority', v)}
                     required={false}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -239,6 +247,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.attendingStaff}
                     module="core"
                     onChange={(v) => this.updateAttribute('attendingStaff', v)}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -247,6 +256,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.status}
                     onChange={(v) => this.updateAttribute('status', v)}
                     required={false}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
@@ -255,6 +265,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.description}
                     onChange={(v) => this.updateAttribute('description', v)}
                     required={false}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
               </Grid>
@@ -284,6 +295,7 @@ class EditTicketPage extends Component {
                     value={stateEdited.resolution}
                     onChange={(v) => this.updateAttribute('resolution', v)}
                     required={false}
+                    readOnly={propsReadOnly}
                   />
                 </Grid>
                 <Grid item xs={11} className={classes.item} />
@@ -293,6 +305,7 @@ class EditTicketPage extends Component {
                     component="label"
                     color="primary"
                     onClick={this.save}
+                    disabled={propsReadOnly}
                   >
                     <Save />
                   </IconButton>

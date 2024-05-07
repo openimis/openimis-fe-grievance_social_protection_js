@@ -7,6 +7,7 @@ import {
 import { ACTION_TYPE } from './reducer';
 import { FETCH_INDIVIDUAL_REF } from './constants';
 import { isBase64Encoded } from './utils/utils';
+import {CLEAR, ERROR, REQUEST, SUCCESS} from './utils/action-type';
 
 const GRIEVANCE_CONFIGURATION_PROJECTION = () => [
   'grievanceTypes',
@@ -34,7 +35,7 @@ export function fetchTicketSummaries(mm, filters) {
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'reporterTypeName', 'category', 'flags',
-    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated',
+    'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated', 'version'
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -53,7 +54,7 @@ export function fetchTicket(mm, uuid) {
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'category', 'flags', 'channel',
     'resolution', 'title', 'dateOfIncident', 'dateCreated',
-    'attendingStaff {id, username}',
+    'attendingStaff {id, username}', 'version',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -76,6 +77,7 @@ export function fetchComments(ticket) {
       'commenterType',
       'commenterTypeName',
       'comment',
+      'isResolution',
       'dateCreated',
     ];
     const payload = formatPageQueryWithCount(
@@ -270,6 +272,44 @@ export function createTicketComment(ticketComment, ticket, commenterType, client
   );
 }
 
+export function resolveGrievanceByComment(id, clientMutationLabel) {
+  const mutation = formatMutation(
+    'resolveGrievanceByComment',
+    `id: "${id}"`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.RESOLVE_BY_COMMENT), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+
+    },
+  );
+}
+
+export function reopenTicket(id, clientMutationLabel) {
+  const mutation = formatMutation(
+    'reopenTicket',
+    `id: "${id}"`,
+    clientMutationLabel,
+  );
+  const requestedDateTime = new Date();
+  return graphql(
+    mutation.payload,
+    [REQUEST(ACTION_TYPE.MUTATION), SUCCESS(ACTION_TYPE.REOPEN_TICKET), ERROR(ACTION_TYPE.MUTATION)],
+    {
+      clientMutationId: mutation.clientMutationId,
+      clientMutationLabel,
+      requestedDateTime,
+
+    },
+  );
+}
+
 export function fetchIndividual(mm, id) {
   const fetchIndividualCallable = mm.getRef(FETCH_INDIVIDUAL_REF);
   return fetchIndividualCallable([`id: ${id}`]);
@@ -299,3 +339,9 @@ export function fetchGrievanceConfiguration(params) {
   const payload = formatQuery('grievanceConfig', params, GRIEVANCE_CONFIGURATION_PROJECTION());
   return graphql(payload, ACTION_TYPE.GET_GRIEVANCE_CONFIGURATION);
 }
+
+export const clearTicket = () => (dispatch) => {
+  dispatch({
+    type: CLEAR(ACTION_TYPE.CLEAR_TICKET),
+  });
+};

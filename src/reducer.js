@@ -6,10 +6,14 @@ import {
   dispatchMutationReq, dispatchMutationResp, dispatchMutationErr,
   decodeId,
 } from '@openimis/fe-core';
-import { ERROR, REQUEST, SUCCESS } from './utils/action-type';
+import {CLEAR, ERROR, REQUEST, SUCCESS} from './utils/action-type';
 
 export const ACTION_TYPE = {
   GET_GRIEVANCE_CONFIGURATION: 'GET_GRIEVANCE_CONFIGURATION',
+  MUTATION: 'GRIEVANCE_SOCIAL_PROTECTION_MUTATION',
+  RESOLVE_BY_COMMENT: 'RESOLVE_BY_COMMENT',
+  REOPEN_TICKET: 'REOPEN_TICKET',
+  CLEAR_TICKET: 'CLEAR_TICKET',
 };
 
 function reducer(
@@ -96,6 +100,19 @@ function reducer(
         }))?.[0],
         errorTicket: formatGraphQLError(action.payload),
       };
+    case CLEAR(ACTION_TYPE.CLEAR_TICKET):
+      return {
+        ...state,
+        fetchingTicket: false,
+        fetchedTicket: false,
+        ticket: null,
+        errorTicket: null,
+        fetchingTicketComments: false,
+        fetchedTicketComments: false,
+        ticketComments: [],
+        ticketCommentsPageInfo: { totalCount: 0 },
+        errorTicketComments: null,
+      };
     case 'COMMENT_COMMENTS_REQ':
       return {
         ...state,
@@ -110,7 +127,9 @@ function reducer(
         ...state,
         fetchingTicketComments: false,
         fetchedTicketComments: true,
-        ticketComments: parseData(action.payload.data.comments),
+        ticketComments: parseData(action.payload.data.comments).map((comment) => {
+          return { ...comment, id: decodeId(comment.id) };
+        }),
         ticketCommentsPageInfo: pageInfo(action.payload.data.comments),
         errorTicketComments: formatGraphQLError(action.payload),
       };
@@ -213,6 +232,14 @@ function reducer(
         errorGrievanceConfig: formatGraphQLError(action.payload),
         grievanceConfig: null,
       };
+    case REQUEST(ACTION_TYPE.MUTATION):
+      return dispatchMutationReq(state, action);
+    case ERROR(ACTION_TYPE.MUTATION):
+      return dispatchMutationErr(state, action);
+    case SUCCESS(ACTION_TYPE.RESOLVE_BY_COMMENT):
+      return dispatchMutationResp(state, 'resolveGrievanceByComment', action);
+    case SUCCESS(ACTION_TYPE.REOPEN_TICKET):
+      return dispatchMutationResp(state, 'reopenTicket', action);
     case 'TICKET_MUTATION_REQ':
       return dispatchMutationReq(state, action);
     case 'TICKET_MUTATION_ERR':

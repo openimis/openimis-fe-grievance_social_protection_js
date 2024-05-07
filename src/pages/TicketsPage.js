@@ -23,7 +23,7 @@ class TicketsPage extends Component {
       this.props.modulesManager,
       this.props.history,
       'grievanceSocialProtection.route.ticket',
-      [decodeId(ticket.id)],
+      [decodeId(ticket.id), ticket.version],
       newTab,
     );
   };
