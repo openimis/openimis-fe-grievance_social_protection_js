@@ -5,16 +5,20 @@
 import React, { Component, Fragment } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 import {
-  Form, formatMessageWithValues, journalize, ProgressOrError, withModulesManager,
+  Form, formatMessageWithValues, journalize, ProgressOrError, withModulesManager, formatMessage,
 } from '@openimis/fe-core';
 import { bindActionCreators } from 'redux';
-import { fetchComments, fetchGrievanceConfiguration, fetchTicket } from '../actions';
+import {
+  clearTicket,
+  fetchComments, fetchGrievanceConfiguration, fetchTicket, reopenTicket,
+} from '../actions';
 import { ticketLabel } from '../utils/utils';
 import EditTicketPage from '../pages/EditTicketPage';
 import AddTicketPage from '../pages/AddTicketPage';
 import TicketCommentPanel from './TicketCommentsPanel';
-import { MODULE_NAME } from '../constants';
+import { MODULE_NAME, TICKET_STATUSES } from '../constants';
 
 class TicketForm extends Component {
   constructor(props) {
@@ -32,6 +36,11 @@ class TicketForm extends Component {
     if (this.props.ticketUuid) {
       this.setState((state, props) => ({ ticketUuid: props.ticketUuid }));
     }
+  }
+
+  // eslint-disable-next-line react/sort-comp
+  componentWillUnmount() {
+    this.props.clearTicket();
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -53,16 +62,23 @@ class TicketForm extends Component {
         lockNew: false,
       }));
     } else if (prevState.ticketUuid !== this.state.ticketUuid) {
+      const filters = [`id: "${this.state.ticketUuid}"`];
+      if (this.props.ticketVersion) filters.push(`ticketVersion: ${this.props.ticketVersion}`);
       this.props.fetchTicket(
         this.props.modulesManager,
-        this.state.ticketUuid,
-        null,
+        filters,
       );
     } else if (prevProps.ticketUuid && !this.props.ticketUuid) {
       this.setState({ ticket: this._newTicket(), lockNew: false, ticketUuid: null });
     } else if (prevProps.submittingMutation && !this.props.submittingMutation) {
       this.props.journalize(this.props.mutation);
       this.setState((state) => ({ reset: state.reset + 1 }));
+      if (this.props?.ticket?.id) {
+        this.props.fetchTicket(
+          this.props.modulesManager,
+          [`id: "${this.state.ticketUuid}"`],
+        );
+      }
     }
   }
 
@@ -94,6 +110,14 @@ class TicketForm extends Component {
     this.setState({ ticket });
   };
 
+  reopenTicket = () => {
+    const { intl, ticket } = this.props;
+    this.props.reopenTicket(
+      ticket.id,
+      formatMessage(intl, MODULE_NAME, 'reopenTicket.mutation.label'),
+    );
+  };
+
   render() {
     const {
       fetchingTicket,
@@ -111,8 +135,15 @@ class TicketForm extends Component {
       ticket,
     } = this.state;
 
-    const readOnly = lockNew || !!ticket.validityTo;
-    const actions = [];
+    const readOnly = lockNew || !!ticket.validityTo || this.props.readOnly;
+    const actions = [
+      {
+        doIt: this.reopenTicket,
+        icon: <LockOpenIcon />,
+        onlyIfDirty: ticket.status !== TICKET_STATUSES.CLOSED,
+        disabled: ticket.isHistory,
+      },
+    ];
 
     return (
       <>
@@ -157,7 +188,9 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchTicket,
   fetchComments,
+  reopenTicket,
   fetchGrievanceConfiguration,
+  clearTicket,
   journalize,
 }, dispatch);
 

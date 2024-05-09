@@ -101,7 +101,10 @@
     "ticket.commenter" : "Commenter",
     "ticket.comment" : "Comment",
     "ticket.dateCreated": "Date Created",
+    "ticket.markAsResolved": "Resolve Using Comment",
     "ticket.editButtonTooltip": "Edit Grievance",
+    "resolveButtonTooltip": "Resolve grievance with this comment.",
+    "TicketCommentsPanel.table.header": "Comments",
     "ticket.ticket.attendingStaff": "Attending Staff",
     "ticket.attendingStaff": "Attending Staff",
     "ticket.anonymousUser": "Anonymous User",
@@ -115,5 +118,9 @@
     "grievantType.beneficiary": "Beneficiary",
     "menu.grievance.add": "Add Grievance",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader": "Please fill the config.",
-    "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}"
+    "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}",
+    "reopenTicket.mutation.label": "Reopen Ticket",
+    "resolveGrievanceByComment.mutation.label": "Resolve Ticket using comment",
+    "showHistory": "Show History",
+    "tickets.version": "Version"
 }

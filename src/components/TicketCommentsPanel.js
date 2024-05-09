@@ -3,24 +3,26 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
-import { withTheme, withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
-  withModulesManager,
-  withHistory,
-  Table, ProgressOrError,
-  PublishedComponent,
   formatDateTimeFromISO,
+  formatMessage,
+  ProgressOrError,
+  PublishedComponent,
+  Table,
+  withHistory,
+  withModulesManager,
 } from '@openimis/fe-core';
-import {
-  Paper, IconButton,
-} from '@material-ui/core';
+import { IconButton, Paper, Tooltip } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
-import { fetchComments, createTicketComment } from '../actions';
+import DoneIcon from '@material-ui/icons/Done';
+import { createTicketComment, fetchComments, resolveGrievanceByComment } from '../actions';
 import GrievanceCommentDialog from '../dialogs/GrievanceCommentDialog';
 import { isEmptyObject } from '../utils/utils';
+import { MODULE_NAME, TICKET_STATUSES } from '../constants';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -70,14 +72,26 @@ class TicketCommentPanel extends Component {
 
   componentDidMount() {
     this.setState({ }, () => this.onChangeRowsPerPage(this.defaultPageSize));
+    if (!this.isReadOnly()) {
+      this.interval = setInterval(this.reload, 5000);
+    }
   }
 
-  ticketChanged = (prevProps) => (!prevProps.ticket && !!this.props.ticket)
-        || (
-          !!prevProps.ticket
-            && !!this.props.ticket
-            && (prevProps.ticket.uuid == null || prevProps.ticket.uuid !== this.props.ticket.uuid)
-        );
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  ticketChanged = (prevProps) => {
+    const prevTicketExists = !!prevProps.ticket;
+    const currentTicketExists = !!this.props.ticket;
+
+    const ticketChanged = (!prevTicketExists && currentTicketExists) // New ticket appeared
+        || (prevTicketExists
+            && currentTicketExists
+            && prevProps.ticket.uuid !== this.props.ticket.uuid); // Ticket UUID changed
+
+    return ticketChanged;
+  };
 
   // eslint-disable-next-line no-unused-vars
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -142,9 +156,26 @@ class TicketCommentPanel extends Component {
     }));
   };
 
+  resolveGrievanceByComment = (comment) => {
+    this.props.resolveGrievanceByComment(
+      comment.id,
+      formatMessage(this.props.intl, MODULE_NAME, 'resolveGrievanceByComment.mutation.label'),
+    );
+  };
+
+  isReadOnly = () => this.props?.ticket?.status === TICKET_STATUSES.CLOSED || this.props?.ticket?.isHistory;
+
+  filterComments = (comments) => {
+    if (!comments) return comments;
+    const jsonExt = this.props.ticket?.jsonExt;
+    const commentIds = jsonExt ? JSON.parse(jsonExt)?.comment_ids : null;
+    if (!commentIds) return [];
+    return comments.filter((comment) => commentIds.includes(comment.id));
+  };
+
   render() {
     const {
-      intl, classes, fetchingTicketComments,
+      intl, classes,
       errorTicketComments, ticketComments,
     } = this.props;
 
@@ -152,7 +183,10 @@ class TicketCommentPanel extends Component {
       'ticket.commenter',
       'ticket.comment',
       'ticket.dateCreated',
+      'ticket.markAsResolved',
     ];
+
+    const shouldHighlight = (row) => row?.isResolution;
 
     const itemFormatters = [
       (comment) => {
@@ -185,8 +219,8 @@ class TicketCommentPanel extends Component {
                 && commenter !== null ? (isEmptyObject(commenter)
                     ? null : commenter) : null
               }
-              module="core"
-              label="ticket.commenter"
+              module={MODULE_NAME}
+              label={formatMessage(this.props.intl, MODULE_NAME, 'ticket.commenter')}
             />
           );
         }
@@ -197,6 +231,17 @@ class TicketCommentPanel extends Component {
       },
       (comment) => comment.comment,
       (comment) => formatDateTimeFromISO(this.props.modulesManager, intl, comment.dateCreated),
+      (comment) => (
+        <Tooltip title={formatMessage(this.props.intl, MODULE_NAME, 'resolveButtonTooltip')}>
+          <IconButton
+            onClick={() => { this.resolveGrievanceByComment(comment); }}
+            disabled={this.isReadOnly()}
+            style={comment.isResolution ? { color: 'green' } : null}
+          >
+            <DoneIcon />
+          </IconButton>
+        </Tooltip>
+      ),
 
     ];
 
@@ -205,11 +250,11 @@ class TicketCommentPanel extends Component {
     return (
       <div className={classes.page}>
 
-        <ProgressOrError progress={fetchingTicketComments} error={errorTicketComments} />
+        <ProgressOrError error={errorTicketComments} />
 
         <Paper className={classes.paper}>
           <div style={{ textAlign: 'end', background: '#b7d4d8', height: '2.5em' }}>
-            <IconButton variant="contained" component="label" onClick={this.reload}>
+            <IconButton variant="contained" component="label" onClick={this.reload} disabled={this.isReadOnly()}>
               <ReplayIcon />
             </IconButton>
             <GrievanceCommentDialog
@@ -220,20 +265,22 @@ class TicketCommentPanel extends Component {
               comment={comment}
               updateCommenterType={this.updateCommenterType}
               commenterType={commenterType}
+              disabled={this.isReadOnly()}
             />
           </div>
           <Table
-            module="programs"
+            module={MODULE_NAME}
             fetch={this.props.fetchComments}
-            header="Comments"
+            header={formatMessage(this.props.intl, MODULE_NAME, 'TicketCommentsPanel.table.header')}
             headers={headers}
             itemFormatters={itemFormatters}
-            items={ticketComments}
+            items={this.isReadOnly() ? this.filterComments(ticketComments) : ticketComments}
             withPagination
             page={this.state.page}
             pageSize={this.state.pageSize}
             onChangePage={this.onChangePage}
             onChangeRowsPerPage={this.onChangeRowsPerPage}
+            rowSecondaryHighlighted={shouldHighlight}
             rowsPerPageOptions={this.rowsPerPageOptions}
             defaultPageSize={this.defaultPageSize}
             rights={this.rights}
@@ -251,10 +298,11 @@ const mapStateToProps = (state) => ({
   errorTicketComments: state.grievanceSocialProtection.errorTicketComments,
   fetchedTicketComments: state.grievanceSocialProtection.fetchedTicketComments,
   ticketComments: state.grievanceSocialProtection.ticketComments,
+  ticket: state.grievanceSocialProtection.ticket,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  fetchComments, createTicketComment,
+  fetchComments, createTicketComment, resolveGrievanceByComment,
 }, dispatch);
 
 export default withHistory(withModulesManager(connect(mapStateToProps, mapDispatchToProps)(

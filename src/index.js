@@ -39,7 +39,7 @@ const DEFAULT_CONFIG = {
   ],
   'core.Router': [
     { path: ROUTE_TICKET_TICKETS, component: TicketsPage },
-    { path: `${ROUTE_TICKET_TICKET}/:ticket_uuid?`, component: TicketPage },
+    { path: `${ROUTE_TICKET_TICKET}/:ticket_uuid?/:version?`, component: TicketPage },
     { path: `${ROUTE_TICKET_NEW_TICKET}`, component: TicketPage },
   ],
   'core.MainMenu': [GrievanceMainMenu],
