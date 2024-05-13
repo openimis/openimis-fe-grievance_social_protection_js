@@ -57,6 +57,8 @@ class TicketSearcher extends Component {
       chfid: null,
       confirmedAction: null,
       reset: 0,
+      showHistoryFilter: false,
+      displayVersion: false,
     };
     this.rowsPerPageOptions = props.modulesManager.getConf(
       'fe-grievance_social_protection',
@@ -82,6 +84,8 @@ class TicketSearcher extends Component {
   }
 
   fetch = (prms) => {
+    const { showHistoryFilter } = this.state;
+    this.setState({ displayVersion: showHistoryFilter });
     this.props.fetchTicketSummaries(
       this.props.modulesManager,
       prms,
@@ -89,6 +93,8 @@ class TicketSearcher extends Component {
   };
 
   rowIdentifier = (r) => r.uuid;
+
+  isShowHistory = () => this.state.displayVersion;
 
   filtersToQueryParams = (state) => {
     const prms = Object.keys(state.filters)
@@ -114,6 +120,7 @@ class TicketSearcher extends Component {
     'tickets.priority',
     'tickets.status',
     'tickets.category',
+    this.isShowHistory() ? 'tickets.version' : '',
   ];
 
   sorts = () => [
@@ -123,6 +130,7 @@ class TicketSearcher extends Component {
     ['priority', true],
     ['status', true],
     ['category', true],
+    ['version', true],
   ];
 
   itemFormatters = () => {
@@ -188,12 +196,14 @@ class TicketSearcher extends Component {
       (ticket) => ticket.priority,
       (ticket) => ticket.status,
       (ticket) => ticket.category,
+      (ticket) => (this.isShowHistory() ? ticket?.version : null),
     ];
 
     if (this.props.rights.includes(RIGHT_TICKET_EDIT)) {
       formatters.push((ticket) => (
         <Tooltip title={formatMessage(this.props.intl, MODULE_NAME, 'editButtonTooltip')}>
           <IconButton
+            disabled={ticket?.isHistory}
             onClick={() => {
               historyPush(
                 this.props.modulesManager,
@@ -225,6 +235,14 @@ class TicketSearcher extends Component {
 
     const count = ticketsPageInfo.totalCount;
 
+    const filterPane = ({ filters, onChangeFilters }) => (
+      <TicketFilter
+        filters={filters}
+        onChangeFilters={onChangeFilters}
+        setShowHistoryFilter={(showHistoryFilter) => this.setState({ showHistoryFilter })}
+      />
+    );
+
     return (
       <>
         <EnquiryDialog
@@ -237,7 +255,7 @@ class TicketSearcher extends Component {
         <Searcher
           module={MODULE_NAME}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={TicketFilter}
+          FilterPane={filterPane}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={tickets}
           itemsPageInfo={ticketsPageInfo}

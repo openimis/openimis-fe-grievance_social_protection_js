@@ -271,7 +271,7 @@ class AddTicketPage extends Component {
                     label="ticket.title"
                     value={stateEdited.title}
                     onChange={(v) => this.updateAttribute('title', v)}
-                    required={false}
+                    required
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -338,7 +338,7 @@ class AddTicketPage extends Component {
                     component="label"
                     color="primary"
                     onClick={this.save}
-                    disabled={!stateEdited.channel || !stateEdited.flags || !stateEdited.channel}
+                    disabled={!stateEdited.channel || !stateEdited.flags || !stateEdited.channel || !stateEdited.title}
                   >
                     <Save />
                   </IconButton>

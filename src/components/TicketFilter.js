@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import _debounce from 'lodash/debounce';
 import { withTheme, withStyles } from '@material-ui/core/styles';
 import { injectIntl } from 'react-intl';
-import { Grid } from '@material-ui/core';
+import { Grid, Checkbox, FormControlLabel } from '@material-ui/core';
 import {
   withModulesManager,
   Contributions,
@@ -12,6 +12,7 @@ import {
   TextInput,
   PublishedComponent,
   decodeId,
+  formatMessage,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 
@@ -48,6 +49,18 @@ class TicketFilter extends Component {
         filter: `${k}: "${decodeId(v?.id)}"`,
       },
     ]);
+  };
+
+  _onChangeCheckbox = (key, value) => {
+    const filters = [
+      {
+        id: key,
+        value,
+        filter: `${key}: ${value}`,
+      },
+    ];
+    this.props.onChangeFilters(filters);
+    this.props.setShowHistoryFilter(value);
   };
 
   render() {
@@ -178,6 +191,26 @@ class TicketFilter extends Component {
             </Grid>
                       )}
         />
+        <Grid>
+          <ControlledField
+            module={MODULE_NAME}
+            id="TicketFilter.showHistory"
+            field={(
+              <Grid item xs={2} className={classes.item}>
+                <FormControlLabel
+                  control={(
+                    <Checkbox
+                      color="primary"
+                      checked={!!this._filterValue('showHistory')}
+                      onChange={(event) => this._onChangeCheckbox('showHistory', event.target.checked)}
+                    />
+                                )}
+                  label={formatMessage(this.props.intl, MODULE_NAME, 'showHistory')}
+                />
+              </Grid>
+                    )}
+          />
+        </Grid>
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}
