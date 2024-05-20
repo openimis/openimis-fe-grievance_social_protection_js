@@ -51,9 +51,9 @@ export function fetchTicket(mm, filters) {
   const projections = [
     'id', 'title', 'code', 'description', 'status',
     'priority', 'dueDate', 'reporter', 'reporterId',
-    'reporterType', 'category', 'flags', 'channel',
+    'reporterType', 'reporterTypeName', 'category', 'flags', 'channel',
     'resolution', 'title', 'dateOfIncident', 'dateCreated',
-    'attendingStaff {id, username}', 'version', 'isHistory,', 'jsonExt'
+    'attendingStaff {id, username}', 'version', 'isHistory,', 'jsonExt',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -102,7 +102,7 @@ export function formatTicketGQL(ticket) {
       ? `reporterId: "${decodeId(ticket.reporter.id)}"`
       : `reporterId: "${ticket.reporter.id}"`)
     : ''}
-    ${!!ticket.reporter && !!ticket.reporter ? 'reporterType: "Individual"' : ''}
+    ${!!ticket.reporterType && !!ticket.reporterType ? `reporterType: "${ticket.reporterType}"` : ''}
     ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
     ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
     ${ticket.status ? `status: "${formatGQLString(ticket.status)}"` : ''}

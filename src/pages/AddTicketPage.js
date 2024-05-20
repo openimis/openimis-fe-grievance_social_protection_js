@@ -66,6 +66,7 @@ class AddTicketPage extends Component {
 
   updateTypeOfGrievant = (field, value) => {
     this.updateAttribute('reporter', null);
+    this.updateAttribute('reporterType', value);
     this.setState((state) => ({
       grievantType: value,
     }));
