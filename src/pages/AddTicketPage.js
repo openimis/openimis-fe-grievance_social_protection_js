@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
@@ -31,6 +32,7 @@ class AddTicketPage extends Component {
       stateEdited: {},
       grievantType: null,
       benefitPlan: null,
+      isSaved: false,
     };
   }
 
@@ -47,11 +49,13 @@ class AddTicketPage extends Component {
       this.props.grievanceConfig,
       `Created Ticket ${this.state.stateEdited.title.firstName}`,
     );
+    this.setState({ isSaved: true });
   };
 
   updateAttribute = (k, v) => {
     this.setState((state) => ({
       stateEdited: { ...state.stateEdited, [k]: v },
+      isSaved: false, // Reset isSaved when form is modified
     }));
   };
 
@@ -91,6 +95,7 @@ class AddTicketPage extends Component {
       stateEdited,
       grievantType,
       benefitPlan,
+      isSaved,
     } = this.state;
 
     return (
@@ -110,7 +115,7 @@ class AddTicketPage extends Component {
                   <GrievantTypePicker
                     module={MODULE_NAME}
                     label="type"
-                    readOnly={!!stateEdited.id}
+                    readOnly={!!stateEdited.id || isSaved}
                     withNull
                     value={grievantType?.replace(/\s+/g, '') ?? ''}
                     onChange={(v) => this.updateTypeOfGrievant('grievantType', v)}
@@ -126,6 +131,7 @@ class AddTicketPage extends Component {
                         label="socialProtection.benefitPlan"
                         value={benefitPlan}
                         onChange={(v) => this.updateBenefitPlan('benefitPlan', v)}
+                        readOnly={isSaved}
                       />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
@@ -135,6 +141,7 @@ class AddTicketPage extends Component {
                         label="Complainant"
                         onChange={(v) => this.updateAttribute('reporter', v)}
                         benefitPlan={benefitPlan}
+                        readOnly={isSaved}
                       />
                     </Grid>
                   </>
@@ -148,6 +155,7 @@ class AddTicketPage extends Component {
                         label="socialProtection.benefitPlan"
                         value={benefitPlan}
                         onChange={(v) => this.updateBenefitPlan('benefitPlan', v)}
+                        readOnly={isSaved}
                       />
                     </Grid>
                     {benefitPlan && (
@@ -158,6 +166,7 @@ class AddTicketPage extends Component {
                           label="Complainant"
                           onChange={(v) => this.updateAttribute('reporter', v)}
                           benefitPlan={benefitPlan}
+                          readOnly={isSaved}
                         />
                       </Grid>
                     )}
@@ -273,6 +282,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.title}
                     onChange={(v) => this.updateAttribute('title', v)}
                     required
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -282,6 +292,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.dateOfIncident}
                     required={false}
                     onChange={(v) => this.updateAttribute('dateOfIncident', v)}
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -290,6 +301,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.category}
                     onChange={(v) => this.updateAttribute('category', v)}
                     required
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -298,6 +310,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.flags}
                     onChange={(v) => this.updateAttribute('flags', v)}
                     required
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -306,6 +319,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.channel}
                     onChange={(v) => this.updateAttribute('channel', v)}
                     required
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -314,6 +328,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.priority}
                     onChange={(v) => this.updateAttribute('priority', v)}
                     required={false}
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.item}>
@@ -322,6 +337,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.attendingStaff}
                     module="core"
                     onChange={(v) => this.updateAttribute('attendingStaff', v)}
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={12} className={classes.item}>
@@ -330,6 +346,7 @@ class AddTicketPage extends Component {
                     value={stateEdited.description}
                     onChange={(v) => this.updateAttribute('description', v)}
                     required={false}
+                    readOnly={isSaved}
                   />
                 </Grid>
                 <Grid item xs={11} className={classes.item} />
@@ -339,7 +356,8 @@ class AddTicketPage extends Component {
                     component="label"
                     color="primary"
                     onClick={this.save}
-                    disabled={!stateEdited.channel || !stateEdited.flags || !stateEdited.channel || !stateEdited.title}
+                    // eslint-disable-next-line max-len
+                    disabled={!stateEdited.channel || !stateEdited.flags || !stateEdited.channel || !stateEdited.title || isSaved}
                   >
                     <Save />
                   </IconButton>
