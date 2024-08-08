@@ -1,9 +1,12 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
+import ReactToPrint, { PrintContextConsumer } from 'react-to-print';
+import PrintIcon from '@material-ui/icons/Print';
 import { withTheme, withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,6 +16,7 @@ import {
   Typography,
   Divider,
   IconButton,
+  Button,
 } from '@material-ui/core';
 import {
   journalize,
@@ -23,6 +27,7 @@ import {
 import { Save } from '@material-ui/icons';
 import { updateTicket, fetchTicket, createTicketComment } from '../actions';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
+import TicketPrintTemplate from '../components/TicketPrintTemplate';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -38,6 +43,7 @@ class EditTicketPage extends Component {
     super(props);
     this.state = {
       stateEdited: props.ticket,
+      comments: props.comments,
       reporter: {},
       grievanceConfig: {},
     };
@@ -96,7 +102,7 @@ class EditTicketPage extends Component {
     const propsReadOnly = this.props.readOnly;
 
     const {
-      stateEdited, reporter,
+      stateEdited, reporter, comments,
     } = this.state;
 
     return (
@@ -203,8 +209,8 @@ class EditTicketPage extends Component {
         <Grid container>
           <Grid item xs={12}>
             <Paper className={classes.paper}>
-              <Grid container className={classes.tableTitle}>
-                <Grid item xs={12} className={classes.tableTitle}>
+              <Grid container className={classes.tableTitle} alignItems="center">
+                <Grid item xs={8} className={classes.tableTitle}>
                   <Typography>
                     <FormattedMessage
                       module={MODULE_NAME}
@@ -212,6 +218,21 @@ class EditTicketPage extends Component {
                       values={titleParams}
                     />
                   </Typography>
+                </Grid>
+                <Grid item xs={4} style={{ textAlign: 'right' }}>
+                  <ReactToPrint content={() => this.componentRef}>
+                    <PrintContextConsumer>
+                      {({ handlePrint }) => (
+                        <IconButton
+                          variant="contained"
+                          component="label"
+                          onClick={handlePrint}
+                        >
+                          <PrintIcon />
+                        </IconButton>
+                      )}
+                    </PrintContextConsumer>
+                  </ReactToPrint>
                 </Grid>
               </Grid>
               <Divider />
@@ -344,6 +365,14 @@ class EditTicketPage extends Component {
             </Paper>
           </Grid>
         </Grid>
+        <div style={{ display: 'none' }}>
+          <TicketPrintTemplate
+            ref={(el) => (this.componentRef = el)}
+            ticket={stateEdited}
+            reporter={reporter}
+            comments={comments}
+          />
+        </div>
       </div>
     );
   }
@@ -358,6 +387,7 @@ const mapStateToProps = (state, props) => ({
   fetchedTicket: state.grievanceSocialProtection.fetchedTicket,
   ticket: state.grievanceSocialProtection.ticket,
   grievanceConfig: state.grievanceSocialProtection.grievanceConfig,
+  comments: state.grievanceSocialProtection.ticketComments,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(

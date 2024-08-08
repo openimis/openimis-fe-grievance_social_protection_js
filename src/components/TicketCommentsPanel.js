@@ -1,8 +1,11 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/sort-comp */
 import React, { Component } from 'react';
+import ReactToPrint, { PrintContextConsumer } from 'react-to-print';
+import PrintIcon from '@material-ui/icons/Print';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
@@ -16,13 +19,16 @@ import {
   withHistory,
   withModulesManager,
 } from '@openimis/fe-core';
-import { IconButton, Paper, Tooltip } from '@material-ui/core';
+import {
+  IconButton, Paper, Tooltip,
+} from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import DoneIcon from '@material-ui/icons/Done';
 import { createTicketComment, fetchComments, resolveGrievanceByComment } from '../actions';
 import GrievanceCommentDialog from '../dialogs/GrievanceCommentDialog';
 import { isEmptyObject } from '../utils/utils';
 import { MODULE_NAME, TICKET_STATUSES } from '../constants';
+import TicketPrintCommentTemplate from './TicketPrintCommentTemplate';
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -267,6 +273,19 @@ class TicketCommentPanel extends Component {
               commenterType={commenterType}
               disabled={this.isReadOnly()}
             />
+            <ReactToPrint content={() => this.componentRef}>
+              <PrintContextConsumer>
+                {({ handlePrint }) => (
+                  <IconButton
+                    variant="contained"
+                    component="label"
+                    onClick={handlePrint}
+                  >
+                    <PrintIcon />
+                  </IconButton>
+                )}
+              </PrintContextConsumer>
+            </ReactToPrint>
           </div>
           <Table
             module={MODULE_NAME}
@@ -287,7 +306,12 @@ class TicketCommentPanel extends Component {
             defaultOrderBy="-dateCreated"
           />
         </Paper>
-
+        <div style={{ display: 'none' }}>
+          <TicketPrintCommentTemplate
+            ref={(el) => (this.componentRef = el)}
+            ticketComments={ticketComments}
+          />
+        </div>
       </div>
     );
   }

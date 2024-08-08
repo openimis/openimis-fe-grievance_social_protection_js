@@ -123,5 +123,19 @@
     "reopenTicket.mutation.label": "Reopen Ticket",
     "resolveGrievanceByComment.mutation.label": "Resolve Ticket using comment",
     "showHistory": "Show History",
-    "tickets.version": "Version"
+    "tickets.version": "Version",
+    "ticket.template.priority": "Priority",
+    "ticket.template.flags": "Flags",
+    "ticket.template.channel": "Channel",
+    "ticket.template.category": "Category",
+    "ticket.template.dateOfIncident": "Date of Incident",
+    "ticket.template.status": "Status",
+    "ticket.template.dateCreated": "Date Created",
+    "ticket.template.ticketCode": "Code",
+    "ticket.template.title": "Title",
+    "ticket.template.reporter": "Reporter",
+    "ticket.template.attendingStaff": "Attending Staff",
+    "ticket.template.description": "Description",
+    "ticket.template.comments": "Comments",
+    "ticket.template.noComments": "No Comments yet"
 }
