@@ -15,11 +15,12 @@ export const TICKET_STATUS = [
 
 export const TICKET_PRIORITY = ['Critical', 'High', 'Normal', 'Low'];
 
-export const RIGHT_TICKET = 123000;
-export const RIGHT_TICKET_SEARCH = 123000;
-export const RIGHT_TICKET_ADD = 123001;
-export const RIGHT_TICKET_EDIT = 123002;
-export const RIGHT_TICKET_DELETE = 123003;
+export const RIGHT_TICKET = 127000;
+export const RIGHT_TICKET_SEARCH = 127000;
+export const RIGHT_TICKET_ADD = 127001;
+export const RIGHT_TICKET_EDIT = 127002;
+export const RIGHT_TICKET_DELETE = 127003;
+
 
 export const MODULE_NAME = 'grievanceSocialProtection';
 export const FETCH_INDIVIDUAL_REF = 'individual.actions.fetchIndividuals';
