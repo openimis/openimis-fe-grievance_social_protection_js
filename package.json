@@ -1,6 +1,6 @@
 {
   "name": "@openimis/fe-grievance_social_protection",
-  "version": "1.2.0-rc1",
+  "version": "1.0.0",
   "license": "AGPL-3.0-only",
   "description": "Fork of a openIMIS Frontend Grievance module",
   "repository": "openimis/openimis-fe-grievance_social_protection_js",
