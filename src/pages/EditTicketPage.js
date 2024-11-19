@@ -24,6 +24,7 @@ import {
   PublishedComponent,
   FormattedMessage,
 } from '@openimis/fe-core';
+import _ from 'lodash';
 import { Save } from '@material-ui/icons';
 import { updateTicket, fetchTicket, createTicketComment } from '../actions';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
@@ -87,6 +88,12 @@ class EditTicketPage extends Component {
       return '';
     }
     return '';
+  };
+
+  doesTicketChange = () => {
+    const { ticket } = this.props;
+    const { stateEdited } = this.state;
+    return !_.isEqual(ticket, stateEdited);
   };
 
   render() {
@@ -356,7 +363,7 @@ class EditTicketPage extends Component {
                     component="label"
                     color="primary"
                     onClick={this.save}
-                    disabled={propsReadOnly}
+                    disabled={propsReadOnly || !this.doesTicketChange()}
                   >
                     <Save />
                   </IconButton>
