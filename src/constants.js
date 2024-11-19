@@ -21,7 +21,6 @@ export const RIGHT_TICKET_ADD = 127001;
 export const RIGHT_TICKET_EDIT = 127002;
 export const RIGHT_TICKET_DELETE = 127003;
 
-
 export const MODULE_NAME = 'grievanceSocialProtection';
 export const FETCH_INDIVIDUAL_REF = 'individual.actions.fetchIndividuals';
 

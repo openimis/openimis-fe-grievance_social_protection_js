@@ -20,6 +20,7 @@ class TicketStatusPicker extends Component {
         constants={TICKET_STATUS}
         readOnly={readOnly}
         value={value}
+        withNull={false}
         onChange={(option) => onChange(option, option ? `${option}` : null)}
         {...this.props}
       />
