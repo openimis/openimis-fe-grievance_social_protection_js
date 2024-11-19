@@ -47,7 +47,7 @@ class AddTicketPage extends Component {
     this.props.createTicket(
       this.state.stateEdited,
       this.props.grievanceConfig,
-      `Created Ticket ${this.state.stateEdited.title.firstName}`,
+      `Created Ticket ${this.state.stateEdited.title}`,
     );
     this.setState({ isSaved: true });
   };
