@@ -9,6 +9,7 @@ class TicketStatusPicker extends Component {
   render() {
     const {
       readOnly = false,
+      withNull = false,
       value,
       onChange,
     } = this.props;
@@ -16,11 +17,11 @@ class TicketStatusPicker extends Component {
     return (
       <ConstantBasedPicker
         module="grievance"
-        label="Ticket Status"
+        label="ticket.ticketStatus"
         constants={TICKET_STATUS}
         readOnly={readOnly}
         value={value}
-        withNull={false}
+        withNull={withNull}
         onChange={(option) => onChange(option, option ? `${option}` : null)}
         {...this.props}
       />
