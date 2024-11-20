@@ -83,7 +83,7 @@ class TicketFilter extends Component {
                   {
                     id: 'code',
                     value: v,
-                    filter: `code_Istartswith: "${v}"`,
+                    filter: `code_Icontains: "${v}"`,
                   },
                 ])}
               />
@@ -104,7 +104,7 @@ class TicketFilter extends Component {
                   {
                     id: 'title',
                     value: v,
-                    filter: `title_Istartswith: "${v}"`,
+                    filter: `title_Icontains: "${v}"`,
                   },
                 ])}
               />
@@ -159,6 +159,7 @@ class TicketFilter extends Component {
                 pubRef="grievanceSocialProtection.TicketStatusPicker"
                 label="ticket.ticketStatus"
                 value={this._filterValue('status')}
+                withNull
                 onChange={(v) => this.debouncedOnChangeFilter([
                   {
                     id: 'status',

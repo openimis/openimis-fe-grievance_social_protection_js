@@ -76,7 +76,7 @@
     "Ticket Status.IN_PROGRESS":"In Progress",
     "Ticket Status.RESOLVED":"Resolved",
     "ticketStatus.CLOSED":"Closed",
-    "ticket.ticketStatus.null":"None",
+    "ticket.ticketStatus.null":"Any",
     "ticket.ticketStatus.RECEIVED":"Received",
     "ticket.ticketStatus.OPEN":"Open",
     "ticket.ticketStatus.IN_PROGRESS":"In Progress",
