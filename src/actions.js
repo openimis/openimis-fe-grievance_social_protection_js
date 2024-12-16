@@ -38,6 +38,7 @@ export function fetchTicketSummaries(mm, filters) {
     'priority', 'dueDate', 'reporter', 'reporterId',
     'reporterType', 'reporterTypeName', 'category', 'flags',
     'channel', 'resolution', 'title', 'dateOfIncident', 'dateCreated', 'version', 'isHistory',
+    'reporterFirstName', 'reporterLastName', 'reporterDob',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -54,6 +55,7 @@ export function fetchTicket(mm, filters) {
     'reporterType', 'reporterTypeName', 'category', 'flags', 'channel',
     'resolution', 'title', 'dateOfIncident', 'dateCreated',
     'attendingStaff {id, username}', 'version', 'isHistory,', 'jsonExt',
+    'reporterFirstName', 'reporterLastName', 'reporterDob',
   ];
   const payload = formatPageQueryWithCount(
     'tickets',
@@ -78,6 +80,9 @@ export function fetchComments(ticket) {
       'comment',
       'isResolution',
       'dateCreated',
+      'commenterFirstName',
+      'commenterLastName',
+      'commenterDob',
     ];
     const payload = formatPageQueryWithCount(
       'comments',
@@ -129,7 +134,7 @@ export function formatUpdateTicketGQL(ticket) {
       ? `reporterId: "${decodeId(ticket.reporter.id)}"`
       : `reporterId: "${ticket.reporter.id}"`)
     : ''}
-    ${!!ticket.reporter && !!ticket.reporter ? 'reporterType: "Individual"' : ''}
+    ${!!ticket.reporter && !!ticket.reporter ? `reporterType: "${ticket.reporterTypeName}"` : ''}
     ${ticket.nameOfComplainant ? `nameOfComplainant: "${formatGQLString(ticket.nameOfComplainant)}"` : ''}
     ${ticket.resolution ? `resolution: "${formatGQLString(ticket.resolution)}"` : ''}
     ${ticket.status ? `status: ${formatGQLString(ticket.status)}` : ''}

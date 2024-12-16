@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import { injectIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
@@ -35,6 +35,7 @@ function GrievanceCommentDialog({
 }) {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
+  const [benefitPlan, setBenefitPlan] = useState(null);
   return (
     <>
       <Button
@@ -106,6 +107,30 @@ function GrievanceCommentDialog({
                     benefitPlan={null}
                   />
                 </Grid>
+              )}
+              {commenterType === 'beneficiary' && (
+              <>
+                <Grid item xs={3} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="socialProtection.BenefitPlanPicker"
+                    withNull
+                    label="socialProtection.benefitPlan"
+                    value={benefitPlan}
+                    onChange={(v) => setBenefitPlan(v)}
+                  />
+                </Grid>
+                {benefitPlan && (
+                <Grid item xs={3} className={classes.item}>
+                  <PublishedComponent
+                    pubRef="socialProtection.BeneficiaryPicker"
+                    value={comment.reporter}
+                    label="ticket.commenter"
+                    onChange={(v) => updateCommentAttribute('commenter', v)}
+                    benefitPlan={benefitPlan}
+                  />
+                </Grid>
+                )}
+              </>
               )}
               <Grid item xs={12} className={classes.item}>
                 <TextInput

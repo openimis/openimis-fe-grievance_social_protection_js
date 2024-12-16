@@ -230,6 +230,25 @@ class TicketCommentPanel extends Component {
             />
           );
         }
+        if (comment.commenterTypeName === 'beneficiary') {
+          picker = (
+            <PublishedComponent
+              pubRef="socialProtection.BeneficiaryPicker"
+              readOnly
+              value={
+                {
+                  individual: {
+                    firstName: comment.commenterFirstName,
+                    lastName: comment.commenterLastName,
+                    dob: comment.commenterDob,
+                  },
+                }
+              }
+              module={MODULE_NAME}
+              label={formatMessage(this.props.intl, MODULE_NAME, 'ticket.commenter')}
+            />
+          );
+        }
         if (comment.commenterTypeName === null) {
           picker = 'Anonymous User';
         }
