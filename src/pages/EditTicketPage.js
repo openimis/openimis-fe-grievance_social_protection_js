@@ -111,7 +111,6 @@ class EditTicketPage extends Component {
     const {
       stateEdited, reporter, comments,
     } = this.state;
-
     return (
       <div className={classes.page}>
         <Grid container>
@@ -183,29 +182,21 @@ class EditTicketPage extends Component {
                 </>
                 )}
                 {stateEdited.reporterTypeName === 'beneficiary' && (
-                <>
-                  <Grid item xs={4} className={classes.item}>
-                    <TextInput
-                      module={MODULE_NAME}
-                      label="ticket.nationalId"
-                      value={reporter?.jsonExt?.national_id ?? ''}
-                      required={false}
-                      readOnly
-                    />
-                  </Grid>
-                  <Grid item xs={4} className={classes.item}>
-                    <TextInput
-                      module={MODULE_NAME}
-                      label="ticket.email"
-                      value={!!stateEdited && !!stateEdited.reporter
-                        ? this.extractFieldFromJsonExt(reporter, 'email')
-                        : EMPTY_STRING}
-                      onChange={(v) => this.updateAttribute('email', v)}
-                      required={false}
-                      readOnly
-                    />
-                  </Grid>
-                </>
+                <PublishedComponent
+                  pubRef="socialProtection.BeneficiaryPicker"
+                  onChange={(v) => this.updateAttribute('reporter', v)}
+                  readOnly
+                  value={
+                    {
+                      individual: {
+                        firstName: stateEdited.reporterFirstName,
+                        lastName: stateEdited.reporterLastName,
+                        dob: stateEdited.reporterDob,
+                      },
+                    }
+                  }
+                  module={MODULE_NAME}
+                />
                 )}
               </Grid>
             </Paper>

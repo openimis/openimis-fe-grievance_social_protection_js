@@ -166,9 +166,13 @@ class TicketSearcher extends Component {
               label="ticket.reporter"
               required
               value={
-                reporter !== undefined
-                && reporter !== null ? (isEmptyObject(reporter)
-                    ? null : reporter) : null
+                {
+                  individual: {
+                    firstName: ticket.reporterFirstName,
+                    lastName: ticket.reporterLastName,
+                    dob: ticket.reporterDob,
+                  },
+                }
               }
             />
           );
