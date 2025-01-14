@@ -43,6 +43,7 @@ function GrievanceMainMenu(props) {
       {...props}
       header={formatMessage(props.intl, MODULE_NAME, 'mainMenuGrievance')}
       entries={entries}
+      menuId="GrievanceMainMenu"
     />
   );
 }
