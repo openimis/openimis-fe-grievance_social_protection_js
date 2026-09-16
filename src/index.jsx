@@ -51,7 +51,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_TICKET_NEW_TICKET, text: "menu.grievance.add", id: 'grievance.add', component: TicketPage, rights: [RIGHT_TICKET_ADD], icon: "AddCircleOutline" },
   ],
   'core.MainMenu': [{ name: 'GrievanceMainMenu', text: `${MODULE_NAME}.mainMenuGrievance`, id: "grievance.MainMenu", icon: "forum" }],
-  'core.AppBarIcons': [
+  'core.GrievanceMainMenu': [
     {
       id: "grievance.ticketsIcon",
       icon: "forum",
