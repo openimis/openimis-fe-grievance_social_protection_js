@@ -11,6 +11,7 @@ import {
   useTranslations, useModulesManager,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
+import { formatCommenterName } from '../utils/commenter';
 
 const StyledTicketPrintCommentTemplate = styled('div')(() => ({
   '& .topHeader': {
@@ -77,22 +78,6 @@ const StyledTicketPrintCommentTemplate = styled('div')(() => ({
 const TicketPrintCommentTemplate = forwardRef(({ ticketComments }, ref) => {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(modulesManager, MODULE_NAME);
-
-  const formatCommenterName = (commenterTypeName, commenter) => {
-    if (!commenterTypeName) return 'Anonymous User';
-
-    if (commenterTypeName === 'individual') {
-      const commenterData = JSON.parse(JSON.parse(commenter));
-      return `Individual: ${commenterData.firstName} ${commenterData.lastName}`;
-    }
-
-    if (commenterTypeName === 'user') {
-      const commenterData = JSON.parse(JSON.parse(commenter));
-      return `User: ${commenterData.username}`;
-    }
-
-    return commenterTypeName;
-  };
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
