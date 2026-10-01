@@ -7,15 +7,15 @@ import { buildCategoryOptions, isSelectableOption } from '../src/utils/categoryO
 // but not create in, a parent that is not creatable with one creatable child, and an open category.
 const hierarchy = [
   {
-    name: 'violence_vbg',
-    full_name: 'violence_vbg',
+    name: 'restricted',
+    full_name: 'restricted',
     can_create: false,
     children: [
       {
-        name: 'viol', full_name: 'violence_vbg > viol', can_create: false, children: [],
+        name: 'assault', full_name: 'restricted > assault', can_create: false, children: [],
       },
       {
-        name: 'autre', full_name: 'violence_vbg > autre', can_create: false, children: [],
+        name: 'other', full_name: 'restricted > other', can_create: false, children: [],
       },
     ],
   },
@@ -28,7 +28,7 @@ const hierarchy = [
     }],
   },
   {
-    name: 'paiement', full_name: 'paiement', can_create: true, children: [],
+    name: 'payment', full_name: 'payment', can_create: true, children: [],
   },
 ];
 
@@ -37,14 +37,14 @@ const values = (options) => options.flatMap((o) => [o.value, ...values(o.childre
 test('without creatableOnly every viewable category is offered and selectable', () => {
   const options = buildCategoryOptions(hierarchy);
   assert.deepEqual(values(options), [
-    'violence_vbg', 'violence_vbg > viol', 'violence_vbg > autre', 'mixed', 'mixed > open_child', 'paiement',
+    'restricted', 'restricted > assault', 'restricted > other', 'mixed', 'mixed > open_child', 'payment',
   ]);
   assert.ok(options.every((o) => o.selectable));
 });
 
 test('creatableOnly drops a category whose subtree has no creatable node', () => {
   const options = buildCategoryOptions(hierarchy, { creatableOnly: true });
-  assert.deepEqual(values(options), ['mixed', 'mixed > open_child', 'paiement']);
+  assert.deepEqual(values(options), ['mixed', 'mixed > open_child', 'payment']);
 });
 
 test('creatableOnly keeps a non-creatable parent of a creatable child, unselectable', () => {
@@ -65,6 +65,6 @@ test('a node without can_create stays selectable (server without the flag)', () 
 
 test('labels come from translateName; clearing the picker stays allowed', () => {
   const [option] = buildCategoryOptions([hierarchy[2]], { translateName: (n) => `T:${n}` });
-  assert.equal(option.label, 'T:paiement');
+  assert.equal(option.label, 'T:payment');
   assert.equal(isSelectableOption(null), true);
 });
