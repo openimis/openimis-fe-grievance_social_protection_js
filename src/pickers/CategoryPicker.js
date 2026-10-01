@@ -32,6 +32,7 @@ function CategoryPicker(props) {
     placeholder,
     classes,
     creatableOnly = false,
+    creatableAlso = [],
   } = props;
   const { formatMessage } = useTranslations('ticket');
   const [inputValue, setInputValue] = useState(value ?? '');
@@ -58,7 +59,7 @@ function CategoryPicker(props) {
 
   const rawJson = data?.grievanceConfig?.grievanceCategoriesJson;
   const parsed = typeof rawJson === 'string' ? JSON.parse(rawJson) : rawJson;
-  const options = buildCategoryOptions(parsed, { creatableOnly, translateName });
+  const options = buildCategoryOptions(parsed, { creatableOnly, creatableAlso, translateName });
 
   const handleClear = (e) => {
     e.stopPropagation();
