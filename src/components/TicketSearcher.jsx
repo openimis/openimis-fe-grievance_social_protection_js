@@ -56,7 +56,6 @@ class TicketSearcher extends Component {
       enquiryOpen: false,
       // open: false,
       chfid: null,
-      confirmedAction: null,
       reset: 0,
       showHistoryFilter: false,
       displayVersion: false,
@@ -79,8 +78,6 @@ class TicketSearcher extends Component {
       this.props.journalize(this.props.mutation);
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ reset: prevState.reset + 1 });
-    } else if (!prevProps.confirmed && this.props.confirmed) {
-      this.state.confirmedAction();
     }
   }
 
