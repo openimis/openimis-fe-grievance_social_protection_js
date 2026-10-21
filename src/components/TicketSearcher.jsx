@@ -277,7 +277,6 @@ const mapStateToProps = (state) => ({
   errorTickets: state.grievanceSocialProtection.errorTickets,
   submittingMutation: state.grievanceSocialProtection.submittingMutation,
   mutation: state.grievanceSocialProtection.mutation,
-  confirmed: state.core.confirmed,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(
