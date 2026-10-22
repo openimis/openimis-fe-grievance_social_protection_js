@@ -2,13 +2,14 @@
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  renderWithProviders, makeStore, screen, within,
+  renderWithProviders, makeStore, screen, within, userEvent,
 } from '@openimis/fe-core/testing';
 import TicketCommentsPanel from './TicketCommentsPanel';
 
 // The fe-core barrel cannot be loaded from a test, so stub the exports this panel
 // and its dialog reach. Table keeps the real title-bar contract
 // (fe-core Table.jsx, `.tableTitle`): the header, then whatever extendHeader returns.
+// It is memoised like the real one, which connect() wraps.
 vi.mock('@openimis/fe-core', async () => {
   const ReactActual = (await import('react')).default;
   const { mockModulesManager } = await import('@openimis/fe-core/testing');
@@ -24,12 +25,12 @@ vi.mock('@openimis/fe-core', async () => {
     PublishedComponent: () => null,
     ConstantBasedPicker: () => null,
     TextInput: () => null,
-    Table: ({ header, extendHeader }) => h(
+    Table: ReactActual.memo(({ header, extendHeader }) => h(
       'div',
       null,
       header && h('div', { className: 'tableTitle' }, h('h6', null, header), extendHeader && extendHeader()),
       h('table', null),
-    ),
+    )),
     useModulesManager: () => mockModulesManager(),
     useTranslations: () => ({ formatMessage: (id) => id }),
     withHistory: (Component) => Component,
@@ -68,5 +69,13 @@ describe('TicketCommentsPanel', () => {
     // No action of the panel is left outside the title bar.
     const outside = screen.getAllByRole('button').filter((b) => !titleBar.contains(b));
     expect(outside).toEqual([]);
+  });
+
+  it('opens the add comment dialog from the title bar', async () => {
+    renderPanel({ id: 'T1', uuid: 'u-1', status: 'OPEN' });
+
+    await userEvent.click(screen.getByRole('button', { name: /add comment to a grievance/i }));
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
   });
 });
