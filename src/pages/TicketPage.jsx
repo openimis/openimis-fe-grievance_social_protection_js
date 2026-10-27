@@ -32,7 +32,8 @@ class TicketPage extends Component {
           this.props.intl,
           'ticket',
           'createTicket.mutationLabel',
-          { label: ticket.code ? ticket.code : '' },
+          // A new ticket has no code yet (the server generates it): name it by its title.
+          { label: ticket.code || ticket.title || '' },
         ),
       );
     } else {
