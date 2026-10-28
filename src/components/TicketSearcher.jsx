@@ -164,10 +164,8 @@ class TicketSearcher extends Component {
         }
 
         if (ticket.reporterTypeName === 'user') {
-          const firstName = reporter?.firstName;
-          const lastName = reporter?.lastName;
-
-          return [firstName, lastName].filter(Boolean).join(' ');
+          // The user reporter is a serialised core.User: it has a username, no names.
+          return reporter?.username || '';
         }
 
         if (!ticket.reporterTypeName) {

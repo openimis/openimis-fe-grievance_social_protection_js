@@ -143,6 +143,8 @@
     "ticket.searchPerson.label": "Find an Individual",
     "ticket.searchPerson.placeholder": "Search and select...",
     "ticket.searchPerson.tooltip": "Type and select an Individual",
+    "ticket.reporter.label": "Reporter",
+    "ticket.reporter.user.label": "Attending Staff",
     "ticket.terminology.help": "Individual: Personn who submit grievance. Beneficiary: Personn covered by the Benefit Plan/Program",
     "ticket.save.success.title": "Grievance saved",
     "ticket.save.success.body": "The Grievance was saved successfuly"

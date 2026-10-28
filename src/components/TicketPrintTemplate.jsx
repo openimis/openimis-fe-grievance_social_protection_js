@@ -74,6 +74,25 @@ const TicketPrintTemplate = forwardRef(({ ticket, reporter }, ref) => {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(modulesManager, MODULE_NAME);
 
+  const reporterValue = () => {
+    switch (ticket.reporterTypeName) {
+      case 'individual':
+        if (reporter?.individual) {
+          return `${reporter.individual.firstName} ${reporter.individual.lastName} ${reporter.individual.dob}`;
+        }
+        return reporter ? `${reporter.firstName} ${reporter.lastName} ${reporter.dob}` : EMPTY_STRING;
+      case 'beneficiary':
+        return reporter?.jsonExt?.national_id ?? EMPTY_STRING;
+      case 'user':
+        // The user reporter is a serialised core.User: it has a username, no names.
+        return reporter?.username ?? EMPTY_STRING;
+      case null:
+        return formatMessage('ticket.anonymousUser');
+      default:
+        return EMPTY_STRING;
+    }
+  };
+
   return (
     <StyledTicketPrintTemplate>
       <div ref={ref} className="containerPadding">
@@ -116,32 +135,10 @@ const TicketPrintTemplate = forwardRef(({ ticket, reporter }, ref) => {
             <p className="detailName">{formatMessage('ticket.template.description')}</p>
             <p className="detailValue">{ticket.description}</p>
           </div>
-          {ticket.reporterTypeName === 'individual' && (
           <div className="detailRow">
             <p className="detailName">{formatMessage('ticket.template.reporter')}</p>
-            <p className="detailValue">
-              {reporter && reporter.individual
-                ? `${reporter.individual.firstName} ${reporter.individual.lastName} ${reporter.individual.dob}`
-                : reporter
-                  ? `${reporter.firstName} ${reporter.lastName} ${reporter.dob}`
-                  : EMPTY_STRING}
-            </p>
+            <p className="detailValue">{reporterValue()}</p>
           </div>
-          )}
-          {ticket.reporterTypeName === 'beneficiary' && (
-          <div className="detailRow">
-            <p className="detailName">{formatMessage('ticket.template.reporter')}</p>
-            <p className="detailValue">
-              {reporter?.jsonExt?.national_id ?? ''}
-            </p>
-          </div>
-          )}
-          {ticket.reporterTypeName === null && (
-          <div className="detailRow">
-            <p className="detailName">{formatMessage('ticket.template.reporter')}</p>
-            <p className="detailValue">{formatMessage('ticket.anonymousUser')}</p>
-          </div>
-          )}
           <div className="detailRow">
             <p className="detailName">{formatMessage('ticket.template.attendingStaff')}</p>
             <p className="detailValue">{ticket?.attendingStaff?.username}</p>
