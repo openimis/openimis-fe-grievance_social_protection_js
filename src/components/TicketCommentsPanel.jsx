@@ -20,7 +20,7 @@ import {
   GetIconComponent,
 } from '@openimis/fe-core';
 import {
-  IconButton, Paper, Tooltip,
+  Box, IconButton, Paper, Tooltip,
 } from '@mui/material';
 const ReplayIcon = GetIconComponent("Replay");
 const DoneIcon = GetIconComponent("Done");
@@ -48,11 +48,7 @@ function PrintButton({ contentRef }) {
   });
 
   return (
-    <IconButton
-      variant="contained"
-      component="label"
-      onClick={handlePrint}
-    >
+    <IconButton onClick={handlePrint}>
       <PrintIcon />
     </IconButton>
   );
@@ -198,6 +194,28 @@ class TicketCommentPanel extends Component {
     return comments.filter((comment) => commentIds.includes(comment.id));
   };
 
+  headerActions = () => {
+    const { comment, commenterType, openCommentModal } = this.state;
+    return (
+      <Box display="flex" alignItems="center" justifyContent="flex-end" width="100%">
+        <IconButton onClick={this.reload} disabled={this.isReadOnly()}>
+          <ReplayIcon />
+        </IconButton>
+        <GrievanceCommentDialog
+          handleComment={this.handleComment}
+          openCommentModal={openCommentModal}
+          handleOpenModal={this.handleOpenModal}
+          updateCommentAttribute={this.updateCommentAttribute}
+          comment={comment}
+          updateCommenterType={this.updateCommenterType}
+          commenterType={commenterType}
+          disabled={this.isReadOnly()}
+        />
+        <PrintButton contentRef={this.printContentRef} />
+      </Box>
+    );
+  };
+
   render() {
     const {
       intl,
@@ -289,8 +307,6 @@ class TicketCommentPanel extends Component {
 
     ];
 
-    const { comment, commenterType } = this.state;
-
     return (
       <StyledTicketCommentPanel>
         <div className="page">
@@ -298,26 +314,13 @@ class TicketCommentPanel extends Component {
           <ProgressOrError error={errorTicketComments} />
 
           <Paper className="paper">
-            <div style={{ textAlign: 'end', background: '#b7d4d8', height: '2.5em' }}>
-              <IconButton variant="contained" component="label" onClick={this.reload} disabled={this.isReadOnly()}>
-                <ReplayIcon />
-              </IconButton>
-              <GrievanceCommentDialog
-                handleComment={this.handleComment}
-                openCommentModal={this.state.openCommentModal}
-                handleOpenModal={this.handleOpenModal}
-                updateCommentAttribute={this.updateCommentAttribute}
-                comment={comment}
-                updateCommenterType={this.updateCommenterType}
-                commenterType={commenterType}
-                disabled={this.isReadOnly()}
-              />
-              <PrintButton contentRef={this.printContentRef} />
-            </div>
             <Table
               module={MODULE_NAME}
               fetch={this.props.fetchComments}
               header={formatMessage(this.props.intl, MODULE_NAME, 'TicketCommentsPanel.table.header')}
+              // A new function each render: connect() memoises Table, and the
+              // dialog's open state and draft live in this panel's state.
+              extendHeader={() => this.headerActions()}
               headers={headers}
               itemFormatters={itemFormatters}
               items={this.isReadOnly() ? this.filterComments(ticketComments) : ticketComments}

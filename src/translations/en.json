@@ -120,6 +120,8 @@
     "menu.grievance.add": "Add Grievance",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogHeader": "Please fill the config.",
     "grievanceSocialProtection.dialogs.GrievanceConfigurationDialog.dialogBody": "Go to django admin panel and set up missing values: {configString}",
+    "createTicket.mutationLabel": "Create Ticket {label}",
+    "updateTicket.mutationLabel": "Update Ticket {label}",
     "reopenTicket.mutation.label": "Reopen Ticket",
     "resolveGrievanceByComment.mutation.label": "Resolve Ticket using comment",
     "showHistory": "Show History",
@@ -141,6 +143,8 @@
     "ticket.searchPerson.label": "Find an Individual",
     "ticket.searchPerson.placeholder": "Search and select...",
     "ticket.searchPerson.tooltip": "Type and select an Individual",
+    "ticket.reporter.label": "Reporter",
+    "ticket.reporter.user.label": "Attending Staff",
     "ticket.terminology.help": "Individual: Personn who submit grievance. Beneficiary: Personn covered by the Benefit Plan/Program",
     "ticket.save.success.title": "Grievance saved",
     "ticket.save.success.body": "The Grievance was saved successfuly"

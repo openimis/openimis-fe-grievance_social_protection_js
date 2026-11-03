@@ -172,7 +172,7 @@ class AddTicketPage extends Component {
                           <PublishedComponent
                             pubRef="socialProtection.BeneficiaryPicker"
                             value={stateEdited.reporter}
-                            label="Complainant"
+                            label={formatMessage(intl, MODULE_NAME, 'ticket.reporter.label')}
                             onChange={(v) => this.updateAttribute('reporter', v)}
                             benefitPlan={benefitPlan}
                             readOnly={isSaved}
@@ -186,7 +186,7 @@ class AddTicketPage extends Component {
                       <PublishedComponent
                         pubRef="admin.UserPicker"
                         value={stateEdited.reporter}
-                        label="Complainant"
+                        label={formatMessage(intl, MODULE_NAME, 'ticket.reporter.user.label')}
                         onChange={(v) => this.updateAttribute('reporter', v)}
                         benefitPlan={benefitPlan}
                         readOnly={isSaved}

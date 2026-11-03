@@ -101,7 +101,8 @@ class TicketForm extends Component {
   };
 
   canSave = () => {
-    if (!this.state.ticket.reporter) return false;
+    // No reporter type means an anonymous grievance; a chosen type needs its reporter.
+    if (this.state.ticket.reporterType && !this.state.ticket.reporter) return false;
     if (!this.state.ticket.category) return false;
     if (!this.state.ticket.title) return false;
     if (!this.state.ticket.flags) return false;

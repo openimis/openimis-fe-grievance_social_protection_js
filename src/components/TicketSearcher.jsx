@@ -56,7 +56,6 @@ class TicketSearcher extends Component {
       enquiryOpen: false,
       // open: false,
       chfid: null,
-      confirmedAction: null,
       reset: 0,
       showHistoryFilter: false,
       displayVersion: false,
@@ -79,8 +78,6 @@ class TicketSearcher extends Component {
       this.props.journalize(this.props.mutation);
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ reset: prevState.reset + 1 });
-    } else if (!prevProps.confirmed && this.props.confirmed) {
-      this.state.confirmedAction();
     }
   }
 
@@ -167,10 +164,8 @@ class TicketSearcher extends Component {
         }
 
         if (ticket.reporterTypeName === 'user') {
-          const firstName = reporter?.firstName;
-          const lastName = reporter?.lastName;
-
-          return [firstName, lastName].filter(Boolean).join(' ');
+          // The user reporter is a serialised core.User: it has a username, no names.
+          return reporter?.username || '';
         }
 
         if (!ticket.reporterTypeName) {
@@ -280,7 +275,6 @@ const mapStateToProps = (state) => ({
   errorTickets: state.grievanceSocialProtection.errorTickets,
   submittingMutation: state.grievanceSocialProtection.submittingMutation,
   mutation: state.grievanceSocialProtection.mutation,
-  confirmed: state.core.confirmed,
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators(

@@ -12,15 +12,10 @@ import {
   useTranslations,
   useModulesManager,
 } from '@openimis/fe-core';
-import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import GrievantTypePicker from '../pickers/GrievantTypePicker';
 import { MODULE_NAME } from '../constants';
-
-const StyledGrievanceCommentDialog = styled('div')(({ theme }) => ({
-  '& .item': theme.paper?.item ?? {},
-}));
 
 function GrievanceCommentDialog({
   handleComment,
@@ -36,17 +31,11 @@ function GrievanceCommentDialog({
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
   const [benefitPlan, setBenefitPlan] = useState(null);
   return (
-    <StyledGrievanceCommentDialog>
+    <>
       <Button
         onClick={handleOpenModal}
         variant="outlined"
-        color="#DFEDEF"
-        className="button"
         disabled={disabled}
-        style={{
-          border: '0px',
-          marginTop: '6px',
-        }}
       >
         Add Comment to a Grievance
       </Button>
@@ -181,7 +170,7 @@ function GrievanceCommentDialog({
           </DialogActions>
         </form>
       </Dialog>
-    </StyledGrievanceCommentDialog>
+    </>
   );
 }
 
@@ -192,7 +181,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
 }, dispatch);
 
-export { StyledGrievanceCommentDialog };
 export default injectIntl(
   connect(mapStateToProps, mapDispatchToProps)(GrievanceCommentDialog),
 );

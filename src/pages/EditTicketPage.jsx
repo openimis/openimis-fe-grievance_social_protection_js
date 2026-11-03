@@ -9,6 +9,7 @@ import { useReactToPrint } from 'react-to-print';
 import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { injectIntl } from 'react-intl';
 import {
   Grid,
   Paper,
@@ -22,6 +23,7 @@ import {
   PublishedComponent,
   FormattedMessage,
   GetIconComponent,
+  formatMessage,
 } from '@openimis/fe-core';
 import _ from 'lodash';
 import { updateTicket, fetchTicket, createTicketComment } from '../actions';
@@ -121,6 +123,7 @@ class EditTicketPage extends Component {
       titlethree = ' Ticket.Resolution',
       titleParams = { label: EMPTY_STRING },
       grievanceConfig,
+      intl,
     } = this.props;
 
     const propsReadOnly = this.props.readOnly;
@@ -150,8 +153,8 @@ class EditTicketPage extends Component {
                       pubRef="individual.IndividualPicker"
                       value={reporter}
                       onChange={(v) => this.updateAttribute('reporter', v)}
-                      label="ticket.searchPerson.label"
-                      placeholder="Commencez à saisir un nom..."
+                      label={formatMessage(intl, MODULE_NAME, 'ticket.reporter.label')}
+                      placeholder={formatMessage(intl, MODULE_NAME, 'ticket.searchPerson.placeholder')}
                       readOnly
                     />
                   </Grid>
@@ -206,8 +209,8 @@ class EditTicketPage extends Component {
                     pubRef="socialProtection.BeneficiaryPicker"
                     onChange={(v) => this.updateAttribute('reporter', v)}
                     readOnly
-                    label="ticket.searchPerson.label"
-                    placeholder="Commencez à saisir un nom..."
+                    label={formatMessage(intl, MODULE_NAME, 'ticket.reporter.label')}
+                    placeholder={formatMessage(intl, MODULE_NAME, 'ticket.searchPerson.placeholder')}
                     value={
                       {
                         individual: {
@@ -227,8 +230,8 @@ class EditTicketPage extends Component {
                       value={reporter}
                       module="core"
                       onChange={(v) => this.updateAttribute('reporter', v)}
-                      label="ticket.searchPerson.label"
-                      placeholder="Commencez à saisir un nom..."
+                      label={formatMessage(intl, MODULE_NAME, 'ticket.reporter.user.label')}
+                      placeholder={formatMessage(intl, MODULE_NAME, 'ticket.searchPerson.placeholder')}
                       readOnly
                     />
                   </Grid>
@@ -408,4 +411,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators(
 );
 
 export { StyledEditTicketPage };
-export default connect(mapStateToProps, mapDispatchToProps)(EditTicketPage);
+export default injectIntl(connect(mapStateToProps, mapDispatchToProps)(EditTicketPage));
