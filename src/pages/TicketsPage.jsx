@@ -1,11 +1,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
 import { Fab } from '@mui/material';
 import {
-  GetIconComponent, historyPush, withModulesManager, withHistory, withTooltip, formatMessage, decodeId,
+  GetIconComponent, historyPush, withModulesManager, withHistory, withTooltip, formatMessage, decodeId, injectIntl,
 } from '@openimis/fe-core';
 import TicketSearcher from '../components/TicketSearcher';
 

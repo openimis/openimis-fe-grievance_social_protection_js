@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Grid } from '@mui/material';
-import { injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -11,6 +10,7 @@ import {
   TextInput,
   useTranslations,
   useModulesManager,
+  injectIntl,
 } from '@openimis/fe-core';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -42,12 +42,14 @@ function GrievanceCommentDialog({
       <Dialog
         open={openCommentModal}
         onClose={handleOpenModal}
-        PaperProps={{
-          style: {
-            width: 1200,
-            maxWidth: 1200,
-            maxHeight: 900,
-          },
+        slotProps={{
+          paper: {
+            style: {
+              width: 1200,
+              maxWidth: 1200,
+              maxHeight: 900,
+            },
+          }
         }}
       >
         <form noValidate>

@@ -1,11 +1,10 @@
 import React, {
   useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
-import { injectIntl } from 'react-intl';
 import Cascader from 'rc-cascader';
 import { styled, keyframes } from '@mui/material/styles';
 import { TextField, IconButton, InputAdornment } from '@mui/material';
-import { useTranslations, useGraphqlQuery, GetIconComponent } from '@openimis/fe-core';
+import { useTranslations, useGraphqlQuery, GetIconComponent, injectIntl } from '@openimis/fe-core';
 
 const ArrowDropDownIcon = GetIconComponent('ArrowDropDown');
 const ClearIcon = GetIconComponent('Clear');
@@ -127,18 +126,20 @@ function CategoryPicker(props) {
           fullWidth
           disabled={readOnly || isLoading}
           error={!!error}
-          InputProps={{
-            readOnly: true,
-            endAdornment: (
-              <InputAdornment position="end">
-                {inputValue && !readOnly && (
-                  <IconButton size="small" onClick={handleClear}>
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                )}
-                <ArrowDropDownIcon style={{ color: 'rgba(0, 0, 0, 0.54)' }} />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              readOnly: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {inputValue && !readOnly && (
+                    <IconButton size="small" onClick={handleClear}>
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <ArrowDropDownIcon style={{ color: 'rgba(0, 0, 0, 0.54)' }} />
+                </InputAdornment>
+              ),
+            }
           }}
         />
       </Cascader>

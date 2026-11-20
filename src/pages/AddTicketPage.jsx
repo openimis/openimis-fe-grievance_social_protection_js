@@ -6,13 +6,12 @@ import React, { Component } from 'react';
 import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { injectIntl } from 'react-intl'
 import {
   Grid, Paper, Typography, Divider, Tooltip,
 } from '@mui/material';
 
 import {
-  TextInput, journalize, PublishedComponent, FormattedMessage, GetIconComponent, formatMessage,
+  TextInput, journalize, PublishedComponent, FormattedMessage, GetIconComponent, formatMessage, injectIntl,
 } from '@openimis/fe-core';
 import { EMPTY_STRING, MODULE_NAME } from '../constants';
 import GrievantTypePicker from '../pickers/GrievantTypePicker';
@@ -129,7 +128,9 @@ class AddTicketPage extends Component {
                       onChange={(v) => this.updateTypeOfGrievant('grievantType', v)}
                       withLabel
                     />
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       <FormattedMessage module={MODULE_NAME} id="ticket.terminology.help" />
                     </Typography>
                   </Grid>

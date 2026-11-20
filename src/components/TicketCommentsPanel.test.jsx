@@ -16,6 +16,7 @@ vi.mock('@openimis/fe-core', async () => {
   const h = ReactActual.createElement;
 
   return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
     formatDateTimeFromISO: (mm, intl, iso) => iso,
     formatMessage: (intl, module, id) => id,
     GetIconComponent: (name) => function Icon() {

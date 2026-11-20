@@ -1,5 +1,4 @@
 import React, { useEffect, Fragment } from 'react';
-import { injectIntl } from 'react-intl';
 import {
   Dialog, Button, DialogActions, DialogContent,
 } from '@mui/material';
@@ -14,6 +13,7 @@ import {
   ProgressOrError,
   withModulesManager,
   withHistory,
+  injectIntl,
 } from '@openimis/fe-core';
 import { fetchIndividual } from '../actions';
 import IndividualSummary from './IndividualSummary';
