@@ -32,11 +32,11 @@ import EnquiryDialog from './EnquiryDialog';
 
 const StyledTicketSearcher = styled('div')(({ theme }) => ({
   '& .paper': {
-    ...(theme.paper?.paper ?? {}),
+    ...theme.paper?.paper,
     margin: 0,
   },
   '& .paperHeader': {
-    ...(theme.paper?.header ?? {}),
+    ...theme.paper?.header,
     padding: 10,
   },
   '& .tableTitle': theme.table?.title ?? {},
