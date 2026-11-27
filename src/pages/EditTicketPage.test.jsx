@@ -18,6 +18,7 @@ vi.mock('@openimis/fe-core', async () => {
   const translate = (id) => messages[id] ?? id;
 
   return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
     formatMessage: (intl, module, id) => translate(id),
     FormattedMessage: ({ id }) => translate(id),
     GetIconComponent: (name) => function Icon() {

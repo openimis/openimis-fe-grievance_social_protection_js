@@ -5,7 +5,6 @@
 import React, { Component, Fragment } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 import { IconButton, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -20,6 +19,7 @@ import {
   historyPush,
   decodeId,
   GetIconComponent,
+  injectIntl,
 } from '@openimis/fe-core';
 const EditIcon = GetIconComponent("Edit");
 // const AddIcon = GetIconComponent("Add");
@@ -32,11 +32,11 @@ import EnquiryDialog from './EnquiryDialog';
 
 const StyledTicketSearcher = styled('div')(({ theme }) => ({
   '& .paper': {
-    ...theme.paper?.paper ?? {},
+    ...theme.paper?.paper,
     margin: 0,
   },
   '& .paperHeader': {
-    ...theme.paper?.header ?? {},
+    ...theme.paper?.header,
     padding: 10,
   },
   '& .tableTitle': theme.table?.title ?? {},

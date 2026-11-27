@@ -1,11 +1,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component } from 'react';
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { styled } from '@mui/material/styles';
 import {
-  formatMessageWithValues, withModulesManager, withHistory, historyPush,
+  formatMessageWithValues, withModulesManager, withHistory, historyPush, injectIntl,
 } from '@openimis/fe-core';
 import TicketForm from '../components/TicketForm';
 import { updateTicket, createTicket } from '../actions';

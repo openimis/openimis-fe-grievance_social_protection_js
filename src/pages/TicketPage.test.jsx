@@ -14,6 +14,7 @@ vi.mock('@openimis/fe-core', async () => {
   const ReactActual = (await import('react')).default;
   const { mockModulesManager } = await import('@openimis/fe-core/testing');
   return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
     formatMessageWithValues: (intl, module, id, values) => `${id} ${JSON.stringify(values ?? {})}`,
     historyPush: () => {},
     withHistory: (Component) => Component,

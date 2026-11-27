@@ -13,6 +13,7 @@ vi.mock('@openimis/fe-core', async () => {
   const h = ReactActual.createElement;
 
   return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
     ConstantBasedPicker: () => null,
     formatMessage: (intl, module, id) => id,
     FormattedMessage: ({ id }) => id,

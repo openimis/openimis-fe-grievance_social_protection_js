@@ -9,7 +9,6 @@ import { useReactToPrint } from 'react-to-print';
 import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { injectIntl } from 'react-intl';
 import {
   Grid,
   Paper,
@@ -24,6 +23,7 @@ import {
   FormattedMessage,
   GetIconComponent,
   formatMessage,
+  injectIntl,
 } from '@openimis/fe-core';
 import _ from 'lodash';
 import { updateTicket, fetchTicket, createTicketComment } from '../actions';
@@ -252,7 +252,9 @@ class EditTicketPage extends Component {
           <Grid container>
             <Grid size={12}>
               <Paper className="paper">
-                <Grid container className="tableTitle" alignItems="center">
+                <Grid container className="tableTitle" sx={{
+                  alignItems: "center"
+                }}>
                   <Grid size={8} className="tableTitle">
                     <Typography>
                       <FormattedMessage

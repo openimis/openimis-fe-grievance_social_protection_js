@@ -17,6 +17,7 @@ vi.mock('@openimis/fe-core', async () => {
   ];
 
   return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
     GetIconComponent: (name) => function Icon() {
       return h('span', { 'data-icon': name });
     },
