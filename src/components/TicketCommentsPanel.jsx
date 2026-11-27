@@ -7,7 +7,6 @@ import React, { Component, createRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import {
   formatDateTimeFromISO,
@@ -18,6 +17,7 @@ import {
   withHistory,
   withModulesManager,
   GetIconComponent,
+  injectIntl,
 } from '@openimis/fe-core';
 import {
   Box, IconButton, Paper, Tooltip,
@@ -197,7 +197,13 @@ class TicketCommentPanel extends Component {
   headerActions = () => {
     const { comment, commenterType, openCommentModal } = this.state;
     return (
-      <Box display="flex" alignItems="center" justifyContent="flex-end" width="100%">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          width: "100%"
+        }}>
         <IconButton onClick={this.reload} disabled={this.isReadOnly()}>
           <ReplayIcon />
         </IconButton>

@@ -3,7 +3,6 @@
 import React, { Component } from 'react';
 import _debounce from 'lodash/debounce';
 import { styled } from '@mui/material/styles';
-import { injectIntl } from 'react-intl';
 import { Grid, Checkbox, FormControlLabel } from '@mui/material';
 import {
   withModulesManager,
@@ -15,6 +14,7 @@ import {
   formatMessage,
   GRID_RESPONSIVE_STANDARD,
   GRID_RESPONSIVE_SMALL,
+  injectIntl,
 } from '@openimis/fe-core';
 import { MODULE_NAME } from '../constants';
 

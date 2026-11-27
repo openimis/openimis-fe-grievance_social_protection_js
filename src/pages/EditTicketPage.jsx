@@ -9,7 +9,6 @@ import { useReactToPrint } from 'react-to-print';
 import { styled } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { injectIntl } from 'react-intl';
 import {
   Grid,
   Paper,
@@ -24,6 +23,7 @@ import {
   FormattedMessage,
   GetIconComponent,
   formatMessage,
+  injectIntl,
 } from '@openimis/fe-core';
 import _ from 'lodash';
 import { updateTicket, fetchTicket, createTicketComment } from '../actions';
@@ -83,6 +83,7 @@ class EditTicketPage extends Component {
 
   // eslint-disable-next-line no-unused-vars
   componentDidUpdate(prevPops, prevState, snapshort) {
+    this.pendingEdited = null;
     if (prevPops.submittingMutation && !this.props.submittingMutation) {
       this.props.journalize(this.props.mutation);
     }
@@ -94,10 +95,16 @@ class EditTicketPage extends Component {
     }
   };
 
+  // The page is told from the input's event, not from a setState callback: a callback runs
+  // during the commit, so the page's update would cost a nested commit per keystroke, and
+  // React 19 throws "Maximum update depth exceeded" on a burst of them (a barcode scanner,
+  // or Cypress typing with no delay). `pendingEdited` chains the changes made in one batch
+  // until they are committed.
   updateAttribute = (k, v) => {
-    this.setState((state) => ({
-      stateEdited: { ...state.stateEdited, [k]: v },
-    }), () => this.syncEdited(this.state.stateEdited));
+    const edited = { ...(this.pendingEdited ?? this.state.stateEdited), [k]: v };
+    this.pendingEdited = edited;
+    this.setState({ stateEdited: edited });
+    this.syncEdited(edited);
   };
 
   extractFieldFromJsonExt = (reporter, field) => {
@@ -245,7 +252,9 @@ class EditTicketPage extends Component {
           <Grid container>
             <Grid size={12}>
               <Paper className="paper">
-                <Grid container className="tableTitle" alignItems="center">
+                <Grid container className="tableTitle" sx={{
+                  alignItems: "center"
+                }}>
                   <Grid size={8} className="tableTitle">
                     <Typography>
                       <FormattedMessage

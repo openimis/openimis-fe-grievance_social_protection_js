@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { injectIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
 import { Grid, Box, Typography } from '@mui/material';
 import {
@@ -8,6 +7,7 @@ import {
   formatDateFromISO,
   Contributions,
   ControlledField,
+  injectIntl,
 } from '@openimis/fe-core';
 
 const INSUREE_SUMMARY_AVATAR_CONTRIBUTION_KEY = 'insuree.InsureeSummaryAvatar';
@@ -31,11 +31,15 @@ function IndividualSummary(props) {
     <StyledIndividualSummary>
       <Grid container className={className}>
         {hasAvatarContribution && (
-          <Box mr={3}>
+          <Box sx={{
+            mr: 3
+          }}>
             <Contributions readOnly photo={insuree.photo} contributionKey={INSUREE_SUMMARY_AVATAR_CONTRIBUTION_KEY} />
           </Box>
         )}
-        <Box flexGrow={1}>
+        <Box sx={{
+          flexGrow: 1
+        }}>
           <ControlledField
             module="insuree"
             id="InsureeSummary.chfId"

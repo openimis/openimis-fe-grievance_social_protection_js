@@ -3,11 +3,10 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable react/no-did-update-set-state */
 import React, { Component, Fragment } from 'react';
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import {
   Form, GetIconComponent, withModulesManager, formatMessage,
-  formatMessageWithValues, journalize, ProgressOrError, coreAlert,
+  formatMessageWithValues, journalize, ProgressOrError, coreAlert, injectIntl,
 } from '@openimis/fe-core';
 import { bindActionCreators } from 'redux';
 import {

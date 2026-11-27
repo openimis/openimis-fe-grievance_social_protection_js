@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { injectIntl } from 'react-intl';
+import React, {
+  useCallback, useEffect, useMemo, useRef, useState,
+} from 'react';
 import Cascader from 'rc-cascader';
 import { styled, keyframes } from '@mui/material/styles';
 import { TextField, IconButton, InputAdornment } from '@mui/material';
-import { useTranslations, useGraphqlQuery, GetIconComponent } from '@openimis/fe-core';
+import { useTranslations, useGraphqlQuery, GetIconComponent, injectIntl } from '@openimis/fe-core';
 
 const ArrowDropDownIcon = GetIconComponent('ArrowDropDown');
 const ClearIcon = GetIconComponent('Clear');
@@ -35,13 +36,25 @@ function CategoryPicker(props) {
     value,
     label,
     placeholder,
+    intl,
   } = props;
   const { formatMessage } = useTranslations('ticket');
   const [inputValue, setInputValue] = useState(value ?? '');
 
-  React.useEffect(() => {
+  useEffect(() => {
     setInputValue(value ?? '');
   }, [value]);
+
+  // The form re-renders this picker on every keystroke typed in any of its fields, with a
+  // new onChange each time. Re-rendering the Cascader makes its (closed) popup schedule
+  // low-priority updates, and React 19 counts every keystroke made while they wait as a
+  // nested update: past 50 it throws "Maximum update depth exceeded" (a barcode scanner, or
+  // Cypress typing with no delay). So the Cascader is only re-rendered when what it shows
+  // changes, and it calls the latest onChange through a ref.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
 
   const { isLoading, data, error } = useGraphqlQuery(
     `query CategoryPicker {
@@ -66,34 +79,37 @@ function CategoryPicker(props) {
   }));
 
   const rawJson = data?.grievanceConfig?.grievanceCategoriesJson;
-  const parsed = typeof rawJson === 'string' ? JSON.parse(rawJson) : rawJson;
-  const options = buildOptions(parsed);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- formatMessage is new on every render; intl is what it depends on
+  const options = useMemo(() => buildOptions(typeof rawJson === 'string' ? JSON.parse(rawJson) : rawJson), [rawJson, intl]);
 
-  const handleClear = (e) => {
+  const handleClear = useCallback((e) => {
     e.stopPropagation();
     setInputValue('');
-    onChange?.(null, null);
-  };
+    onChangeRef.current?.(null, null);
+  }, []);
 
-  const handleCascaderChange = (values, selectedOptions = []) => {
+  const handleCascaderChange = useCallback((values, selectedOptions = []) => {
     const selected = selectedOptions.length ? selectedOptions[selectedOptions.length - 1] : null;
     const stringValue = selected?.value ?? null;
     setInputValue(stringValue || '');
-    onChange?.(stringValue, selected);
-  };
+    onChangeRef.current?.(stringValue, selected);
+  }, []);
 
-  const defaultValue = () => {
+  const cascaderValue = useMemo(() => {
     if (!value) {
       return [];
     }
     const parts = value.split(' > ');
     return parts.map((_, index) => parts.slice(0, index + 1).join(' > '));
-  };
+  }, [value]);
 
-  return (
+  const fieldLabel = label || formatMessage('CategoryPicker.label');
+  const fieldPlaceholder = placeholder ?? formatMessage('CategoryPicker.placeholder');
+
+  return useMemo(() => (
     <StyledDiv>
       <Cascader
-        value={defaultValue()}
+        value={cascaderValue}
         options={options}
         onChange={handleCascaderChange}
         changeOnSelect
@@ -103,30 +119,35 @@ function CategoryPicker(props) {
         loadingIcon={<SpinningIcon fontSize="small" />}
       >
         <TextField
-          label={label || formatMessage('CategoryPicker.label')}
-          placeholder={placeholder ?? formatMessage('CategoryPicker.placeholder')}
+          label={fieldLabel}
+          placeholder={fieldPlaceholder}
           required={required}
           value={inputValue}
           fullWidth
           disabled={readOnly || isLoading}
           error={!!error}
-          InputProps={{
-            readOnly: true,
-            endAdornment: (
-              <InputAdornment position="end">
-                {inputValue && !readOnly && (
-                  <IconButton size="small" onClick={handleClear}>
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                )}
-                <ArrowDropDownIcon style={{ color: 'rgba(0, 0, 0, 0.54)' }} />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              readOnly: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {inputValue && !readOnly && (
+                    <IconButton size="small" onClick={handleClear}>
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <ArrowDropDownIcon style={{ color: 'rgba(0, 0, 0, 0.54)' }} />
+                </InputAdornment>
+              ),
+            }
           }}
         />
       </Cascader>
     </StyledDiv>
-  );
+  ), [
+    cascaderValue, options, handleCascaderChange, handleClear, readOnly, isLoading, inputValue,
+    fieldLabel, fieldPlaceholder, required, error,
+  ]);
 }
 
 export default injectIntl(CategoryPicker);
